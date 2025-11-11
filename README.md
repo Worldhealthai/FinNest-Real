@@ -87,17 +87,37 @@ FinNest-Real/
 
 ## Deployment
 
-### Vercel
+### Vercel (Web Deployment)
 
-The app is configured for Vercel deployment:
+The app is fully configured for Vercel deployment. See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
 
+**Quick Deploy Options:**
+
+1. **Via Vercel Dashboard** (Recommended)
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import `Worldhealthai/FinNest-Real` repository
+   - Deploy with one click!
+
+2. **Via CLI**
+   ```bash
+   npm install -g vercel
+   npm run deploy
+   ```
+
+3. **GitHub Integration**
+   - Connect your repo to Vercel for automatic deployments
+   - Every push automatically deploys
+
+**Available Scripts:**
 ```bash
-npm run build
+npm run build          # Build for production
+npm run deploy         # Deploy to production
+npm run deploy:preview # Deploy preview version
 ```
 
-### Expo Build
+### Expo Build (Native Apps)
 
-For native builds:
+For iOS and Android native builds:
 
 ```bash
 npx expo build:android
