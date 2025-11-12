@@ -114,9 +114,14 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
 
       {/* Logo */}
       <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
-        <View style={styles.logoCircle}>
+        <LinearGradient
+          colors={[Colors.mediumNavy, Colors.deepNavy]}
+          style={styles.logoCircle}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
           <Image source={require('@/assets/logo.png')} style={styles.logoImage} resizeMode="contain" />
-        </View>
+        </LinearGradient>
       </Animated.View>
 
       {/* Title */}
@@ -192,11 +197,12 @@ const styles = StyleSheet.create({
     borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.deepNavy,
+    borderWidth: 2,
+    borderColor: Colors.gold + '40',
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
+    shadowOpacity: 0.4,
+    shadowRadius: 25,
     elevation: 10,
   },
   logoImage: {
