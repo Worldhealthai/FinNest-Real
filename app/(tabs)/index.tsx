@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,9 +33,7 @@ export default function DashboardScreen() {
               <Text style={styles.title}>ISA Dashboard</Text>
               <Text style={styles.year}>{taxYear.start.getFullYear()}/{taxYear.end.getFullYear()} Tax Year</Text>
             </View>
-            <LinearGradient colors={Colors.goldGradient} style={styles.logo}>
-              <Text style={styles.logoText}>FN</Text>
-            </LinearGradient>
+            <Image source={require('@/assets/logo.png')} style={styles.logo} resizeMode="contain" />
           </View>
 
           {days <= 30 && (
@@ -183,8 +181,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
   title: { fontSize: Typography.sizes.xxl, color: Colors.white, fontWeight: Typography.weights.bold },
   year: { fontSize: Typography.sizes.sm, color: Colors.gold, marginTop: 4, fontWeight: Typography.weights.semibold },
-  logo: { width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' },
-  logoText: { fontSize: 20, fontWeight: Typography.weights.extrabold, color: Colors.deepNavy },
+  logo: { width: 60, height: 60 },
   card: { marginBottom: Spacing.sm, padding: Spacing.md },
   row: { flexDirection: 'row', alignItems: 'center' },
   label: { fontSize: Typography.sizes.sm, color: Colors.lightGray, marginBottom: 4 },

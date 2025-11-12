@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
@@ -114,14 +114,9 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
 
       {/* Logo */}
       <Animated.View style={[styles.logoContainer, logoAnimatedStyle]}>
-        <LinearGradient
-          colors={Colors.goldGradient}
-          style={styles.logoCircle}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <Text style={styles.logoText}>FN</Text>
-        </LinearGradient>
+        <View style={styles.logoCircle}>
+          <Image source={require('@/assets/logo.png')} style={styles.logoImage} resizeMode="contain" />
+        </View>
       </Animated.View>
 
       {/* Title */}
@@ -192,21 +187,21 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
   },
   logoCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: Colors.deepNavy,
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
     elevation: 10,
   },
-  logoText: {
-    fontSize: 48,
-    fontWeight: Typography.weights.extrabold,
-    color: Colors.deepNavy,
+  logoImage: {
+    width: 120,
+    height: 120,
   },
   titleContainer: {
     alignItems: 'center',
