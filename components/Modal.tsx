@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -43,7 +45,11 @@ export default function Modal({
       <View style={styles.overlay}>
         <BlurView intensity={50} style={StyleSheet.absoluteFill} tint="dark" />
 
-        <View style={styles.modalContainer}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalContainer}
+          keyboardVerticalOffset={0}
+        >
           <GlassCard style={styles.modalContent} intensity="dark">
             {/* Header */}
             <LinearGradient
@@ -72,11 +78,13 @@ export default function Modal({
               style={styles.scrollView}
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              nestedScrollEnabled={true}
             >
               {children}
             </ScrollView>
           </GlassCard>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </RNModal>
   );

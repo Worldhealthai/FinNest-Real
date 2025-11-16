@@ -7,6 +7,9 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +23,7 @@ import {
   LIFETIME_ISA_MAX,
   formatCurrency,
 } from '@/constants/isaData';
+import { searchProviders, ISAProvider } from '@/constants/isaProviders';
 
 interface AddISAContributionModalProps {
   visible: boolean;
@@ -47,6 +51,8 @@ export default function AddISAContributionModal({
   const [amount, setAmount] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [notes, setNotes] = useState('');
+  const [showProviderSuggestions, setShowProviderSuggestions] = useState(false);
+  const [filteredProviders, setFilteredProviders] = useState<ISAProvider[]>([]);
 
   const resetForm = () => {
     setProvider('');
@@ -54,6 +60,26 @@ export default function AddISAContributionModal({
     setAmount('');
     setAccountNumber('');
     setNotes('');
+    setShowProviderSuggestions(false);
+    setFilteredProviders([]);
+  };
+
+  const handleProviderChange = (text: string) => {
+    setProvider(text);
+    if (text.trim().length > 0) {
+      const results = searchProviders(text);
+      setFilteredProviders(results.slice(0, 5)); // Limit to 5 suggestions
+      setShowProviderSuggestions(results.length > 0);
+    } else {
+      setShowProviderSuggestions(false);
+      setFilteredProviders([]);
+    }
+  };
+
+  const selectProvider = (providerData: ISAProvider) => {
+    setProvider(providerData.name);
+    setShowProviderSuggestions(false);
+    setFilteredProviders([]);
   };
 
   const handleSubmit = () => {
@@ -126,6 +152,26 @@ export default function AddISAContributionModal({
     return iconMap[type] || 'wallet';
   };
 
+  const getCategoryIcon = (category: string): keyof typeof Ionicons.glyphMap => {
+    const iconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
+      'bank': 'business',
+      'investment-platform': 'trending-up',
+      'fintech': 'phone-portrait',
+      'building-society': 'home',
+    };
+    return iconMap[category] || 'business';
+  };
+
+  const getCategoryColor = (category: string): string => {
+    const colorMap: Record<string, string> = {
+      'bank': Colors.info,
+      'investment-platform': Colors.success,
+      'fintech': Colors.gold,
+      'building-society': Colors.warning,
+    };
+    return colorMap[category] || Colors.info;
+  };
+
   const maxContribution =
     selectedType === ISA_TYPES.LIFETIME ? LIFETIME_ISA_MAX : ISA_ANNUAL_ALLOWANCE;
 
@@ -154,21 +200,72 @@ export default function AddISAContributionModal({
           </View>
         </GlassCard>
 
-        {/* Provider Name */}
+        {/* Provider Name with Autocomplete */}
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Provider Name *</Text>
           <Text style={styles.helperText}>
-            e.g., Barclays, Vanguard, Moneybox, Hargreaves Lansdown
+            Start typing to see suggestions from real UK ISA providers
           </Text>
           <GlassCard style={styles.inputCard} intensity="medium">
-            <TextInput
-              style={styles.input}
-              placeholder="Enter provider name"
-              placeholderTextColor={Colors.mediumGray}
-              value={provider}
-              onChangeText={setProvider}
-            />
+            <View style={styles.providerInputContainer}>
+              <Ionicons name="business-outline" size={20} color={Colors.gold} style={styles.providerIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., Hargreaves Lansdown, Vanguard, Moneybox"
+                placeholderTextColor={Colors.mediumGray}
+                value={provider}
+                onChangeText={handleProviderChange}
+                onFocus={() => {
+                  if (provider.trim().length > 0) {
+                    const results = searchProviders(provider);
+                    setFilteredProviders(results.slice(0, 5));
+                    setShowProviderSuggestions(results.length > 0);
+                  }
+                }}
+              />
+            </View>
           </GlassCard>
+
+          {/* Provider Suggestions Dropdown */}
+          {showProviderSuggestions && filteredProviders.length > 0 && (
+            <GlassCard style={styles.suggestionsCard} intensity="dark">
+              <View style={styles.suggestionsHeader}>
+                <Ionicons name="search" size={16} color={Colors.gold} />
+                <Text style={styles.suggestionsTitle}>Suggested Providers</Text>
+              </View>
+              {filteredProviders.map((providerData, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.suggestionItem,
+                    index === filteredProviders.length - 1 && styles.suggestionItemLast,
+                  ]}
+                  onPress={() => selectProvider(providerData)}
+                >
+                  <View style={styles.suggestionLeft}>
+                    <View style={[
+                      styles.providerCategoryBadge,
+                      { backgroundColor: getCategoryColor(providerData.category) + '30' }
+                    ]}>
+                      <Ionicons
+                        name={getCategoryIcon(providerData.category)}
+                        size={16}
+                        color={getCategoryColor(providerData.category)}
+                      />
+                    </View>
+                    <View style={styles.suggestionText}>
+                      <Text style={styles.suggestionName}>{providerData.name}</Text>
+                      <Text style={styles.suggestionTypes}>
+                        {providerData.types.slice(0, 2).join(', ')}
+                        {providerData.types.length > 2 ? ` +${providerData.types.length - 2}` : ''}
+                      </Text>
+                    </View>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color={Colors.lightGray} />
+                </TouchableOpacity>
+              ))}
+            </GlassCard>
+          )}
         </View>
 
         {/* ISA Type Selection */}
@@ -410,10 +507,76 @@ const styles = StyleSheet.create({
   inputCard: {
     padding: Spacing.lg,
   },
+  providerInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  providerIcon: {
+    marginRight: Spacing.md,
+  },
   input: {
+    flex: 1,
     fontSize: Typography.sizes.md,
     color: Colors.white,
     fontWeight: Typography.weights.medium,
+  },
+  suggestionsCard: {
+    marginTop: Spacing.sm,
+    padding: Spacing.md,
+    maxHeight: 300,
+  },
+  suggestionsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.glassLight,
+  },
+  suggestionsTitle: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.gold,
+    fontWeight: Typography.weights.bold,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.glassLight,
+  },
+  suggestionItemLast: {
+    borderBottomWidth: 0,
+  },
+  suggestionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  providerCategoryBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  suggestionText: {
+    flex: 1,
+  },
+  suggestionName: {
+    fontSize: Typography.sizes.md,
+    color: Colors.white,
+    fontWeight: Typography.weights.semibold,
+    marginBottom: 2,
+  },
+  suggestionTypes: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.lightGray,
   },
   notesInput: {
     minHeight: 80,
