@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
+import AddISAContributionModal, { ISAContribution } from '@/components/AddISAContributionModal';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { ISA_INFO, ISA_ANNUAL_ALLOWANCE, LIFETIME_ISA_MAX, getDaysUntilTaxYearEnd, formatCurrency, getTaxYearDates, calculateFlexibleISA } from '@/constants/isaData';
 
@@ -23,6 +24,9 @@ export default function DashboardScreen() {
   const percent = (total / ISA_ANNUAL_ALLOWANCE) * 100;
   const lisaBonus = USER_ISAS.lifetime.contributed * 0.25;
 
+  // Modal state
+  const [addContributionVisible, setAddContributionVisible] = useState(false);
+
   // Flexible ISA Calculator State
   const [withdrawals, setWithdrawals] = useState('2000');
   const [depositAmount, setDepositAmount] = useState('5000');
@@ -38,6 +42,12 @@ export default function DashboardScreen() {
       parseFloat(depositAmount) || 0
     );
     setCalcResult(result);
+  };
+
+  const handleAddContribution = (contribution: ISAContribution) => {
+    // In a real app, this would save to state/database
+    console.log('New contribution added:', contribution);
+    // You could update the USER_ISAS state here if it was managed state
   };
 
   return (
@@ -164,12 +174,12 @@ export default function DashboardScreen() {
             <Text style={[styles.sub, { marginTop: 4 }]}>{formatCurrency(LIFETIME_ISA_MAX - USER_ISAS.lifetime.contributed)} left for max bonus</Text>
           </GlassCard>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setAddContributionVisible(true)}>
             <GlassCard style={styles.card} intensity="light">
               <View style={{ alignItems: 'center', paddingVertical: 12 }}>
                 <Ionicons name="add-circle" size={32} color={Colors.gold} />
-                <Text style={[styles.name, { marginTop: 8 }]}>Add Another ISA</Text>
-                <Text style={styles.sub}>Track ISAs from any provider</Text>
+                <Text style={[styles.name, { marginTop: 8 }]}>Add ISA Contribution</Text>
+                <Text style={styles.sub}>Track contributions from any provider</Text>
               </View>
             </GlassCard>
           </TouchableOpacity>
@@ -311,6 +321,13 @@ export default function DashboardScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Add ISA Contribution Modal */}
+      <AddISAContributionModal
+        visible={addContributionVisible}
+        onClose={() => setAddContributionVisible(false)}
+        onAdd={handleAddContribution}
+      />
     </View>
   );
 }
