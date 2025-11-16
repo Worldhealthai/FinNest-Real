@@ -6,10 +6,6 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  ScrollView,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,7 +19,7 @@ import {
   LIFETIME_ISA_MAX,
   formatCurrency,
 } from '@/constants/isaData';
-import { searchProviders, ISAProvider } from '@/constants/isaProviders';
+import { searchProviders, getPopularProviders, ISAProvider } from '@/constants/isaProviders';
 
 interface AddISAContributionModalProps {
   visible: boolean;
@@ -68,11 +64,13 @@ export default function AddISAContributionModal({
     setProvider(text);
     if (text.trim().length > 0) {
       const results = searchProviders(text);
-      setFilteredProviders(results.slice(0, 5)); // Limit to 5 suggestions
+      setFilteredProviders(results.slice(0, 8)); // Show up to 8 suggestions
       setShowProviderSuggestions(results.length > 0);
     } else {
-      setShowProviderSuggestions(false);
-      setFilteredProviders([]);
+      // Show popular providers when input is empty
+      const popular = getPopularProviders();
+      setFilteredProviders(popular);
+      setShowProviderSuggestions(true);
     }
   };
 
@@ -185,7 +183,7 @@ export default function AddISAContributionModal({
       title="Add ISA Contribution"
       icon="add-circle"
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <>
         {/* Info Card */}
         <GlassCard style={styles.infoCard} intensity="dark">
           <View style={styles.infoRow}>
@@ -204,7 +202,7 @@ export default function AddISAContributionModal({
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Provider Name *</Text>
           <Text style={styles.helperText}>
-            Start typing to see suggestions from real UK ISA providers
+            Tap to see popular providers or start typing to search
           </Text>
           <GlassCard style={styles.inputCard} intensity="medium">
             <View style={styles.providerInputContainer}>
@@ -216,11 +214,21 @@ export default function AddISAContributionModal({
                 value={provider}
                 onChangeText={handleProviderChange}
                 onFocus={() => {
+                  // Show suggestions on focus
                   if (provider.trim().length > 0) {
                     const results = searchProviders(provider);
-                    setFilteredProviders(results.slice(0, 5));
+                    setFilteredProviders(results.slice(0, 8));
                     setShowProviderSuggestions(results.length > 0);
+                  } else {
+                    // Show popular providers when field is empty
+                    const popular = getPopularProviders();
+                    setFilteredProviders(popular);
+                    setShowProviderSuggestions(true);
                   }
+                }}
+                onBlur={() => {
+                  // Delay hiding suggestions to allow tap on suggestion
+                  setTimeout(() => setShowProviderSuggestions(false), 200);
                 }}
               />
             </View>
@@ -230,8 +238,14 @@ export default function AddISAContributionModal({
           {showProviderSuggestions && filteredProviders.length > 0 && (
             <GlassCard style={styles.suggestionsCard} intensity="dark">
               <View style={styles.suggestionsHeader}>
-                <Ionicons name="search" size={16} color={Colors.gold} />
-                <Text style={styles.suggestionsTitle}>Suggested Providers</Text>
+                <Ionicons
+                  name={provider.trim().length > 0 ? "search" : "star"}
+                  size={16}
+                  color={Colors.gold}
+                />
+                <Text style={styles.suggestionsTitle}>
+                  {provider.trim().length > 0 ? "Suggested Providers" : "Popular Providers"}
+                </Text>
               </View>
               {filteredProviders.map((providerData, index) => (
                 <TouchableOpacity
@@ -464,7 +478,7 @@ export default function AddISAContributionModal({
         >
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </>
     </Modal>
   );
 }
@@ -523,7 +537,7 @@ const styles = StyleSheet.create({
   suggestionsCard: {
     marginTop: Spacing.sm,
     padding: Spacing.md,
-    maxHeight: 300,
+    maxHeight: 400,
   },
   suggestionsHeader: {
     flexDirection: 'row',
