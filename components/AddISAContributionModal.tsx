@@ -367,8 +367,6 @@ export default function AddISAContributionModal({
         >
           <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
-
-        <View style={{ height: 40 }} />
       </ScrollView>
     </Modal>
   );

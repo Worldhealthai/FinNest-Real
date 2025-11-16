@@ -14,7 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
 import PersonalInfoModal from '@/components/PersonalInfoModal';
-import PaymentMethodsModal from '@/components/PaymentMethodsModal';
 import ISAAccountsModal from '@/components/ISAAccountsModal';
 import SecurityModal from '@/components/SecurityModal';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
@@ -26,7 +25,6 @@ export default function ProfileScreen() {
 
   // Modal states
   const [personalInfoVisible, setPersonalInfoVisible] = React.useState(false);
-  const [paymentMethodsVisible, setPaymentMethodsVisible] = React.useState(false);
   const [isaAccountsVisible, setIsaAccountsVisible] = React.useState(false);
   const [securityVisible, setSecurityVisible] = React.useState(false);
 
@@ -160,18 +158,6 @@ export default function ProfileScreen() {
                     <Ionicons name="person-outline" size={20} color={Colors.gold} />
                   </View>
                   <Text style={styles.menuText}>Personal Information</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={Colors.lightGray} />
-              </TouchableOpacity>
-            </GlassCard>
-
-            <GlassCard style={styles.menuCard} intensity="medium">
-              <TouchableOpacity style={styles.menuItem} onPress={() => setPaymentMethodsVisible(true)}>
-                <View style={styles.menuLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: Colors.info + '30' }]}>
-                    <Ionicons name="card-outline" size={20} color={Colors.info} />
-                  </View>
-                  <Text style={styles.menuText}>Payment Methods</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={Colors.lightGray} />
               </TouchableOpacity>
@@ -353,10 +339,6 @@ export default function ProfileScreen() {
       <PersonalInfoModal
         visible={personalInfoVisible}
         onClose={() => setPersonalInfoVisible(false)}
-      />
-      <PaymentMethodsModal
-        visible={paymentMethodsVisible}
-        onClose={() => setPaymentMethodsVisible(false)}
       />
       <ISAAccountsModal
         visible={isaAccountsVisible}

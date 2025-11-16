@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    height: height * 0.85,
+    height: height * 0.92,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     overflow: 'hidden',
@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.lg,
-    paddingBottom: Spacing.xl * 2,
+    paddingBottom: 120,
   },
 });
