@@ -148,8 +148,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1,
     padding: Spacing.lg,
-    paddingBottom: 150,
+    paddingBottom: 40,
   },
 });

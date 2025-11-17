@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg,
   },
   stepContainer: {
@@ -571,11 +571,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gold,
   },
   stepContent: {
-    flex: 1,
+    // Removed flex: 1 to allow proper scrolling
   },
   stepHeader: {
     alignItems: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   stepTitle: {
     fontSize: Typography.sizes.xxl,
@@ -608,7 +608,8 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   providerList: {
-    flex: 1,
+    // Removed flex: 1 to allow proper scrolling
+    marginBottom: Spacing.xl,
   },
   listTitle: {
     fontSize: Typography.sizes.sm,
@@ -651,7 +652,7 @@ const styles = StyleSheet.create({
   // Step 2: ISA Type Selection
   selectedProviderCard: {
     padding: Spacing.lg,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
     alignItems: 'center',
   },
   selectedProviderLabel: {
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.md,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   isaTypeButton: {
     width: (width - Spacing.lg * 2 - Spacing.md) / 2,
@@ -744,7 +745,7 @@ const styles = StyleSheet.create({
   // Step 3: Amount Entry
   summaryCard: {
     padding: Spacing.lg,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -762,8 +763,8 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.semibold,
   },
   amountCard: {
-    padding: Spacing.xl,
-    marginBottom: Spacing.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
     alignItems: 'center',
   },
   amountLabel: {
@@ -816,10 +817,10 @@ const styles = StyleSheet.create({
   bonusCard: {
     padding: 0,
     overflow: 'hidden',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   bonusGradient: {
-    padding: Spacing.xl,
+    padding: Spacing.lg,
     alignItems: 'center',
   },
   bonusTitle: {
@@ -877,6 +878,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.md,
     marginTop: Spacing.xl,
+    paddingBottom: Spacing.xl,
   },
   backButton: {
     flex: 1,
