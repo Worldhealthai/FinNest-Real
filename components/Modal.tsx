@@ -70,23 +70,17 @@ export default function Modal({
             </LinearGradient>
 
             {/* Content */}
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              style={styles.keyboardView}
-              keyboardVerticalOffset={0}
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={true}
+              keyboardShouldPersistTaps="handled"
+              scrollEnabled={true}
+              bounces={true}
+              alwaysBounceVertical={true}
             >
-              <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={true}
-                keyboardShouldPersistTaps="handled"
-                nestedScrollEnabled={true}
-                scrollEnabled={true}
-                bounces={true}
-              >
-                {children}
-              </ScrollView>
-            </KeyboardAvoidingView>
+              {children}
+            </ScrollView>
           </GlassCard>
         </View>
       </View>
@@ -100,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    height: height * 0.92,
+    height: height * 0.90,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     overflow: 'hidden',
@@ -108,6 +102,7 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     padding: 0,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
@@ -141,14 +136,12 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: Spacing.xs,
   },
-  keyboardView: {
-    flex: 1,
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     padding: Spacing.lg,
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
 });
