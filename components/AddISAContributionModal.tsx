@@ -243,40 +243,38 @@ export default function AddISAContributionModal({
       </GlassCard>
 
       {/* Provider List */}
-      <View style={styles.providerList}>
-        <Text style={styles.listTitle}>
-          {providerSearch.trim().length > 0 ? `Results (${filteredProviders.length})` : 'Popular Providers'}
-        </Text>
-        {filteredProviders.map((providerData, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => selectProvider(providerData)}
-            activeOpacity={0.7}
-          >
-            <GlassCard style={styles.providerCard} intensity="medium">
-              <View style={styles.providerCardContent}>
-                <View style={[
-                  styles.providerBadge,
-                  { backgroundColor: getCategoryColor(providerData.category) + '30' }
-                ]}>
-                  <Ionicons
-                    name={getCategoryIcon(providerData.category)}
-                    size={24}
-                    color={getCategoryColor(providerData.category)}
-                  />
-                </View>
-                <View style={styles.providerInfo}>
-                  <Text style={styles.providerName}>{providerData.name}</Text>
-                  <Text style={styles.providerTypes}>
-                    {providerData.types.slice(0, 2).join(' • ')}
-                  </Text>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={Colors.lightGray} />
+      <Text style={styles.listTitle}>
+        {providerSearch.trim().length > 0 ? `Results (${filteredProviders.length})` : 'Popular Providers'}
+      </Text>
+      {filteredProviders.map((providerData, index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => selectProvider(providerData)}
+          activeOpacity={0.7}
+        >
+          <GlassCard style={styles.providerCard} intensity="medium">
+            <View style={styles.providerCardContent}>
+              <View style={[
+                styles.providerBadge,
+                { backgroundColor: getCategoryColor(providerData.category) + '30' }
+              ]}>
+                <Ionicons
+                  name={getCategoryIcon(providerData.category)}
+                  size={24}
+                  color={getCategoryColor(providerData.category)}
+                />
               </View>
-            </GlassCard>
-          </TouchableOpacity>
-        ))}
-      </View>
+              <View style={styles.providerInfo}>
+                <Text style={styles.providerName}>{providerData.name}</Text>
+                <Text style={styles.providerTypes}>
+                  {providerData.types.slice(0, 2).join(' • ')}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={Colors.lightGray} />
+            </View>
+          </GlassCard>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 
@@ -606,10 +604,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.md,
     color: Colors.white,
     fontWeight: Typography.weights.medium,
-  },
-  providerList: {
-    // Removed flex: 1 to allow proper scrolling
-    marginBottom: Spacing.xl,
   },
   listTitle: {
     fontSize: Typography.sizes.sm,

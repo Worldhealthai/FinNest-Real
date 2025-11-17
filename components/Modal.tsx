@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,7 +24,8 @@ interface ModalProps {
   showCloseButton?: boolean;
 }
 
-const { height } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const MODAL_HEIGHT = SCREEN_HEIGHT * 0.88;
 
 export default function Modal({
   visible,
@@ -41,43 +41,42 @@ export default function Modal({
       transparent
       animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent
     >
       <View style={styles.overlay}>
         <BlurView intensity={50} style={StyleSheet.absoluteFill} tint="dark" />
 
         <View style={styles.modalContainer}>
-          <GlassCard style={styles.modalContent} intensity="dark">
-            {/* Header */}
+          <GlassCard style={styles.modalCard} intensity="dark">
+            {/* Fixed Header */}
             <LinearGradient
               colors={[Colors.deepNavy + 'DD', Colors.mediumNavy + 'AA']}
               style={styles.header}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             >
-              <View style={styles.headerLeft}>
+              <View style={styles.headerContent}>
                 {icon && (
                   <View style={styles.iconContainer}>
                     <Ionicons name={icon} size={24} color={Colors.gold} />
                   </View>
                 )}
-                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.title} numberOfLines={1}>{title}</Text>
               </View>
               {showCloseButton && (
-                <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <TouchableOpacity onPress={onClose} style={styles.closeButton} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                   <Ionicons name="close" size={28} color={Colors.lightGray} />
                 </TouchableOpacity>
               )}
             </LinearGradient>
 
-            {/* Content */}
+            {/* Scrollable Content */}
             <ScrollView
               style={styles.scrollView}
               contentContainerStyle={styles.scrollContent}
               showsVerticalScrollIndicator={true}
-              keyboardShouldPersistTaps="handled"
-              scrollEnabled={true}
               bounces={true}
-              alwaysBounceVertical={true}
+              scrollEnabled={true}
             >
               {children}
             </ScrollView>
@@ -92,17 +91,18 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   modalContainer: {
-    height: height * 0.90,
+    height: MODAL_HEIGHT,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
     overflow: 'hidden',
   },
-  modalContent: {
-    flex: 1,
+  modalCard: {
+    height: MODAL_HEIGHT,
     padding: 0,
-    overflow: 'hidden',
+    borderRadius: 0,
   },
   header: {
     flexDirection: 'row',
@@ -112,11 +112,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.glassLight,
+    height: 70,
   },
-  headerLeft: {
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    marginRight: Spacing.md,
   },
   iconContainer: {
     width: 40,
@@ -140,8 +142,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    flexGrow: 1,
     padding: Spacing.lg,
-    paddingBottom: 80,
+    paddingBottom: 100,
   },
 });
