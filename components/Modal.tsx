@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.lg,
-    paddingBottom: 100,
+    paddingBottom: 150,
+    flexGrow: 1,
   },
 });
