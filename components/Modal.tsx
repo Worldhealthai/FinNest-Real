@@ -77,6 +77,8 @@ export default function Modal({
               showsVerticalScrollIndicator={true}
               bounces={true}
               scrollEnabled={true}
+              nestedScrollEnabled={true}
+              keyboardShouldPersistTaps="handled"
             >
               {children}
             </ScrollView>
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Spacing.lg,
-    paddingBottom: 150,
+    paddingBottom: 200,
     flexGrow: 1,
   },
 });
