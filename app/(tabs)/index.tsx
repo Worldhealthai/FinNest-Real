@@ -43,9 +43,16 @@ export default function DashboardScreen() {
 
   const loadISAData = async () => {
     try {
+      console.log('Loading ISA data from AsyncStorage...');
       const savedData = await AsyncStorage.getItem(STORAGE_KEY);
+      console.log('Saved data:', savedData);
       if (savedData) {
-        setUserISAs(JSON.parse(savedData));
+        const parsed = JSON.parse(savedData);
+        console.log('Parsed data:', parsed);
+        setUserISAs(parsed);
+        console.log('ISA data loaded successfully');
+      } else {
+        console.log('No saved data found, using initial values');
       }
     } catch (error) {
       console.error('Error loading ISA data:', error);
@@ -54,7 +61,9 @@ export default function DashboardScreen() {
 
   const saveISAData = async (data: typeof INITIAL_USER_ISAS) => {
     try {
+      console.log('Saving ISA data to AsyncStorage:', data);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      console.log('ISA data saved successfully');
     } catch (error) {
       console.error('Error saving ISA data:', error);
     }
@@ -73,7 +82,13 @@ export default function DashboardScreen() {
   };
 
   const handleAddContribution = (contribution: ISAContribution) => {
+    console.log('=== handleAddContribution called ===');
+    console.log('Contribution received:', contribution);
+    console.log('Current userISAs:', userISAs);
+
     const isaKey = contribution.isaType as keyof typeof userISAs;
+    console.log('ISA Key:', isaKey);
+    console.log('Current ISA value:', userISAs[isaKey]);
 
     // Update the ISA data
     const updatedISAs = {
@@ -86,10 +101,19 @@ export default function DashboardScreen() {
       },
     };
 
+    console.log('Updated ISAs:', updatedISAs);
+
     setUserISAs(updatedISAs);
     saveISAData(updatedISAs);
 
-    console.log('Contribution added successfully:', contribution);
+    // Show alert to confirm
+    Alert.alert(
+      'Contribution Added!',
+      `${formatCurrency(contribution.amount)} added to ${ISA_INFO[isaKey].name}\n\nNew total: ${formatCurrency(updatedISAs[isaKey].contributed)}`,
+      [{ text: 'OK' }]
+    );
+
+    console.log('Contribution added successfully');
   };
 
   return (
