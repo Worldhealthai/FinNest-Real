@@ -315,13 +315,13 @@ export default function AddISAContributionModal({
               >
                 {isSelected && (
                   <View style={styles.selectedBadgeCorner}>
-                    <Ionicons name="checkmark-circle" size={24} color={Colors.gold} />
+                    <Ionicons name="checkmark-circle" size={28} color={Colors.gold} />
                   </View>
                 )}
                 <View style={[styles.isaTypeIcon, { backgroundColor: info.color + '30' }]}>
                   <Ionicons
                     name={getISAIcon(type)}
-                    size={32}
+                    size={40}
                     color={info.color}
                   />
                 </View>
@@ -645,95 +645,113 @@ const styles = StyleSheet.create({
 
   // Step 2: ISA Type Selection
   selectedProviderCard: {
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
+    padding: Spacing.xl,
+    marginBottom: Spacing.xl,
     alignItems: 'center',
+    borderRadius: BorderRadius.xl,
   },
   selectedProviderLabel: {
     fontSize: Typography.sizes.sm,
     color: Colors.lightGray,
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
+    fontWeight: Typography.weights.medium,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   selectedProviderName: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xxl,
     color: Colors.gold,
-    fontWeight: Typography.weights.bold,
+    fontWeight: Typography.weights.extrabold,
   },
   isaTypeGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.md,
-    marginBottom: Spacing.lg,
+    gap: Spacing.lg,
+    marginBottom: Spacing.xl,
+    justifyContent: 'space-between',
   },
   isaTypeButton: {
-    width: (width - Spacing.lg * 2 - Spacing.md) / 2,
+    width: (width - Spacing.lg * 3) / 2,
   },
   isaTypeCard: {
-    padding: Spacing.lg,
+    padding: Spacing.xl,
+    paddingVertical: Spacing.xxl,
     alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
-    minHeight: 140,
+    minHeight: 160,
+    borderRadius: BorderRadius.xl,
   },
   isaTypeCardSelected: {
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: Colors.gold,
+    backgroundColor: Colors.gold + '10',
   },
   selectedBadgeCorner: {
     position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm,
+    top: Spacing.md,
+    right: Spacing.md,
   },
   isaTypeIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   isaTypeName: {
-    fontSize: Typography.sizes.md,
-    color: Colors.white,
-    fontWeight: Typography.weights.bold,
-    textAlign: 'center',
-    marginBottom: Spacing.xs,
-  },
-  isaTypeDescription: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.lightGray,
-    textAlign: 'center',
-  },
-  isaInfoCard: {
-    padding: Spacing.lg,
-  },
-  isaInfoTitle: {
     fontSize: Typography.sizes.lg,
     color: Colors.white,
     fontWeight: Typography.weights.bold,
+    textAlign: 'center',
     marginBottom: Spacing.sm,
+    lineHeight: 22,
   },
-  isaInfoDescription: {
+  isaTypeDescription: {
     fontSize: Typography.sizes.sm,
     color: Colors.lightGray,
-    lineHeight: 20,
+    textAlign: 'center',
+    fontWeight: Typography.weights.medium,
+  },
+  isaInfoCard: {
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+  },
+  isaInfoTitle: {
+    fontSize: Typography.sizes.xl,
+    color: Colors.gold,
+    fontWeight: Typography.weights.bold,
     marginBottom: Spacing.md,
+    textAlign: 'center',
+  },
+  isaInfoDescription: {
+    fontSize: Typography.sizes.md,
+    color: Colors.white,
+    lineHeight: 22,
+    marginBottom: Spacing.lg,
+    textAlign: 'center',
   },
   isaInfoStats: {
     flexDirection: 'row',
     justifyContent: 'center',
+    backgroundColor: Colors.deepNavy + '80',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
   },
   isaInfoStat: {
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   isaInfoStatLabel: {
-    fontSize: Typography.sizes.xs,
+    fontSize: Typography.sizes.sm,
     color: Colors.lightGray,
+    fontWeight: Typography.weights.medium,
   },
   isaInfoStatValue: {
-    fontSize: Typography.sizes.md,
+    fontSize: Typography.sizes.xl,
     color: Colors.gold,
-    fontWeight: Typography.weights.bold,
+    fontWeight: Typography.weights.extrabold,
   },
 
   // Step 3: Amount Entry
