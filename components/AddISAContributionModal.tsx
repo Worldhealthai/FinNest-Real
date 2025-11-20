@@ -499,7 +499,7 @@ export default function AddISAContributionModal({
               numberOfLines={3}
               textAlignVertical="top"
             />
-          </GlassCard>
+          </View>
         </View>
       </View>
     </View>
