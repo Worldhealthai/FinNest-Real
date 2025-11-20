@@ -135,21 +135,37 @@ export default function HubScreen() {
             </View>
           </View>
 
-          <Text style={styles.section}>Quick Tips</Text>
+          <Text style={styles.section}>Learn More</Text>
 
-          {EDUCATIONAL_CONTENT.BEGINNER.slice(0, 2).map((item, i) => (
+          {EDUCATIONAL_CONTENT.BEGINNER.map((item, i) => (
             <View key={i} style={styles.card}>
               <Text style={styles.eduTitle}>{item.title}</Text>
               <Text style={[styles.sub, { marginTop: 8, lineHeight: 20 }]}>{item.content}</Text>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{item.category}</Text>
+              </View>
             </View>
           ))}
 
-          {EDUCATIONAL_CONTENT.INTERMEDIATE.slice(0, 1).map((item, i) => (
+          {EDUCATIONAL_CONTENT.INTERMEDIATE.slice(0, 2).map((item, i) => (
             <View key={i} style={styles.card}>
               <Text style={styles.eduTitle}>{item.title}</Text>
               <Text style={[styles.sub, { marginTop: 8, lineHeight: 20 }]}>{item.content}</Text>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{item.category}</Text>
+              </View>
             </View>
           ))}
+
+          <View style={styles.card}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Ionicons name="school" size={24} color={Colors.gold} />
+              <Text style={[styles.name, { marginLeft: 12 }]}>Want to Learn More?</Text>
+            </View>
+            <Text style={[styles.sub, { marginTop: 8, lineHeight: 20 }]}>
+              FinNest provides comprehensive ISA education to help you make informed decisions about your financial future.
+            </Text>
+          </View>
 
           <Text style={styles.section}>Progress & Rewards</Text>
 
