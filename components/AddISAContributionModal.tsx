@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   Dimensions,
+  Pressable,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -251,12 +252,15 @@ export default function AddISAContributionModal({
             autoCapitalize="words"
           />
           {providerSearch.length > 0 && (
-            <TouchableOpacity onPress={() => {
-              setProviderSearch('');
-              setFilteredProviders(getPopularProviders());
-            }}>
+            <Pressable
+              onPress={() => {
+                setProviderSearch('');
+                setFilteredProviders(getPopularProviders());
+              }}
+              style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+            >
               <Ionicons name="close-circle" size={20} color={Colors.lightGray} />
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </GlassCard>
@@ -266,10 +270,12 @@ export default function AddISAContributionModal({
         {providerSearch.trim().length > 0 ? `Results (${filteredProviders.length})` : 'Popular Providers'}
       </Text>
       {filteredProviders.map((providerData, index) => (
-        <TouchableOpacity
+        <Pressable
           key={index}
           onPress={() => selectProvider(providerData)}
-          activeOpacity={0.7}
+          style={({ pressed }) => [
+            { opacity: pressed ? 0.7 : 1 }
+          ]}
         >
           <GlassCard style={styles.providerCard} intensity="medium">
             <View style={styles.providerCardContent}>
@@ -292,7 +298,7 @@ export default function AddISAContributionModal({
               <Ionicons name="chevron-forward" size={24} color={Colors.lightGray} />
             </View>
           </GlassCard>
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   );
@@ -329,12 +335,14 @@ export default function AddISAContributionModal({
           const isAvailable = isISATypeAvailable(type);
 
           return (
-            <TouchableOpacity
+            <Pressable
               key={type}
               onPress={() => isAvailable && setSelectedType(type)}
-              activeOpacity={isAvailable ? 0.7 : 1}
               disabled={!isAvailable}
-              style={styles.isaTypeButton}
+              style={({ pressed }) => [
+                styles.isaTypeButton,
+                { opacity: pressed && isAvailable ? 0.7 : 1 }
+              ]}
             >
               <GlassCard
                 style={[
@@ -377,7 +385,7 @@ export default function AddISAContributionModal({
                   {isAvailable ? `${info.riskLevel} Risk` : 'Not Available'}
                 </Text>
               </GlassCard>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </View>
@@ -515,18 +523,28 @@ export default function AddISAContributionModal({
         {/* Navigation Buttons */}
         <View style={styles.navigationButtons}>
           {step > 1 && (
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Pressable
+              onPress={handleBack}
+              style={({ pressed }) => [
+                styles.backButton,
+                { opacity: pressed ? 0.7 : 1 }
+              ]}
+            >
               <View style={styles.backButtonCard}>
                 <Ionicons name="arrow-back" size={24} color={Colors.white} />
                 <Text style={styles.backButtonText}>Back</Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           {step < TOTAL_STEPS ? (
-            <TouchableOpacity
+            <Pressable
               onPress={handleNext}
-              style={[styles.nextButton, step === 1 && styles.nextButtonFull]}
+              style={({ pressed }) => [
+                styles.nextButton,
+                step === 1 && styles.nextButtonFull,
+                { opacity: pressed ? 0.9 : 1 }
+              ]}
             >
               <LinearGradient
                 colors={Colors.goldGradient}
@@ -537,11 +555,14 @@ export default function AddISAContributionModal({
                 <Text style={styles.nextButtonText}>Next</Text>
                 <Ionicons name="arrow-forward" size={24} color={Colors.deepNavy} />
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
-            <TouchableOpacity
+            <Pressable
               onPress={handleSubmit}
-              style={styles.submitButton}
+              style={({ pressed }) => [
+                styles.submitButton,
+                { opacity: pressed ? 0.9 : 1 }
+              ]}
             >
               <LinearGradient
                 colors={Colors.goldGradient}
@@ -552,7 +573,7 @@ export default function AddISAContributionModal({
                 <Ionicons name="checkmark-circle" size={24} color={Colors.deepNavy} />
                 <Text style={styles.submitButtonText}>Add Contribution</Text>
               </LinearGradient>
-            </TouchableOpacity>
+            </Pressable>
           )}
         </View>
       </>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -240,7 +240,10 @@ export default function DashboardScreen() {
             <Text style={[styles.sub, { marginTop: 4 }]}>{formatCurrency(LIFETIME_ISA_MAX - userISAs.lifetime.contributed)} left for max bonus</Text>
           </GlassCard>
 
-          <TouchableOpacity onPress={() => setAddContributionVisible(true)}>
+          <Pressable
+            onPress={() => setAddContributionVisible(true)}
+            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+          >
             <GlassCard style={styles.card} intensity="light">
               <View style={{ alignItems: 'center', paddingVertical: 12 }}>
                 <Ionicons name="add-circle" size={32} color={Colors.gold} />
@@ -248,7 +251,7 @@ export default function DashboardScreen() {
                 <Text style={styles.sub}>Track contributions from any provider</Text>
               </View>
             </GlassCard>
-          </TouchableOpacity>
+          </Pressable>
 
           <GlassCard style={[styles.card, { marginTop: 16 }]} intensity="dark">
             <View style={styles.row}>
