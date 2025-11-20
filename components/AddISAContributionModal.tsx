@@ -240,7 +240,7 @@ export default function AddISAContributionModal({
       </View>
 
       {/* Search Bar */}
-      <GlassCard style={styles.searchCard} intensity="medium">
+      <View style={styles.searchCard}>
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color={Colors.gold} />
           <TextInput
@@ -263,7 +263,7 @@ export default function AddISAContributionModal({
             </Pressable>
           )}
         </View>
-      </GlassCard>
+      </View>
 
       {/* Provider List */}
       <Text style={styles.listTitle}>
@@ -274,14 +274,14 @@ export default function AddISAContributionModal({
           key={index}
           onPress={() => selectProvider(providerData)}
           style={({ pressed }) => [
-            { opacity: pressed ? 0.7 : 1 }
+            { opacity: pressed ? 0.8 : 1 }
           ]}
         >
-          <GlassCard style={styles.providerCard} intensity="medium">
+          <View style={styles.providerCard}>
             <View style={styles.providerCardContent}>
               <View style={[
                 styles.providerBadge,
-                { backgroundColor: getCategoryColor(providerData.category) + '30' }
+                { backgroundColor: getCategoryColor(providerData.category) + '20' }
               ]}>
                 <Ionicons
                   name={getCategoryIcon(providerData.category)}
@@ -297,7 +297,7 @@ export default function AddISAContributionModal({
               </View>
               <Ionicons name="chevron-forward" size={24} color={Colors.lightGray} />
             </View>
-          </GlassCard>
+          </View>
         </Pressable>
       ))}
     </View>
@@ -406,19 +406,20 @@ export default function AddISAContributionModal({
       </View>
 
       {/* Provider & Type Summary */}
-      <GlassCard style={styles.summaryCard} intensity="dark">
+      <View style={styles.summaryCard}>
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Provider:</Text>
+          <Text style={styles.summaryLabel}>Provider</Text>
           <Text style={styles.summaryValue}>{provider}</Text>
         </View>
+        <View style={styles.summaryDivider} />
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>ISA Type:</Text>
+          <Text style={styles.summaryLabel}>ISA Type</Text>
           <Text style={styles.summaryValue}>{ISA_INFO[selectedType].shortName}</Text>
         </View>
-      </GlassCard>
+      </View>
 
       {/* Amount Input */}
-      <GlassCard style={styles.amountCard} intensity="dark">
+      <View style={styles.amountCard}>
         <Text style={styles.amountLabel}>CONTRIBUTION AMOUNT</Text>
         <View style={styles.amountInputContainer}>
           <Text style={styles.currencySymbol}>£</Text>
@@ -445,18 +446,18 @@ export default function AddISAContributionModal({
             Max: {formatCurrency(maxContribution)} per tax year
           </Text>
         </View>
-      </GlassCard>
+      </View>
 
       {/* LISA Bonus */}
       {selectedType === ISA_TYPES.LIFETIME && parseFloat(amount) > 0 && (
-        <GlassCard style={styles.bonusCard} intensity="dark">
+        <View style={styles.bonusCard}>
           <LinearGradient
-            colors={[Colors.success + 'DD', Colors.success + '88']}
+            colors={['rgba(40, 167, 69, 0.25)', 'rgba(40, 167, 69, 0.15)']}
             style={styles.bonusGradient}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <Ionicons name="gift" size={28} color={Colors.white} />
+            <Ionicons name="gift" size={28} color={Colors.success} />
             <Text style={styles.bonusTitle}>Government Bonus</Text>
             <Text style={styles.bonusAmount}>
               +{formatCurrency(parseFloat(amount) * 0.25)}
@@ -465,7 +466,7 @@ export default function AddISAContributionModal({
               You'll receive a 25% bonus on this contribution!
             </Text>
           </LinearGradient>
-        </GlassCard>
+        </View>
       )}
 
       {/* Optional Details */}
@@ -474,7 +475,7 @@ export default function AddISAContributionModal({
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Account Number</Text>
-          <GlassCard style={styles.inputCard} intensity="medium">
+          <View style={styles.inputCard}>
             <TextInput
               style={styles.input}
               placeholder="Last 4 digits or full account number"
@@ -482,12 +483,12 @@ export default function AddISAContributionModal({
               value={accountNumber}
               onChangeText={setAccountNumber}
             />
-          </GlassCard>
+          </View>
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.inputLabel}>Notes</Text>
-          <GlassCard style={styles.inputCard} intensity="medium">
+          <View style={styles.inputCard}>
             <TextInput
               style={[styles.input, styles.notesInput]}
               placeholder="Add any notes..."
@@ -649,6 +650,10 @@ const styles = StyleSheet.create({
   searchCard: {
     padding: Spacing.md,
     marginBottom: Spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -672,6 +677,10 @@ const styles = StyleSheet.create({
   providerCard: {
     padding: Spacing.lg,
     marginBottom: Spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   providerCardContent: {
     flexDirection: 'row',
@@ -881,26 +890,42 @@ const styles = StyleSheet.create({
   summaryCard: {
     padding: Spacing.lg,
     marginBottom: Spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.sm,
+    paddingVertical: Spacing.sm,
+  },
+  summaryDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: Spacing.sm,
   },
   summaryLabel: {
     fontSize: Typography.sizes.sm,
     color: Colors.lightGray,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    fontWeight: Typography.weights.semibold,
   },
   summaryValue: {
     fontSize: Typography.sizes.md,
-    color: Colors.white,
-    fontWeight: Typography.weights.semibold,
+    color: Colors.gold,
+    fontWeight: Typography.weights.bold,
   },
   amountCard: {
-    padding: Spacing.lg,
+    padding: Spacing.xl,
     marginBottom: Spacing.md,
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 215, 0, 0.2)',
   },
   amountLabel: {
     fontSize: Typography.sizes.xs,
@@ -953,21 +978,25 @@ const styles = StyleSheet.create({
     padding: 0,
     overflow: 'hidden',
     marginBottom: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1.5,
+    borderColor: 'rgba(40, 167, 69, 0.3)',
   },
   bonusGradient: {
-    padding: Spacing.lg,
+    padding: Spacing.xl,
     alignItems: 'center',
+    borderRadius: BorderRadius.xl,
   },
   bonusTitle: {
     fontSize: Typography.sizes.md,
-    color: Colors.white,
+    color: Colors.success,
     fontWeight: Typography.weights.bold,
     marginTop: Spacing.sm,
     marginBottom: Spacing.xs,
   },
   bonusAmount: {
     fontSize: Typography.sizes.xxxl,
-    color: Colors.white,
+    color: Colors.success,
     fontWeight: Typography.weights.extrabold,
     marginBottom: Spacing.xs,
   },
@@ -998,6 +1027,10 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     padding: Spacing.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   input: {
     fontSize: Typography.sizes.md,
