@@ -9,6 +9,7 @@ import GlassCard from '@/components/GlassCard';
 import AddISAContributionModal, { ISAContribution } from '@/components/AddISAContributionModal';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { ISA_INFO, ISA_ANNUAL_ALLOWANCE, LIFETIME_ISA_MAX, getDaysUntilTaxYearEnd, formatCurrency, getTaxYearDates, calculateFlexibleISA } from '@/constants/isaData';
+import { getCurrentTaxYear, getAvailableTaxYears, isDateInTaxYear, getTaxYearLabel, type TaxYear } from '@/utils/taxYear';
 
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
 
@@ -37,8 +38,15 @@ const groupContributions = (contributions: ISAContribution[]) => {
 export default function DashboardScreen() {
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
   const [expandedISA, setExpandedISA] = useState<string | null>(null);
+  const [selectedTaxYear, setSelectedTaxYear] = useState<TaxYear>(getCurrentTaxYear());
+  const [availableTaxYears] = useState<TaxYear[]>(getAvailableTaxYears(5));
 
-  const groupedISAs = groupContributions(contributions);
+  // Filter contributions by selected tax year
+  const filteredContributions = contributions.filter(contribution =>
+    isDateInTaxYear(new Date(contribution.date), selectedTaxYear)
+  );
+
+  const groupedISAs = groupContributions(filteredContributions);
   const total = Object.values(groupedISAs).reduce((s, i) => s + i.total, 0);
   const remaining = ISA_ANNUAL_ALLOWANCE - total;
   const days = getDaysUntilTaxYearEnd();
@@ -192,6 +200,38 @@ export default function DashboardScreen() {
             <Image source={require('@/assets/logo.png')} style={styles.logo} resizeMode="contain" />
           </View>
 
+          {/* Tax Year Selector Tabs */}
+          <GlassCard style={[styles.card, { marginBottom: Spacing.md }]} intensity="dark">
+            <Text style={[styles.label, { marginBottom: 12 }]}>Select Tax Year</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8 }}
+            >
+              {availableTaxYears.map((year) => {
+                const isSelected = year.startYear === selectedTaxYear.startYear;
+                return (
+                  <Pressable
+                    key={year.startYear}
+                    onPress={() => setSelectedTaxYear(year)}
+                    style={({ pressed }) => [
+                      styles.taxYearTab,
+                      isSelected && styles.taxYearTabActive,
+                      { opacity: pressed ? 0.7 : 1 }
+                    ]}
+                  >
+                    <Text style={[
+                      styles.taxYearTabText,
+                      isSelected && styles.taxYearTabTextActive
+                    ]}>
+                      {getTaxYearLabel(year)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </GlassCard>
+
           {days <= 30 && (
             <GlassCard style={styles.card} intensity="dark">
               <View style={styles.row}>
@@ -261,10 +301,10 @@ export default function DashboardScreen() {
                 </View>
               </View>
 
-              {expandedISA === 'cash' && contributions.filter(c => c.isaType === 'cash').length > 0 && (
+              {expandedISA === 'cash' && filteredContributions.filter(c => c.isaType === 'cash').length > 0 && (
                 <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors.glassLight }}>
                   <Text style={[styles.sub, { marginBottom: 12, fontWeight: '600' }]}>Contributions:</Text>
-                  {contributions.filter(c => c.isaType === 'cash').map((contribution) => (
+                  {filteredContributions.filter(c => c.isaType === 'cash').map((contribution) => (
                     <View key={contribution.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingLeft: 12, paddingVertical: 8, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 8 }}>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.sub}>{contribution.provider}</Text>
@@ -314,10 +354,10 @@ export default function DashboardScreen() {
                 </View>
               </View>
 
-              {expandedISA === 'stocks_shares' && contributions.filter(c => c.isaType === 'stocks_shares').length > 0 && (
+              {expandedISA === 'stocks_shares' && filteredContributions.filter(c => c.isaType === 'stocks_shares').length > 0 && (
                 <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors.glassLight }}>
                   <Text style={[styles.sub, { marginBottom: 12, fontWeight: '600' }]}>Contributions:</Text>
-                  {contributions.filter(c => c.isaType === 'stocks_shares').map((contribution) => (
+                  {filteredContributions.filter(c => c.isaType === 'stocks_shares').map((contribution) => (
                     <View key={contribution.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingLeft: 12, paddingVertical: 8, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 8 }}>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.sub}>{contribution.provider}</Text>
@@ -371,10 +411,10 @@ export default function DashboardScreen() {
               </View>
               <Text style={[styles.sub, { marginTop: 4 }]}>{formatCurrency(LIFETIME_ISA_MAX - groupedISAs.lifetime.total)} left for max bonus</Text>
 
-              {expandedISA === 'lifetime' && contributions.filter(c => c.isaType === 'lifetime').length > 0 && (
+              {expandedISA === 'lifetime' && filteredContributions.filter(c => c.isaType === 'lifetime').length > 0 && (
                 <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors.glassLight }}>
                   <Text style={[styles.sub, { marginBottom: 12, fontWeight: '600' }]}>Contributions:</Text>
-                  {contributions.filter(c => c.isaType === 'lifetime').map((contribution) => (
+                  {filteredContributions.filter(c => c.isaType === 'lifetime').map((contribution) => (
                     <View key={contribution.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingLeft: 12, paddingVertical: 8, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 8 }}>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.sub}>{contribution.provider}</Text>
@@ -424,10 +464,10 @@ export default function DashboardScreen() {
                 </View>
               </View>
 
-              {expandedISA === 'innovative_finance' && contributions.filter(c => c.isaType === 'innovative_finance').length > 0 && (
+              {expandedISA === 'innovative_finance' && filteredContributions.filter(c => c.isaType === 'innovative_finance').length > 0 && (
                 <View style={{ marginTop: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: Colors.glassLight }}>
                   <Text style={[styles.sub, { marginBottom: 12, fontWeight: '600' }]}>Contributions:</Text>
-                  {contributions.filter(c => c.isaType === 'innovative_finance').map((contribution) => (
+                  {filteredContributions.filter(c => c.isaType === 'innovative_finance').map((contribution) => (
                     <View key={contribution.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingLeft: 12, paddingVertical: 8, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 8 }}>
                       <View style={{ flex: 1 }}>
                         <Text style={styles.sub}>{contribution.provider}</Text>
@@ -669,4 +709,25 @@ const styles = StyleSheet.create({
   resultCard: { padding: Spacing.md, borderRadius: 8, borderWidth: 1, borderColor: Colors.glassLight },
   resultTitle: { fontSize: Typography.sizes.sm, color: Colors.white, fontWeight: Typography.weights.bold },
   divider: { height: 1, backgroundColor: Colors.glassLight, marginVertical: 12 },
+  taxYearTab: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.glassLight,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  taxYearTabActive: {
+    backgroundColor: Colors.gold + '20',
+    borderColor: Colors.gold,
+  },
+  taxYearTabText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    fontWeight: Typography.weights.semibold,
+  },
+  taxYearTabTextActive: {
+    color: Colors.gold,
+    fontWeight: Typography.weights.bold,
+  },
 });
