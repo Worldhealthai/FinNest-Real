@@ -99,18 +99,20 @@ export default function DashboardScreen() {
     setCalcResult(result);
   };
 
-  const handleAddContribution = (contribution: ISAContribution) => {
+  const handleAddContribution = async (contribution: ISAContribution) => {
     console.log('=== handleAddContribution called ===');
     console.log('Contribution received:', contribution);
 
     // Add new contribution to the array
     const updatedContributions = [...contributions, contribution];
 
+    console.log('Updating state with:', updatedContributions);
     setContributions(updatedContributions);
-    saveContributions(updatedContributions);
 
-    console.log('Contribution added successfully');
-    console.log('Updated contributions:', updatedContributions);
+    // Save to AsyncStorage
+    await saveContributions(updatedContributions);
+
+    console.log('Contribution added and saved successfully');
   };
 
   return (

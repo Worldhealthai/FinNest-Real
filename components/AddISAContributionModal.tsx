@@ -132,6 +132,7 @@ export default function AddISAContributionModal({
   };
 
   const handleSubmit = () => {
+    console.log('=== handleSubmit called ===');
     const contributionAmount = parseFloat(amount);
 
     const contribution: ISAContribution = {
@@ -143,13 +144,24 @@ export default function AddISAContributionModal({
       notes: notes.trim() || undefined,
     };
 
+    console.log('Created contribution:', contribution);
+
+    // Store contribution first
+    setSubmittedContribution(contribution);
+    console.log('Set submittedContribution');
+
+    // Then call parent's onAdd
     if (onAdd) {
+      console.log('Calling parent onAdd');
       onAdd(contribution);
     }
 
-    // Store contribution and move to confirmation screen
-    setSubmittedContribution(contribution);
-    setStep(4);
+    // Move to confirmation screen after a short delay to ensure state is set
+    console.log('Setting timeout to move to step 4');
+    setTimeout(() => {
+      console.log('Moving to step 4');
+      setStep(4);
+    }, 100);
   };
 
   const handleDone = () => {
@@ -563,12 +575,21 @@ export default function AddISAContributionModal({
   );
 
   const renderStep4 = () => {
-    if (!submittedContribution) return null;
+    console.log('=== renderStep4 called ===');
+    console.log('submittedContribution:', submittedContribution);
+    console.log('current step:', step);
+
+    if (!submittedContribution) {
+      console.log('No submitted contribution, returning null');
+      return null;
+    }
 
     const isaInfo = ISA_INFO[submittedContribution.isaType];
     const lisaBonus = submittedContribution.isaType === ISA_TYPES.LIFETIME
       ? submittedContribution.amount * 0.25
       : 0;
+
+    console.log('Rendering confirmation screen for:', isaInfo.name);
 
     return (
       <View style={styles.stepContent}>
