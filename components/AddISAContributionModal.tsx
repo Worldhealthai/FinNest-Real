@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -65,6 +65,23 @@ export default function AddISAContributionModal({
   const [submittedContribution, setSubmittedContribution] = useState<ISAContribution | null>(null);
 
   const TOTAL_STEPS = 4;
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (visible) {
+      console.log('Modal opened, resetting form');
+      setStep(1);
+      setProvider('');
+      setSelectedProviderData(null);
+      setSelectedType(ISA_TYPES.CASH);
+      setAmount('');
+      setNotes('');
+      setContributionDate(new Date());
+      setProviderSearch('');
+      setFilteredProviders(getPopularProviders());
+      setSubmittedContribution(null);
+    }
+  }, [visible]);
 
   const resetForm = () => {
     setStep(1);
