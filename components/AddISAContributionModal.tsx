@@ -59,6 +59,7 @@ export default function AddISAContributionModal({
   const [selectedType, setSelectedType] = useState(ISA_TYPES.CASH);
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
+  const [contributionDate, setContributionDate] = useState(new Date());
   const [providerSearch, setProviderSearch] = useState('');
   const [filteredProviders, setFilteredProviders] = useState<ISAProvider[]>(getPopularProviders());
   const [submittedContribution, setSubmittedContribution] = useState<ISAContribution | null>(null);
@@ -72,6 +73,7 @@ export default function AddISAContributionModal({
     setSelectedType(ISA_TYPES.CASH);
     setAmount('');
     setNotes('');
+    setContributionDate(new Date());
     setProviderSearch('');
     setFilteredProviders(getPopularProviders());
     setSubmittedContribution(null);
@@ -116,13 +118,6 @@ export default function AddISAContributionModal({
         );
         return;
       }
-      if (selectedType === ISA_TYPES.LIFETIME && contributionAmount > LIFETIME_ISA_MAX) {
-        Alert.alert(
-          'LISA Limit Exceeded',
-          `Lifetime ISA contributions are limited to ${formatCurrency(LIFETIME_ISA_MAX)} per year`
-        );
-        return;
-      }
     }
 
     if (step < TOTAL_STEPS) {
@@ -144,7 +139,7 @@ export default function AddISAContributionModal({
       provider: provider.trim(),
       isaType: selectedType,
       amount: contributionAmount,
-      date: new Date().toISOString(),
+      date: contributionDate.toISOString(),
       notes: notes.trim() || undefined,
     };
 
@@ -501,6 +496,48 @@ export default function AddISAContributionModal({
           </LinearGradient>
         </View>
       )}
+
+      {/* Tax Year Selection */}
+      <View style={styles.taxYearSection}>
+        <Text style={styles.inputLabel}>Tax Year</Text>
+        <Text style={styles.taxYearHint}>Select when this contribution was made</Text>
+        <View style={styles.taxYearButtons}>
+          <Pressable
+            onPress={() => setContributionDate(new Date())}
+            style={({ pressed }) => [
+              styles.taxYearButton,
+              contributionDate.getFullYear() === new Date().getFullYear() && styles.taxYearButtonActive,
+              { opacity: pressed ? 0.7 : 1 }
+            ]}
+          >
+            <Text style={[
+              styles.taxYearButtonText,
+              contributionDate.getFullYear() === new Date().getFullYear() && styles.taxYearButtonTextActive
+            ]}>
+              2024/25 (Current)
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              const lastYear = new Date();
+              lastYear.setFullYear(lastYear.getFullYear() - 1);
+              setContributionDate(lastYear);
+            }}
+            style={({ pressed }) => [
+              styles.taxYearButton,
+              contributionDate.getFullYear() === new Date().getFullYear() - 1 && styles.taxYearButtonActive,
+              { opacity: pressed ? 0.7 : 1 }
+            ]}
+          >
+            <Text style={[
+              styles.taxYearButtonText,
+              contributionDate.getFullYear() === new Date().getFullYear() - 1 && styles.taxYearButtonTextActive
+            ]}>
+              2023/24 (Previous)
+            </Text>
+          </Pressable>
+        </View>
+      </View>
 
       {/* Optional Details */}
       <View style={styles.optionalSection}>
@@ -1115,6 +1152,40 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.sm,
     color: Colors.white,
     opacity: 0.9,
+  },
+  taxYearSection: {
+    marginBottom: Spacing.lg,
+  },
+  taxYearHint: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    marginBottom: Spacing.md,
+    marginTop: 4,
+  },
+  taxYearButtons: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  taxYearButton: {
+    flex: 1,
+    padding: Spacing.md,
+    backgroundColor: Colors.glassLight,
+    borderRadius: BorderRadius.md,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+  },
+  taxYearButtonActive: {
+    backgroundColor: Colors.gold + '20',
+    borderColor: Colors.gold,
+  },
+  taxYearButtonText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.white,
+    fontWeight: Typography.weights.semibold,
+  },
+  taxYearButtonTextActive: {
+    color: Colors.gold,
   },
   optionalSection: {
     marginTop: Spacing.md,
