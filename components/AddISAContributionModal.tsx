@@ -61,8 +61,9 @@ export default function AddISAContributionModal({
   const [notes, setNotes] = useState('');
   const [providerSearch, setProviderSearch] = useState('');
   const [filteredProviders, setFilteredProviders] = useState<ISAProvider[]>(getPopularProviders());
+  const [submittedContribution, setSubmittedContribution] = useState<ISAContribution | null>(null);
 
-  const TOTAL_STEPS = 3;
+  const TOTAL_STEPS = 4;
 
   const resetForm = () => {
     setStep(1);
@@ -150,19 +151,15 @@ export default function AddISAContributionModal({
       onAdd(contribution);
     }
 
-    Alert.alert(
-      'Success!',
-      `Added ${formatCurrency(contributionAmount)} to your ${ISA_INFO[selectedType].name}`,
-      [
-        {
-          text: 'Done',
-          onPress: () => {
-            resetForm();
-            onClose();
-          },
-        },
-      ]
-    );
+    // Store contribution and move to confirmation screen
+    setSubmittedContribution(contribution);
+    setStep(4);
+  };
+
+  const handleDone = () => {
+    resetForm();
+    setSubmittedContribution(null);
+    onClose();
   };
 
   const getISAIcon = (type: string): keyof typeof Ionicons.glyphMap => {
@@ -228,7 +225,7 @@ export default function AddISAContributionModal({
 
   const renderStepIndicator = () => (
     <View style={styles.stepIndicator}>
-      {[1, 2, 3].map((s) => (
+      {[1, 2, 3, 4].map((s) => (
         <View key={s} style={styles.stepContainer}>
           <View style={[styles.stepDot, step >= s && styles.stepDotActive]}>
             {step > s ? (
@@ -528,6 +525,94 @@ export default function AddISAContributionModal({
     </View>
   );
 
+  const renderStep4 = () => {
+    if (!submittedContribution) return null;
+
+    const isaInfo = ISA_INFO[submittedContribution.isaType];
+    const lisaBonus = submittedContribution.isaType === ISA_TYPES.LIFETIME
+      ? submittedContribution.amount * 0.25
+      : 0;
+
+    return (
+      <View style={styles.stepContent}>
+        {/* Success Icon */}
+        <View style={styles.confirmationHeader}>
+          <LinearGradient
+            colors={[Colors.success + 'DD', Colors.success + '88']}
+            style={styles.successIconWrapper}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <Ionicons name="checkmark-circle" size={64} color={Colors.white} />
+          </LinearGradient>
+          <Text style={styles.confirmationTitle}>Contribution Added!</Text>
+          <Text style={styles.confirmationSubtitle}>
+            Your ISA has been updated successfully
+          </Text>
+        </View>
+
+        {/* Contribution Details Card */}
+        <View style={styles.confirmationCard}>
+          <View style={styles.confirmationRow}>
+            <View style={[styles.isaIconCircle, { backgroundColor: isaInfo.color + '20' }]}>
+              <Ionicons name={getISAIcon(submittedContribution.isaType)} size={28} color={isaInfo.color} />
+            </View>
+            <View style={{ flex: 1, marginLeft: Spacing.md }}>
+              <Text style={styles.confirmationISAType}>{isaInfo.name}</Text>
+              <Text style={styles.confirmationProvider}>{submittedContribution.provider}</Text>
+            </View>
+          </View>
+
+          <View style={styles.confirmationDivider} />
+
+          <View style={styles.confirmationDetail}>
+            <Text style={styles.confirmationDetailLabel}>Amount Added</Text>
+            <Text style={styles.confirmationDetailValue}>
+              {formatCurrency(submittedContribution.amount)}
+            </Text>
+          </View>
+
+          {lisaBonus > 0 && (
+            <View style={styles.confirmationDetail}>
+              <Text style={styles.confirmationDetailLabel}>Government Bonus</Text>
+              <Text style={[styles.confirmationDetailValue, { color: isaInfo.color }]}>
+                +{formatCurrency(lisaBonus)}
+              </Text>
+            </View>
+          )}
+
+          {submittedContribution.notes && (
+            <>
+              <View style={styles.confirmationDivider} />
+              <View style={styles.confirmationDetail}>
+                <Text style={styles.confirmationDetailLabel}>Notes</Text>
+                <Text style={styles.confirmationNotes}>{submittedContribution.notes}</Text>
+              </View>
+            </>
+          )}
+        </View>
+
+        {/* Done Button */}
+        <Pressable
+          onPress={handleDone}
+          style={({ pressed }) => [
+            styles.doneButton,
+            { opacity: pressed ? 0.9 : 1 }
+          ]}
+        >
+          <LinearGradient
+            colors={Colors.goldGradient}
+            style={styles.doneButtonGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+          >
+            <Text style={styles.doneButtonText}>Done</Text>
+          </LinearGradient>
+        </Pressable>
+      </View>
+    );
+  };
+
   return (
     <Modal
       visible={visible}
@@ -546,8 +631,10 @@ export default function AddISAContributionModal({
         {step === 1 && renderStep1()}
         {step === 2 && renderStep2()}
         {step === 3 && renderStep3()}
+        {step === 4 && renderStep4()}
 
         {/* Navigation Buttons */}
+        {step < 4 && (
         <View style={styles.navigationButtons}>
           {step > 1 && (
             <Pressable
@@ -603,6 +690,7 @@ export default function AddISAContributionModal({
             </Pressable>
           )}
         </View>
+        )}
       </>
     </Modal>
   );
@@ -1124,5 +1212,96 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.md,
     color: Colors.deepNavy,
     fontWeight: Typography.weights.bold,
+  },
+  // Confirmation Screen Styles
+  confirmationHeader: {
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+  },
+  successIconWrapper: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.lg,
+  },
+  confirmationTitle: {
+    fontSize: Typography.sizes.xl,
+    color: Colors.white,
+    fontWeight: Typography.weights.extrabold,
+    marginBottom: Spacing.xs,
+  },
+  confirmationSubtitle: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    textAlign: 'center',
+  },
+  confirmationCard: {
+    backgroundColor: Colors.glassDark,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.xl,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  confirmationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  isaIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmationISAType: {
+    fontSize: Typography.sizes.lg,
+    color: Colors.white,
+    fontWeight: Typography.weights.bold,
+  },
+  confirmationProvider: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    marginTop: 4,
+  },
+  confirmationDivider: {
+    height: 1,
+    backgroundColor: Colors.glassLight,
+    marginVertical: Spacing.md,
+  },
+  confirmationDetail: {
+    marginBottom: Spacing.md,
+  },
+  confirmationDetailLabel: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    marginBottom: 4,
+  },
+  confirmationDetailValue: {
+    fontSize: Typography.sizes.xxl,
+    color: Colors.white,
+    fontWeight: Typography.weights.extrabold,
+  },
+  confirmationNotes: {
+    fontSize: Typography.sizes.md,
+    color: Colors.white,
+    lineHeight: 22,
+    marginTop: 4,
+  },
+  doneButton: {
+    width: '100%',
+  },
+  doneButtonGradient: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+  },
+  doneButtonText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.deepNavy,
+    fontWeight: Typography.weights.extrabold,
   },
 });
