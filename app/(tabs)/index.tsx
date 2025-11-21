@@ -61,29 +61,70 @@ export default function DashboardScreen() {
 
   const loadISAData = async () => {
     try {
-      console.log('Loading contributions from AsyncStorage...');
+      console.log('=== Loading contributions from AsyncStorage ===');
+      console.log('Storage key:', CONTRIBUTIONS_STORAGE_KEY);
+
       const savedData = await AsyncStorage.getItem(CONTRIBUTIONS_STORAGE_KEY);
-      console.log('Saved data:', savedData);
+      console.log('Raw saved data:', savedData);
+
       if (savedData) {
         const parsed = JSON.parse(savedData);
-        console.log('Parsed contributions:', parsed);
+        console.log('✅ Parsed contributions:', parsed);
+        console.log('✅ Number of contributions loaded:', parsed.length);
         setContributions(parsed);
-        console.log('Contributions loaded successfully');
+
+        // Also save to localStorage as backup (web only)
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem('finnest_contributions_backup', savedData);
+          console.log('💾 Backup saved to localStorage');
+        }
       } else {
-        console.log('No saved contributions found');
+        console.log('❌ No saved contributions found in AsyncStorage');
+
+        // Try to restore from localStorage backup (web only)
+        if (typeof window !== 'undefined' && window.localStorage) {
+          const backup = window.localStorage.getItem('finnest_contributions_backup');
+          if (backup) {
+            console.log('🔄 Restoring from localStorage backup');
+            const parsed = JSON.parse(backup);
+            setContributions(parsed);
+            await AsyncStorage.setItem(CONTRIBUTIONS_STORAGE_KEY, backup);
+            console.log('✅ Restored', parsed.length, 'contributions from backup');
+          } else {
+            console.log('❌ No backup found in localStorage either');
+          }
+        }
       }
     } catch (error) {
-      console.error('Error loading contributions:', error);
+      console.error('❌ Error loading contributions:', error);
     }
   };
 
   const saveContributions = async (contributionsData: ISAContribution[]) => {
     try {
-      console.log('Saving contributions to AsyncStorage:', contributionsData);
-      await AsyncStorage.setItem(CONTRIBUTIONS_STORAGE_KEY, JSON.stringify(contributionsData));
-      console.log('Contributions saved successfully');
+      console.log('=== Saving contributions ===');
+      console.log('Number of contributions to save:', contributionsData.length);
+      console.log('Contributions:', contributionsData);
+
+      const jsonData = JSON.stringify(contributionsData);
+      await AsyncStorage.setItem(CONTRIBUTIONS_STORAGE_KEY, jsonData);
+      console.log('✅ Saved to AsyncStorage');
+
+      // Also save to localStorage as backup (web only)
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem('finnest_contributions_backup', jsonData);
+        console.log('💾 Backup saved to localStorage');
+      }
+
+      // Verify the save
+      const verification = await AsyncStorage.getItem(CONTRIBUTIONS_STORAGE_KEY);
+      if (verification) {
+        console.log('✅ Save verified - data persisted successfully');
+      } else {
+        console.error('❌ Save verification failed!');
+      }
     } catch (error) {
-      console.error('Error saving contributions:', error);
+      console.error('❌ Error saving contributions:', error);
     }
   };
 
