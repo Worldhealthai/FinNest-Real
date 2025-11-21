@@ -109,18 +109,8 @@ export default function DashboardScreen() {
     setContributions(updatedContributions);
     saveContributions(updatedContributions);
 
-    // Calculate new total for this ISA type
-    const newGrouped = groupContributions(updatedContributions);
-    const newTotal = newGrouped[contribution.isaType].total;
-
-    // Show alert to confirm
-    Alert.alert(
-      'Contribution Added!',
-      `${formatCurrency(contribution.amount)} added to ${ISA_INFO[contribution.isaType].name} with ${contribution.provider}\n\nNew ${ISA_INFO[contribution.isaType].shortName} total: ${formatCurrency(newTotal)}`,
-      [{ text: 'OK' }]
-    );
-
     console.log('Contribution added successfully');
+    console.log('Updated contributions:', updatedContributions);
   };
 
   return (

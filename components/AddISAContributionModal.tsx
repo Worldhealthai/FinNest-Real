@@ -74,6 +74,7 @@ export default function AddISAContributionModal({
     setNotes('');
     setProviderSearch('');
     setFilteredProviders(getPopularProviders());
+    setSubmittedContribution(null);
   };
 
   const handleProviderSearch = (text: string) => {
@@ -158,7 +159,6 @@ export default function AddISAContributionModal({
 
   const handleDone = () => {
     resetForm();
-    setSubmittedContribution(null);
     onClose();
   };
 
@@ -545,9 +545,9 @@ export default function AddISAContributionModal({
           >
             <Ionicons name="checkmark-circle" size={64} color={Colors.white} />
           </LinearGradient>
-          <Text style={styles.confirmationTitle}>Contribution Added!</Text>
+          <Text style={styles.confirmationTitle}>✓ Confirmed</Text>
           <Text style={styles.confirmationSubtitle}>
-            Your ISA has been updated successfully
+            Your contribution has been added successfully
           </Text>
         </View>
 
