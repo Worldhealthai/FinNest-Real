@@ -3341,6 +3341,30 @@ export const ISA_PROVIDERS: ISAProvider[] = [
   }
 ];
 
+// Common provider name aliases for better search
+const PROVIDER_ALIASES: Record<string, string[]> = {
+  'Digital Moneybox': ['moneybox', 'money box'],
+  'Investengine (UK)': ['investengine', 'invest engine'],
+  'National Westminster Bank': ['natwest', 'nat west'],
+  'Halifax Share Dealing': ['halifax'],
+  'Barclays Bank': ['barclays'],
+  'HSBC UK Bank': ['hsbc'],
+  'Lloyds Bank': ['lloyds'],
+  'Bank of Scotland': ['bank of scotland', 'bos'],
+  'Santander UK': ['santander'],
+  'Starling Bank': ['starling'],
+  'Monzo Bank': ['monzo'],
+  'Atom Bank': ['atom'],
+  'Metro Bank': ['metro'],
+  'TSB Bank': ['tsb'],
+  'Interactive Investor Services': ['interactive investor', 'ii'],
+  'Hargreaves Lansdown Asset Management': ['hargreaves lansdown', 'hl'],
+  'AJ Bell Securities': ['aj bell', 'ajbell'],
+  'Freetrade': ['free trade'],
+  'Trading 212 UK': ['trading 212', 'trading212'],
+  'eToro (UK)': ['etoro', 'e-toro'],
+};
+
 // Helper function to search providers by name
 export const searchProviders = (query: string): ISAProvider[] => {
   if (!query.trim()) {
@@ -3348,9 +3372,28 @@ export const searchProviders = (query: string): ISAProvider[] => {
   }
 
   const lowercaseQuery = query.toLowerCase().trim();
-  return ISA_PROVIDERS.filter((provider) =>
+
+  // Direct search
+  const directMatches = ISA_PROVIDERS.filter((provider) =>
     provider.name.toLowerCase().includes(lowercaseQuery)
-  ).slice(0, 50); // Limit to 50 results for performance
+  );
+
+  // Search through aliases
+  const aliasMatches = ISA_PROVIDERS.filter((provider) => {
+    const aliases = PROVIDER_ALIASES[provider.name];
+    return aliases && aliases.some(alias =>
+      alias.toLowerCase().includes(lowercaseQuery) ||
+      lowercaseQuery.includes(alias.toLowerCase())
+    );
+  });
+
+  // Combine and deduplicate
+  const combined = [...directMatches, ...aliasMatches];
+  const unique = Array.from(new Set(combined.map(p => p.name)))
+    .map(name => combined.find(p => p.name === name)!)
+    .filter(Boolean);
+
+  return unique.slice(0, 50); // Limit to 50 results for performance
 };
 
 // Helper function to filter providers by ISA type
@@ -3362,13 +3405,13 @@ export const getProvidersByType = (isaType: string): ISAProvider[] => {
 
 // Get popular providers (first 20)
 export const getPopularProviders = (): ISAProvider[] => {
-  // Return mix of categories
+  // Return mix of categories - using actual names from the database
   const popularNames = [
-    'Hargreaves Lansdown', 'AJ Bell', 'Vanguard', 'Moneybox',
-    'Barclays', 'NatWest', 'Lloyds Bank', 'HSBC',
+    'Hargreaves Lansdown', 'AJ Bell', 'Digital Moneybox', 'Investengine',
+    'Barclays', 'National Westminster', 'Lloyds Bank', 'HSBC',
     'Nationwide', 'Coventry', 'Yorkshire',
-    'Plum', 'Monzo', 'Tembo', 'Freetrade', 'Trading 212',
-    'Interactive Investor', 'Fidelity', 'Santander', 'Halifax'
+    'Monzo', 'Starling', 'Atom', 'Freetrade', 'Trading 212',
+    'Interactive Investor', 'eToro', 'Santander', 'Halifax'
   ];
 
   return ISA_PROVIDERS.filter(p =>
