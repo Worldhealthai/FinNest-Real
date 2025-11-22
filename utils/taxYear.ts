@@ -69,12 +69,21 @@ export const formatTaxYear = (startYear: number): string => {
 };
 
 /**
- * Gets an array of tax years for selection (current + previous years)
+ * Gets an array of tax years for selection (future + current + previous years)
  * @param yearsBack - Number of previous years to include (default 5)
+ * @param yearsForward - Number of future years to include (default 1)
  */
-export const getAvailableTaxYears = (yearsBack: number = 5): TaxYear[] => {
+export const getAvailableTaxYears = (yearsBack: number = 5, yearsForward: number = 1): TaxYear[] => {
   const currentTaxYear = getCurrentTaxYear();
-  const years: TaxYear[] = [currentTaxYear];
+  const years: TaxYear[] = [];
+
+  // Add future years (in reverse order so they appear first)
+  for (let i = yearsForward; i >= 1; i--) {
+    years.push(getTaxYearBoundaries(currentTaxYear.startYear + i));
+  }
+
+  // Add current year
+  years.push(currentTaxYear);
 
   // Add previous years
   for (let i = 1; i <= yearsBack; i++) {
@@ -93,13 +102,15 @@ export const isDateInTaxYear = (date: Date, taxYear: TaxYear): boolean => {
 
 /**
  * Gets the label for a tax year relative to current
- * e.g., "2024/25 (Current)", "2023/24 (Previous)", "2022/23"
+ * e.g., "2025/26 (Next)", "2024/25 (Current)", "2023/24 (Previous)", "2022/23"
  */
 export const getTaxYearLabel = (taxYear: TaxYear): string => {
   const currentTaxYear = getCurrentTaxYear();
 
   if (taxYear.startYear === currentTaxYear.startYear) {
     return `${taxYear.label} (Current)`;
+  } else if (taxYear.startYear === currentTaxYear.startYear + 1) {
+    return `${taxYear.label} (Next)`;
   } else if (taxYear.startYear === currentTaxYear.startYear - 1) {
     return `${taxYear.label} (Previous)`;
   }

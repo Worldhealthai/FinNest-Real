@@ -8,6 +8,7 @@ import {
   Alert,
   Dimensions,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,6 +23,7 @@ import {
   formatCurrency,
 } from '@/constants/isaData';
 import { searchProviders, getPopularProviders, ISAProvider } from '@/constants/isaProviders';
+import { getAvailableTaxYears, getTaxYearLabel, getTaxYearFromDate, type TaxYear } from '@/utils/taxYear';
 
 const { width } = Dimensions.get('window');
 
@@ -63,6 +65,8 @@ export default function AddISAContributionModal({
   const [providerSearch, setProviderSearch] = useState('');
   const [filteredProviders, setFilteredProviders] = useState<ISAProvider[]>(getPopularProviders());
   const [submittedContribution, setSubmittedContribution] = useState<ISAContribution | null>(null);
+  const [availableTaxYears] = useState<TaxYear[]>(getAvailableTaxYears(5, 1)); // 5 previous + 1 future year
+  const [selectedTaxYear, setSelectedTaxYear] = useState<TaxYear>(getTaxYearFromDate(new Date()));
 
   const TOTAL_STEPS = 4;
 
@@ -77,6 +81,7 @@ export default function AddISAContributionModal({
       setAmount('');
       setNotes('');
       setContributionDate(new Date());
+      setSelectedTaxYear(getTaxYearFromDate(new Date()));
       setProviderSearch('');
       setFilteredProviders(getPopularProviders());
       setSubmittedContribution(null);
@@ -91,6 +96,7 @@ export default function AddISAContributionModal({
     setAmount('');
     setNotes('');
     setContributionDate(new Date());
+    setSelectedTaxYear(getTaxYearFromDate(new Date()));
     setProviderSearch('');
     setFilteredProviders(getPopularProviders());
     setSubmittedContribution(null);
@@ -530,42 +536,37 @@ export default function AddISAContributionModal({
       <View style={styles.taxYearSection}>
         <Text style={styles.inputLabel}>Tax Year</Text>
         <Text style={styles.taxYearHint}>Select when this contribution was made</Text>
-        <View style={styles.taxYearButtons}>
-          <Pressable
-            onPress={() => setContributionDate(new Date())}
-            style={({ pressed }) => [
-              styles.taxYearButton,
-              contributionDate.getFullYear() === new Date().getFullYear() && styles.taxYearButtonActive,
-              { opacity: pressed ? 0.7 : 1 }
-            ]}
-          >
-            <Text style={[
-              styles.taxYearButtonText,
-              contributionDate.getFullYear() === new Date().getFullYear() && styles.taxYearButtonTextActive
-            ]}>
-              2024/25 (Current)
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              const lastYear = new Date();
-              lastYear.setFullYear(lastYear.getFullYear() - 1);
-              setContributionDate(lastYear);
-            }}
-            style={({ pressed }) => [
-              styles.taxYearButton,
-              contributionDate.getFullYear() === new Date().getFullYear() - 1 && styles.taxYearButtonActive,
-              { opacity: pressed ? 0.7 : 1 }
-            ]}
-          >
-            <Text style={[
-              styles.taxYearButtonText,
-              contributionDate.getFullYear() === new Date().getFullYear() - 1 && styles.taxYearButtonTextActive
-            ]}>
-              2023/24 (Previous)
-            </Text>
-          </Pressable>
-        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingVertical: 4 }}
+        >
+          {availableTaxYears.map((year) => {
+            const isSelected = year.startYear === selectedTaxYear.startYear;
+            return (
+              <Pressable
+                key={year.startYear}
+                onPress={() => {
+                  setSelectedTaxYear(year);
+                  // Set contribution date to be within the selected tax year
+                  setContributionDate(year.startDate);
+                }}
+                style={({ pressed }) => [
+                  styles.taxYearButton,
+                  isSelected && styles.taxYearButtonActive,
+                  { opacity: pressed ? 0.7 : 1 }
+                ]}
+              >
+                <Text style={[
+                  styles.taxYearButtonText,
+                  isSelected && styles.taxYearButtonTextActive
+                ]}>
+                  {getTaxYearLabel(year)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {/* Optional Details */}
