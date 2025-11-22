@@ -147,6 +147,28 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
     return ISA_ANNUAL_ALLOWANCE - getTotalContributions();
   };
 
+  const handleDeleteAccount = (accountId: string, providerName: string) => {
+    Alert.alert(
+      'Delete ISA Account',
+      `Are you sure you want to delete your ${providerName} ISA account? This action cannot be undone.`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            setAccounts(accounts.filter(acc => acc.id !== accountId));
+            Alert.alert('Success', 'ISA account deleted successfully');
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const getISAIcon = (type: string) => {
     const iconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
       [ISA_TYPES.CASH]: 'cash',
@@ -450,14 +472,22 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
                     color={info.color}
                   />
                 </View>
-                <View>
+                <View style={{ flex: 1 }}>
                   <Text style={styles.accountProvider}>{account.providerName}</Text>
                   <Text style={styles.accountType}>{info.name}</Text>
                 </View>
               </View>
-              <Text style={styles.accountBalance}>
-                {formatCurrency(account.currentBalance)}
-              </Text>
+              <View style={styles.accountRight}>
+                <Text style={styles.accountBalance}>
+                  {formatCurrency(account.currentBalance)}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => handleDeleteAccount(account.id, account.providerName)}
+                  style={styles.deleteButton}
+                >
+                  <Ionicons name="trash" size={20} color={Colors.error} />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.accountDetails}>
@@ -585,6 +615,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  accountRight: {
+    alignItems: 'flex-end',
+    gap: Spacing.sm,
+  },
+  deleteButton: {
+    padding: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.error + '20',
   },
   accountIcon: {
     width: 50,
