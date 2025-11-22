@@ -2,13 +2,13 @@
 
 export const Colors = {
   // Primary Brand Colors
-  deepNavy: '#0A2540',
+  deepNavy: '#0B1F3F',
   gold: '#FFD700',
 
   // Extended Palette
-  darkNavy: '#051729',
-  mediumNavy: '#0D2F52',
-  lightNavy: '#1A3F63',
+  darkNavy: '#061426',
+  mediumNavy: '#15294A',
+  lightNavy: '#1E3A5F',
   paleGold: '#FFE55C',
   richGold: '#FFC700',
 

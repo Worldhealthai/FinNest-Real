@@ -42,7 +42,7 @@ export default function AnimatedBackground() {
       />
       <Animated.View style={[styles.orb1, animatedStyle]}>
         <LinearGradient
-          colors={[Colors.gold + '40', Colors.gold + '00']}
+          colors={['#1E3A5F40', '#4A90E220']}
           style={styles.orbGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -50,7 +50,7 @@ export default function AnimatedBackground() {
       </Animated.View>
       <Animated.View style={[styles.orb2, animatedStyle]}>
         <LinearGradient
-          colors={[Colors.info + '30', Colors.info + '00']}
+          colors={['#2B4F7E30', '#1E3A5F00']}
           style={styles.orbGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
