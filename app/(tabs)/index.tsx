@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Alert, Pressable, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -164,27 +164,41 @@ export default function DashboardScreen() {
     console.log('Contribution added and saved successfully');
   };
 
-  const handleDeleteContribution = (contributionId: string) => {
+  const handleDeleteContribution = async (contributionId: string) => {
     const contribution = contributions.find(c => c.id === contributionId);
     if (!contribution) return;
 
-    Alert.alert(
-      'Delete Contribution',
-      `Are you sure you want to delete this ${formatCurrency(contribution.amount)} contribution from ${contribution.provider}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            const updatedContributions = contributions.filter(c => c.id !== contributionId);
-            setContributions(updatedContributions);
-            await saveContributions(updatedContributions);
-            console.log('Contribution deleted:', contributionId);
+    const message = `Are you sure you want to delete this ${formatCurrency(contribution.amount)} contribution from ${contribution.provider}?`;
+
+    // Use native browser confirm on web, Alert.alert on mobile
+    if (Platform.OS === 'web') {
+      // Web: Use window.confirm
+      if (typeof window !== 'undefined' && window.confirm(message)) {
+        const updatedContributions = contributions.filter(c => c.id !== contributionId);
+        setContributions(updatedContributions);
+        await saveContributions(updatedContributions);
+        console.log('Contribution deleted:', contributionId);
+      }
+    } else {
+      // Mobile: Use Alert.alert
+      Alert.alert(
+        'Delete Contribution',
+        message,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              const updatedContributions = contributions.filter(c => c.id !== contributionId);
+              setContributions(updatedContributions);
+              await saveContributions(updatedContributions);
+              console.log('Contribution deleted:', contributionId);
+            }
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   };
 
   return (
