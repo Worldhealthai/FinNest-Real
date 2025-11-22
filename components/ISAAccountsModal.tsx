@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from './Modal';
 import GlassCard from './GlassCard';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
@@ -21,6 +22,8 @@ import {
   formatCurrency,
   FlexibleISAState,
 } from '@/constants/isaData';
+
+const ACCOUNTS_STORAGE_KEY = '@finnest_isa_accounts';
 
 interface ISAAccount {
   id: string;
@@ -40,36 +43,7 @@ interface ISAAccountsModalProps {
 
 export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalProps) {
   const [showAddForm, setShowAddForm] = useState(false);
-  const [accounts, setAccounts] = useState<ISAAccount[]>([
-    {
-      id: '1',
-      providerName: 'Barclays',
-      isaType: ISA_TYPES.CASH,
-      currentBalance: 8000,
-      contributionsThisYear: 5000,
-      withdrawalsThisYear: 0,
-      interestRate: 4.5,
-      openedDate: '2023-04-15',
-    },
-    {
-      id: '2',
-      providerName: 'Vanguard',
-      isaType: ISA_TYPES.STOCKS_SHARES,
-      currentBalance: 12000,
-      contributionsThisYear: 8000,
-      withdrawalsThisYear: 0,
-      openedDate: '2022-06-20',
-    },
-    {
-      id: '3',
-      providerName: 'Moneybox',
-      isaType: ISA_TYPES.LIFETIME,
-      currentBalance: 6000,
-      contributionsThisYear: 4000,
-      withdrawalsThisYear: 0,
-      openedDate: '2023-01-10',
-    },
-  ]);
+  const [accounts, setAccounts] = useState<ISAAccount[]>([]);
 
   // Form state
   const [providerName, setProviderName] = useState('');
@@ -80,6 +54,58 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
   const [interestRate, setInterestRate] = useState('');
   const [testDepositAmount, setTestDepositAmount] = useState('');
   const [flexibleResult, setFlexibleResult] = useState<any>(null);
+
+  // Load ISA accounts from AsyncStorage when modal becomes visible
+  useEffect(() => {
+    if (visible) {
+      loadAccounts();
+    }
+  }, [visible]);
+
+  const loadAccounts = async () => {
+    try {
+      console.log('=== Loading ISA accounts from AsyncStorage ===');
+      console.log('Storage key:', ACCOUNTS_STORAGE_KEY);
+
+      const savedData = await AsyncStorage.getItem(ACCOUNTS_STORAGE_KEY);
+      console.log('Raw saved data:', savedData);
+
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        console.log('✅ Parsed ISA accounts:', parsed);
+        console.log('✅ Number of accounts loaded:', parsed.length);
+        setAccounts(parsed);
+      } else {
+        console.log('❌ No saved ISA accounts found - using empty array');
+        setAccounts([]);
+      }
+    } catch (error) {
+      console.error('❌ Error loading ISA accounts:', error);
+      setAccounts([]);
+    }
+  };
+
+  const saveAccounts = async (accountsData: ISAAccount[]) => {
+    try {
+      console.log('=== Saving ISA accounts ===');
+      console.log('Number of accounts to save:', accountsData.length);
+      console.log('Accounts:', accountsData);
+
+      const jsonData = JSON.stringify(accountsData);
+      await AsyncStorage.setItem(ACCOUNTS_STORAGE_KEY, jsonData);
+      console.log('✅ Saved to AsyncStorage');
+
+      // Verify the save
+      const verification = await AsyncStorage.getItem(ACCOUNTS_STORAGE_KEY);
+      if (verification) {
+        console.log('✅ Save verified - ISA accounts persisted successfully');
+      } else {
+        console.error('❌ Save verification failed!');
+      }
+    } catch (error) {
+      console.error('❌ Error saving ISA accounts:', error);
+    }
+  };
 
   const resetForm = () => {
     setProviderName('');
@@ -92,7 +118,7 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
     setFlexibleResult(null);
   };
 
-  const handleAddAccount = () => {
+  const handleAddAccount = async () => {
     if (!providerName.trim()) {
       Alert.alert('Error', 'Please enter a provider name');
       return;
@@ -113,7 +139,9 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
       openedDate: new Date().toISOString().split('T')[0],
     };
 
-    setAccounts([...accounts, newAccount]);
+    const updatedAccounts = [...accounts, newAccount];
+    setAccounts(updatedAccounts);
+    await saveAccounts(updatedAccounts);
     setShowAddForm(false);
     resetForm();
     Alert.alert('Success', 'ISA account added successfully!');
@@ -159,8 +187,11 @@ export default function ISAAccountsModal({ visible, onClose }: ISAAccountsModalP
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            setAccounts(accounts.filter(acc => acc.id !== accountId));
+          onPress: async () => {
+            const updatedAccounts = accounts.filter(acc => acc.id !== accountId);
+            setAccounts(updatedAccounts);
+            await saveAccounts(updatedAccounts);
+            console.log('ISA account deleted:', accountId);
             Alert.alert('Success', 'ISA account deleted successfully');
           },
         },
