@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
   },
   sectionBox: {
     // Inner grey box
-    backgroundColor: 'rgba(100, 100, 100, 0.6)',
+    backgroundColor: 'rgba(150, 150, 150, 0.5)',
     borderRadius: 12,
     padding: Spacing.lg,
   },
