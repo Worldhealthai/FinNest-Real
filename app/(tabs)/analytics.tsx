@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -208,7 +208,10 @@ export default function AnalyticsScreen() {
       <AnimatedBackground />
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>ISA Summary</Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>ISA Summary</Text>
+            <Image source={require('@/assets/logo.png')} style={styles.logo} resizeMode="contain" />
+          </View>
 
           <GlassCard style={styles.card} intensity="dark">
             <Text style={styles.label}>Contribution History</Text>
@@ -399,7 +402,9 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   safe: { flex: 1 },
   scroll: { padding: Spacing.md },
-  title: { fontSize: Typography.sizes.xxl, color: Colors.white, fontWeight: Typography.weights.bold, marginBottom: Spacing.lg },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
+  title: { fontSize: Typography.sizes.xxl, color: Colors.white, fontWeight: Typography.weights.bold },
+  logo: { width: 60, height: 60 },
   section: { fontSize: Typography.sizes.lg, color: Colors.white, fontWeight: Typography.weights.bold, marginBottom: Spacing.md, marginTop: Spacing.md },
   card: { marginBottom: Spacing.sm, padding: Spacing.md },
   label: { fontSize: Typography.sizes.sm, color: Colors.lightGray, marginBottom: 8 },
