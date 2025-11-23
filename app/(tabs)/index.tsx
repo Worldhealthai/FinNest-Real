@@ -545,16 +545,6 @@ export default function DashboardScreen() {
             </GlassCard>
           </Pressable>
 
-          <GlassCard style={[styles.card, { marginTop: 16 }]} intensity="dark">
-            <View style={styles.row}>
-              <Ionicons name="bulb" size={24} color={Colors.gold} />
-              <Text style={[styles.name, { marginLeft: 12 }]}>Quick Tip</Text>
-            </View>
-            <Text style={[styles.sub, { marginTop: 8, lineHeight: 20 }]}>
-              Contribute the remaining {formatCurrency(LIFETIME_ISA_MAX - groupedISAs.lifetime.total)} to your LISA before tax year end to get {formatCurrency((LIFETIME_ISA_MAX - groupedISAs.lifetime.total) * 0.25)} free government bonus!
-            </Text>
-          </GlassCard>
-
           <Text style={styles.section}>Flexible ISA Calculator</Text>
 
           <GlassCard style={styles.card} intensity="dark">
