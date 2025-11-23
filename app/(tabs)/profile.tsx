@@ -18,10 +18,39 @@ import GlassCard from '@/components/GlassCard';
 import PersonalInfoModal from '@/components/PersonalInfoModal';
 import ISAAccountsModal from '@/components/ISAAccountsModal';
 import SecurityModal from '@/components/SecurityModal';
+import TermsModal from '@/components/TermsModal';
+import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import { ISAContribution } from '@/components/AddISAContributionModal';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
+import { ISA_ANNUAL_ALLOWANCE, formatCurrency } from '@/constants/isaData';
+import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
 
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
+
+// Get time-based greeting
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
+};
+
+// Get motivational message based on progress percentage
+const getProgressMessage = (percentage: number) => {
+  if (percentage === 0) {
+    return "Start your ISA journey today and secure your financial future!";
+  } else if (percentage < 25) {
+    return "Great start! Keep building your tax-free savings.";
+  } else if (percentage < 50) {
+    return "You're making solid progress with your ISA contributions!";
+  } else if (percentage < 75) {
+    return "Excellent work! You're well on your way to maximizing your allowance.";
+  } else if (percentage < 100) {
+    return "Outstanding! You're using your allowance better than most UK savers.";
+  } else {
+    return "Amazing! You've maximized your ISA allowance for this tax year!";
+  }
+};
 
 export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
@@ -32,6 +61,8 @@ export default function ProfileScreen() {
   const [personalInfoVisible, setPersonalInfoVisible] = React.useState(false);
   const [isaAccountsVisible, setIsaAccountsVisible] = React.useState(false);
   const [securityVisible, setSecurityVisible] = React.useState(false);
+  const [termsVisible, setTermsVisible] = React.useState(false);
+  const [privacyVisible, setPrivacyVisible] = React.useState(false);
 
   // Contributions state
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
@@ -61,6 +92,25 @@ export default function ProfileScreen() {
     }, [])
   );
 
+  // Calculate real progress based on current tax year contributions
+  const currentTaxYear = getCurrentTaxYear();
+  const currentYearContributions = contributions.filter(
+    c => !c.deleted && isDateInTaxYear(new Date(c.date), currentTaxYear)
+  );
+  const totalContributed = currentYearContributions.reduce((sum, c) => sum + c.amount, 0);
+  const progressPercentage = Math.min((totalContributed / ISA_ANNUAL_ALLOWANCE) * 100, 100);
+  const progressMessage = getProgressMessage(progressPercentage);
+
+  // Calculate stats for profile card
+  const activeContributions = contributions.filter(c => !c.deleted);
+  const uniqueAccounts = new Set(
+    activeContributions.map(c => `${c.provider}-${c.isaType}`)
+  ).size;
+  const totalAllTime = activeContributions.reduce((sum, c) => sum + c.amount, 0);
+  // Simplified tax benefit: Assume 4% annual growth, 20% tax rate
+  const estimatedAnnualGrowth = totalAllTime * 0.04;
+  const estimatedTaxSaved = estimatedAnnualGrowth * 0.2;
+
   return (
     <View style={styles.container}>
       <AnimatedBackground />
@@ -71,47 +121,11 @@ export default function ProfileScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Creative Header with Logo */}
-          <GlassCard style={styles.headerCard} intensity="dark">
-            <LinearGradient
-              colors={[Colors.deepNavy + 'DD', Colors.mediumNavy + 'AA']}
-              style={styles.headerGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <View style={styles.headerTop}>
-                <View style={styles.logoRow}>
-                  <Image
-                    source={require('@/assets/logo.png')}
-                    style={styles.headerLogo}
-                    resizeMode="contain"
-                  />
-                  <View>
-                    <Text style={styles.greeting}>Good Evening, Alex! 👋</Text>
-                    <Text style={styles.subGreeting}>Your ISA journey is looking great</Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.editButton}>
-                  <Ionicons name="create-outline" size={24} color={Colors.gold} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.achievementRow}>
-                <View style={styles.achievementBadge}>
-                  <Ionicons name="trophy" size={16} color={Colors.gold} />
-                  <Text style={styles.achievementText}>ISA Pro</Text>
-                </View>
-                <View style={[styles.achievementBadge, { backgroundColor: Colors.info + '30', borderColor: Colors.info }]}>
-                  <Ionicons name="flash" size={16} color={Colors.info} />
-                  <Text style={styles.achievementText}>3 Year Streak</Text>
-                </View>
-                <View style={[styles.achievementBadge, { backgroundColor: Colors.success + '30', borderColor: Colors.success }]}>
-                  <Ionicons name="checkmark-circle" size={16} color={Colors.success} />
-                  <Text style={styles.achievementText}>Max Saver</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </GlassCard>
+          {/* Simple Greeting with Logo */}
+          <View style={styles.header}>
+            <Text style={styles.greeting}>{getGreeting()}</Text>
+            <Image source={require('@/assets/logo.png')} style={styles.logo} resizeMode="contain" />
+          </View>
 
           {/* Enhanced Profile Card */}
           <GlassCard style={styles.profileCard} intensity="dark">
@@ -145,20 +159,20 @@ export default function ProfileScreen() {
             <View style={styles.statsRow}>
               <View style={styles.stat}>
                 <Ionicons name="wallet" size={20} color={Colors.gold} />
-                <Text style={styles.statValue}>3</Text>
+                <Text style={styles.statValue}>{uniqueAccounts}</Text>
                 <Text style={styles.statLabel}>ISA Accounts</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Ionicons name="trending-up" size={20} color={Colors.success} />
-                <Text style={styles.statValue}>£16K</Text>
+                <Text style={styles.statValue}>{formatCurrency(totalAllTime)}</Text>
                 <Text style={styles.statLabel}>Total Saved</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Ionicons name="shield-checkmark" size={20} color={Colors.info} />
-                <Text style={styles.statValue}>£1.2K</Text>
-                <Text style={styles.statLabel}>Tax Saved</Text>
+                <Text style={styles.statValue}>{formatCurrency(estimatedTaxSaved)}</Text>
+                <Text style={styles.statLabel}>Tax Saved (Est.)</Text>
               </View>
             </View>
 
@@ -166,17 +180,17 @@ export default function ProfileScreen() {
             <View style={styles.progressSection}>
               <View style={styles.progressHeader}>
                 <Text style={styles.progressTitle}>ISA Journey Progress</Text>
-                <Text style={styles.progressPercent}>80%</Text>
+                <Text style={styles.progressPercent}>{progressPercentage.toFixed(0)}%</Text>
               </View>
               <View style={styles.progressBar}>
                 <LinearGradient
                   colors={Colors.goldGradient}
-                  style={styles.progressFill}
+                  style={[styles.progressFill, { width: `${progressPercentage}%` }]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                 />
               </View>
-              <Text style={styles.progressSubtext}>You're using your allowance better than 78% of UK savers!</Text>
+              <Text style={styles.progressSubtext}>{progressMessage}</Text>
             </View>
           </GlassCard>
 
@@ -329,7 +343,7 @@ export default function ProfileScreen() {
             </GlassCard>
 
             <GlassCard style={styles.menuCard} intensity="medium">
-              <TouchableOpacity style={styles.menuItem}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => setTermsVisible(true)}>
                 <View style={styles.menuLeft}>
                   <View style={[styles.menuIcon, { backgroundColor: Colors.gold + '30' }]}>
                     <Ionicons name="document-text-outline" size={20} color={Colors.gold} />
@@ -341,7 +355,7 @@ export default function ProfileScreen() {
             </GlassCard>
 
             <GlassCard style={styles.menuCard} intensity="medium">
-              <TouchableOpacity style={styles.menuItem}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => setPrivacyVisible(true)}>
                 <View style={styles.menuLeft}>
                   <View style={[styles.menuIcon, { backgroundColor: Colors.warning + '30' }]}>
                     <Ionicons name="shield-outline" size={20} color={Colors.warning} />
@@ -382,6 +396,14 @@ export default function ProfileScreen() {
         visible={securityVisible}
         onClose={() => setSecurityVisible(false)}
       />
+      <TermsModal
+        visible={termsVisible}
+        onClose={() => setTermsVisible(false)}
+      />
+      <PrivacyPolicyModal
+        visible={privacyVisible}
+        onClose={() => setPrivacyVisible(false)}
+      />
     </View>
   );
 }
@@ -399,64 +421,20 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: Spacing.md,
   },
-  headerCard: {
-    marginBottom: Spacing.md,
-    padding: 0,
-    overflow: 'hidden',
-  },
-  headerGradient: {
-    padding: Spacing.lg,
-  },
-  headerTop: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: Spacing.md,
-  },
-  logoRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
-    flex: 1,
-  },
-  headerLogo: {
-    width: 50,
-    height: 50,
-    tintColor: Colors.gold,
+    marginBottom: Spacing.lg,
   },
   greeting: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xxl,
     color: Colors.white,
     fontWeight: Typography.weights.bold,
   },
-  subGreeting: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.lightGray,
-    marginTop: 2,
-  },
-  achievementRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  achievementBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: Colors.gold + '30',
-    borderWidth: 1,
-    borderColor: Colors.gold,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  achievementText: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.white,
-    fontWeight: Typography.weights.semibold,
-  },
-  editButton: {
-    padding: Spacing.sm,
+  logo: {
+    width: 60,
+    height: 60,
   },
   profileCard: {
     padding: Spacing.lg,
@@ -578,7 +556,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   progressFill: {
-    width: '80%',
     height: '100%',
     borderRadius: 4,
   },
