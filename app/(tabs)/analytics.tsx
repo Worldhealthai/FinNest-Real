@@ -10,7 +10,7 @@ import GlassCard from '@/components/GlassCard';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { formatCurrency, ISA_INFO, ISA_ANNUAL_ALLOWANCE } from '@/constants/isaData';
 import { Dimensions } from 'react-native';
-import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
+import { getCurrentTaxYear, isDateInTaxYear, getTaxYearFromDate, getTaxYearBoundaries } from '@/utils/taxYear';
 
 const { width } = Dimensions.get('window');
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
@@ -43,6 +43,41 @@ const groupContributions = (contributions: ISAContribution[]) => {
   });
 
   return grouped;
+};
+
+// Helper to calculate historical performance by tax year
+const calculateHistoricalPerformance = (contributions: ISAContribution[]) => {
+  const currentTaxYear = getCurrentTaxYear();
+  const historicalData: { year: string; amount: number; percentage: number }[] = [];
+
+  // Group contributions by tax year
+  const byTaxYear: Record<string, number> = {};
+
+  contributions.forEach(contribution => {
+    const taxYear = getTaxYearFromDate(new Date(contribution.date));
+    const yearLabel = taxYear.label;
+
+    if (!byTaxYear[yearLabel]) {
+      byTaxYear[yearLabel] = 0;
+    }
+    byTaxYear[yearLabel] += contribution.amount;
+  });
+
+  // Get the last 3 tax years (excluding current year)
+  const years = [];
+  for (let i = 1; i <= 3; i++) {
+    const taxYear = getTaxYearBoundaries(currentTaxYear.startYear - i);
+    const amount = byTaxYear[taxYear.label] || 0;
+    const percentage = (amount / ISA_ANNUAL_ALLOWANCE) * 100;
+
+    years.push({
+      year: taxYear.label,
+      amount,
+      percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal place
+    });
+  }
+
+  return years;
 };
 
 export default function AnalyticsScreen() {
@@ -78,6 +113,9 @@ export default function AnalyticsScreen() {
 
   // Calculate estimated tax saved (20% basic rate on contributions)
   const taxSaved = totalSaved * 0.20;
+
+  // Calculate historical performance data
+  const historicalPerformance = calculateHistoricalPerformance(contributions);
 
   const chartData = {
     labels: ['Apr', 'Jun', 'Aug', 'Oct', 'Dec', 'Feb'],
@@ -239,27 +277,29 @@ export default function AnalyticsScreen() {
           <Text style={styles.section}>Historical Performance</Text>
 
           <GlassCard style={styles.card} intensity="medium">
-            <View style={styles.histrow}>
-              <Text style={styles.histyear}>2023/24</Text>
-              <Text style={styles.histval}>£18,500</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>92.5%</Text>
+            {historicalPerformance.length > 0 ? (
+              historicalPerformance.map((yearData, index) => (
+                <View
+                  key={yearData.year}
+                  style={[
+                    styles.histrow,
+                    index === historicalPerformance.length - 1 && { borderBottomWidth: 0 }
+                  ]}
+                >
+                  <Text style={styles.histyear}>{yearData.year}</Text>
+                  <Text style={styles.histval}>{formatCurrency(yearData.amount)}</Text>
+                  {yearData.amount > 0 && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>{yearData.percentage}%</Text>
+                    </View>
+                  )}
+                </View>
+              ))
+            ) : (
+              <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+                <Text style={styles.sub}>No historical data available</Text>
               </View>
-            </View>
-            <View style={styles.histrow}>
-              <Text style={styles.histyear}>2022/23</Text>
-              <Text style={styles.histval}>£15,200</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>76%</Text>
-              </View>
-            </View>
-            <View style={styles.histrow}>
-              <Text style={styles.histyear}>2021/22</Text>
-              <Text style={styles.histval}>£12,000</Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>60%</Text>
-              </View>
-            </View>
+            )}
           </GlassCard>
 
           <GlassCard style={styles.card} intensity="dark">
