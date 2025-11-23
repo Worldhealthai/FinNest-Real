@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
+import { useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
@@ -87,6 +88,13 @@ export default function AnalyticsScreen() {
   useEffect(() => {
     loadISAData();
   }, []);
+
+  // Reload contributions whenever the analytics tab is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadISAData();
+    }, [])
+  );
 
   const loadISAData = async () => {
     try {
