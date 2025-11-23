@@ -23,6 +23,14 @@ import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
 
+// Get time-based greeting
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
+};
+
 export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [biometricsEnabled, setBiometricsEnabled] = React.useState(true);
@@ -71,47 +79,8 @@ export default function ProfileScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Creative Header with Logo */}
-          <GlassCard style={styles.headerCard} intensity="dark">
-            <LinearGradient
-              colors={[Colors.deepNavy + 'DD', Colors.mediumNavy + 'AA']}
-              style={styles.headerGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <View style={styles.headerTop}>
-                <View style={styles.logoRow}>
-                  <Image
-                    source={require('@/assets/logo.png')}
-                    style={styles.headerLogo}
-                    resizeMode="contain"
-                  />
-                  <View>
-                    <Text style={styles.greeting}>Good Evening, Alex! 👋</Text>
-                    <Text style={styles.subGreeting}>Your ISA journey is looking great</Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.editButton}>
-                  <Ionicons name="create-outline" size={24} color={Colors.gold} />
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.achievementRow}>
-                <View style={styles.achievementBadge}>
-                  <Ionicons name="trophy" size={16} color={Colors.gold} />
-                  <Text style={styles.achievementText}>ISA Pro</Text>
-                </View>
-                <View style={[styles.achievementBadge, { backgroundColor: Colors.info + '30', borderColor: Colors.info }]}>
-                  <Ionicons name="flash" size={16} color={Colors.info} />
-                  <Text style={styles.achievementText}>3 Year Streak</Text>
-                </View>
-                <View style={[styles.achievementBadge, { backgroundColor: Colors.success + '30', borderColor: Colors.success }]}>
-                  <Ionicons name="checkmark-circle" size={16} color={Colors.success} />
-                  <Text style={styles.achievementText}>Max Saver</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </GlassCard>
+          {/* Simple Greeting */}
+          <Text style={styles.greeting}>{getGreeting()}</Text>
 
           {/* Enhanced Profile Card */}
           <GlassCard style={styles.profileCard} intensity="dark">
@@ -399,64 +368,11 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: Spacing.md,
   },
-  headerCard: {
-    marginBottom: Spacing.md,
-    padding: 0,
-    overflow: 'hidden',
-  },
-  headerGradient: {
-    padding: Spacing.lg,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: Spacing.md,
-  },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    flex: 1,
-  },
-  headerLogo: {
-    width: 50,
-    height: 50,
-    tintColor: Colors.gold,
-  },
   greeting: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xxl,
     color: Colors.white,
     fontWeight: Typography.weights.bold,
-  },
-  subGreeting: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.lightGray,
-    marginTop: 2,
-  },
-  achievementRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-    flexWrap: 'wrap',
-  },
-  achievementBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: Colors.gold + '30',
-    borderWidth: 1,
-    borderColor: Colors.gold,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  achievementText: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.white,
-    fontWeight: Typography.weights.semibold,
-  },
-  editButton: {
-    padding: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
   profileCard: {
     padding: Spacing.lg,
