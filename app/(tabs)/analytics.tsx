@@ -49,7 +49,6 @@ const groupContributions = (contributions: ISAContribution[]) => {
 // Helper to calculate historical performance by tax year
 const calculateHistoricalPerformance = (contributions: ISAContribution[]) => {
   const currentTaxYear = getCurrentTaxYear();
-  const historicalData: { year: string; amount: number; percentage: number }[] = [];
 
   // Group contributions by tax year
   const byTaxYear: Record<string, number> = {};
@@ -69,12 +68,10 @@ const calculateHistoricalPerformance = (contributions: ISAContribution[]) => {
   for (let i = 1; i <= 3; i++) {
     const taxYear = getTaxYearBoundaries(currentTaxYear.startYear - i);
     const amount = byTaxYear[taxYear.label] || 0;
-    const percentage = (amount / ISA_ANNUAL_ALLOWANCE) * 100;
 
     years.push({
       year: taxYear.label,
       amount,
-      percentage: Math.round(percentage * 10) / 10, // Round to 1 decimal place
     });
   }
 
@@ -372,11 +369,6 @@ export default function AnalyticsScreen() {
                 >
                   <Text style={styles.histyear}>{yearData.year}</Text>
                   <Text style={styles.histval}>{formatCurrency(yearData.amount)}</Text>
-                  {yearData.amount > 0 && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>{yearData.percentage}%</Text>
-                    </View>
-                  )}
                 </View>
               ))
             ) : (
