@@ -10,6 +10,7 @@ import AddISAContributionModal, { ISAContribution } from '@/components/AddISACon
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { ISA_INFO, ISA_ANNUAL_ALLOWANCE, LIFETIME_ISA_MAX, getDaysUntilTaxYearEnd, formatCurrency, getTaxYearDates, calculateFlexibleISA } from '@/constants/isaData';
 import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
+import { isISAFlexible } from '@/utils/isaSettings';
 
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
 
@@ -23,6 +24,9 @@ const groupContributions = (contributions: ISAContribution[]) => {
   };
 
   contributions.forEach(contribution => {
+    // Skip deleted contributions in display
+    if (contribution.deleted) return;
+
     const type = contribution.isaType;
     if (!grouped[type].providers[contribution.provider]) {
       grouped[type].providers[contribution.provider] = { contributed: 0, balance: 0 };
@@ -35,9 +39,31 @@ const groupContributions = (contributions: ISAContribution[]) => {
   return grouped;
 };
 
+// Helper to calculate total allowance used (including deleted non-flexible contributions)
+const calculateAllowanceUsed = async (contributions: ISAContribution[]) => {
+  let totalUsed = 0;
+
+  for (const contribution of contributions) {
+    if (!contribution.deleted) {
+      // Active contribution - always counts
+      totalUsed += contribution.amount;
+    } else {
+      // Deleted contribution - only counts if non-flexible
+      const flexible = await isISAFlexible(contribution.provider, contribution.isaType);
+      if (!flexible) {
+        // Non-flexible deleted contribution still uses allowance
+        totalUsed += contribution.amount;
+      }
+    }
+  }
+
+  return totalUsed;
+};
+
 export default function DashboardScreen() {
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
   const [expandedISA, setExpandedISA] = useState<string | null>(null);
+  const [allowanceUsed, setAllowanceUsed] = useState<number>(0);
 
   // Filter contributions by current tax year only
   const currentTaxYear = getCurrentTaxYear();
@@ -47,10 +73,13 @@ export default function DashboardScreen() {
 
   const groupedISAs = groupContributions(filteredContributions);
   const total = Object.values(groupedISAs).reduce((s, i) => s + i.total, 0);
-  const remaining = ISA_ANNUAL_ALLOWANCE - total;
+  // Use allowanceUsed instead of total for calculating remaining allowance
+  // This accounts for deleted non-flexible contributions
+  const remaining = ISA_ANNUAL_ALLOWANCE - allowanceUsed;
   const days = getDaysUntilTaxYearEnd();
   const taxYear = getTaxYearDates();
-  const percent = (total / ISA_ANNUAL_ALLOWANCE) * 100;
+  // Use allowanceUsed for percentage calculation too
+  const percent = (allowanceUsed / ISA_ANNUAL_ALLOWANCE) * 100;
   const lisaBonus = groupedISAs.lifetime.total * 0.25;
 
   // Modal state
@@ -65,6 +94,15 @@ export default function DashboardScreen() {
   useEffect(() => {
     loadISAData();
   }, []);
+
+  // Calculate allowance used (including deleted non-flexible contributions)
+  useEffect(() => {
+    const updateAllowanceUsed = async () => {
+      const used = await calculateAllowanceUsed(filteredContributions);
+      setAllowanceUsed(used);
+    };
+    updateAllowanceUsed();
+  }, [filteredContributions]);
 
   const loadISAData = async () => {
     try {
@@ -167,16 +205,41 @@ export default function DashboardScreen() {
     const contribution = contributions.find(c => c.id === contributionId);
     if (!contribution) return;
 
-    const message = `Are you sure you want to delete this ${formatCurrency(contribution.amount)} contribution from ${contribution.provider}?`;
+    // Check if this ISA is flexible
+    const flexible = await isISAFlexible(contribution.provider, contribution.isaType);
+
+    const isaTypeInfo = ISA_INFO[contribution.isaType];
+    const message = flexible
+      ? `Delete this ${formatCurrency(contribution.amount)} contribution from ${contribution.provider}?\n\nThis is a FLEXIBLE ISA - your allowance will be restored.`
+      : `Delete this ${formatCurrency(contribution.amount)} contribution from ${contribution.provider}?\n\nThis is a NON-FLEXIBLE ISA - the allowance will be permanently used even after deletion.`;
+
+    const performDelete = async () => {
+      if (flexible) {
+        // FLEXIBLE ISA: Actually remove the contribution
+        console.log(`Deleting from flexible ISA - allowance will be restored`);
+        const updatedContributions = contributions.filter(c => c.id !== contributionId);
+        setContributions(updatedContributions);
+        await saveContributions(updatedContributions);
+        console.log('✅ Contribution deleted from flexible ISA:', contributionId);
+      } else {
+        // NON-FLEXIBLE ISA: Soft delete (mark as deleted but keep in array)
+        console.log(`Soft deleting from non-flexible ISA - allowance remains used`);
+        const updatedContributions = contributions.map(c =>
+          c.id === contributionId
+            ? { ...c, deleted: true, deletedDate: new Date().toISOString() }
+            : c
+        );
+        setContributions(updatedContributions);
+        await saveContributions(updatedContributions);
+        console.log('✅ Contribution soft deleted from non-flexible ISA:', contributionId);
+      }
+    };
 
     // Use native browser confirm on web, Alert.alert on mobile
     if (Platform.OS === 'web') {
       // Web: Use window.confirm
       if (typeof window !== 'undefined' && window.confirm(message)) {
-        const updatedContributions = contributions.filter(c => c.id !== contributionId);
-        setContributions(updatedContributions);
-        await saveContributions(updatedContributions);
-        console.log('Contribution deleted:', contributionId);
+        await performDelete();
       }
     } else {
       // Mobile: Use Alert.alert
@@ -188,12 +251,7 @@ export default function DashboardScreen() {
           {
             text: 'Delete',
             style: 'destructive',
-            onPress: async () => {
-              const updatedContributions = contributions.filter(c => c.id !== contributionId);
-              setContributions(updatedContributions);
-              await saveContributions(updatedContributions);
-              console.log('Contribution deleted:', contributionId);
-            }
+            onPress: performDelete
           }
         ]
       );
