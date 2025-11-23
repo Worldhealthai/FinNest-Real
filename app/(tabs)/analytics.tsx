@@ -100,16 +100,20 @@ export default function AnalyticsScreen() {
     }
   };
 
-  // Filter contributions by current tax year
+  // Filter contributions by current tax year for allowance tracking
   const currentTaxYear = getCurrentTaxYear();
-  const filteredContributions = contributions.filter(contribution =>
+  const currentYearContributions = contributions.filter(contribution =>
     isDateInTaxYear(new Date(contribution.date), currentTaxYear)
   );
 
-  const groupedISAs = groupContributions(filteredContributions);
-  const totalSaved = Object.values(groupedISAs).reduce((s, i) => s + i.total, 0);
+  // For ISA breakdown, show all contributions across all years
+  const groupedISAs = groupContributions(contributions);
+
+  // For allowance calculations, use only current year
+  const currentYearGrouped = groupContributions(currentYearContributions);
+  const totalSaved = Object.values(currentYearGrouped).reduce((s, i) => s + i.total, 0);
   const remaining = ISA_ANNUAL_ALLOWANCE - totalSaved;
-  const lifetimeBonus = groupedISAs.lifetime.total * 0.25;
+  const lifetimeBonus = currentYearGrouped.lifetime.total * 0.25;
 
   // Calculate estimated tax saved (20% basic rate on contributions)
   const taxSaved = totalSaved * 0.20;
