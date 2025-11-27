@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
 import AddISAContributionModal, { ISAContribution } from '@/components/AddISAContributionModal';
+import EditISAContributionModal from '@/components/EditISAContributionModal';
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { ISA_INFO, ISA_ANNUAL_ALLOWANCE, LIFETIME_ISA_MAX, getDaysUntilTaxYearEnd, formatCurrency, getTaxYearDates, calculateFlexibleISA } from '@/constants/isaData';
 import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
@@ -84,6 +85,8 @@ export default function DashboardScreen() {
 
   // Modal state
   const [addContributionVisible, setAddContributionVisible] = useState(false);
+  const [editContributionVisible, setEditContributionVisible] = useState(false);
+  const [selectedContribution, setSelectedContribution] = useState<ISAContribution | null>(null);
 
   // Flexible ISA Calculator State
   const [withdrawals, setWithdrawals] = useState('2000');
@@ -199,6 +202,29 @@ export default function DashboardScreen() {
     await saveContributions(updatedContributions);
 
     console.log('Contribution added and saved successfully');
+  };
+
+  const handleEditContribution = (contribution: ISAContribution) => {
+    setSelectedContribution(contribution);
+    setEditContributionVisible(true);
+  };
+
+  const handleUpdateContribution = async (updatedContribution: ISAContribution) => {
+    console.log('=== handleUpdateContribution called ===');
+    console.log('Updated contribution received:', updatedContribution);
+
+    // Update the contribution in the array
+    const updatedContributions = contributions.map(c =>
+      c.id === updatedContribution.id ? updatedContribution : c
+    );
+
+    console.log('Updating state with:', updatedContributions);
+    setContributions(updatedContributions);
+
+    // Save to AsyncStorage
+    await saveContributions(updatedContributions);
+
+    console.log('Contribution updated and saved successfully');
   };
 
   const handleDeleteContribution = async (contributionId: string) => {
@@ -353,11 +379,11 @@ export default function DashboardScreen() {
                       </View>
                       <Text style={[styles.val, { marginRight: 12 }]}>{formatCurrency(contribution.amount)}</Text>
                       <TouchableOpacity
-                        onPress={() => handleDeleteContribution(contribution.id)}
+                        onPress={() => handleEditContribution(contribution)}
                         style={{ padding: 8 }}
                         activeOpacity={0.6}
                       >
-                        <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                        <Ionicons name="create-outline" size={20} color={Colors.gold} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -407,11 +433,11 @@ export default function DashboardScreen() {
                       </View>
                       <Text style={[styles.val, { marginRight: 12 }]}>{formatCurrency(contribution.amount)}</Text>
                       <TouchableOpacity
-                        onPress={() => handleDeleteContribution(contribution.id)}
+                        onPress={() => handleEditContribution(contribution)}
                         style={{ padding: 8 }}
                         activeOpacity={0.6}
                       >
-                        <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                        <Ionicons name="create-outline" size={20} color={Colors.gold} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -465,11 +491,11 @@ export default function DashboardScreen() {
                       </View>
                       <Text style={[styles.val, { marginRight: 12 }]}>{formatCurrency(contribution.amount)}</Text>
                       <TouchableOpacity
-                        onPress={() => handleDeleteContribution(contribution.id)}
+                        onPress={() => handleEditContribution(contribution)}
                         style={{ padding: 8 }}
                         activeOpacity={0.6}
                       >
-                        <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                        <Ionicons name="create-outline" size={20} color={Colors.gold} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -519,11 +545,11 @@ export default function DashboardScreen() {
                       </View>
                       <Text style={[styles.val, { marginRight: 12 }]}>{formatCurrency(contribution.amount)}</Text>
                       <TouchableOpacity
-                        onPress={() => handleDeleteContribution(contribution.id)}
+                        onPress={() => handleEditContribution(contribution)}
                         style={{ padding: 8 }}
                         activeOpacity={0.6}
                       >
-                        <Ionicons name="trash-outline" size={20} color={Colors.error} />
+                        <Ionicons name="create-outline" size={20} color={Colors.gold} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -700,6 +726,17 @@ export default function DashboardScreen() {
             provider: Object.keys(groupedISAs.innovative_finance.providers)[0] || 'None',
           },
         }}
+      />
+
+      {/* Edit ISA Contribution Modal */}
+      <EditISAContributionModal
+        visible={editContributionVisible}
+        onClose={() => {
+          setEditContributionVisible(false);
+          setSelectedContribution(null);
+        }}
+        onUpdate={handleUpdateContribution}
+        contribution={selectedContribution}
       />
     </View>
   );
