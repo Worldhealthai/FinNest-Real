@@ -197,8 +197,87 @@ export default function AnalyticsScreen() {
   const remaining = ISA_ANNUAL_ALLOWANCE - totalSaved;
   const lifetimeBonus = currentYearGrouped.lifetime.total * 0.25;
 
-  // Calculate estimated tax saved (20% basic rate on contributions)
-  const taxSaved = totalSaved * 0.20;
+  // Calculate Consistency Score
+  const calculateConsistencyScore = (contributions: ISAContribution[]) => {
+    if (contributions.length === 0) return { score: 0, monthsCovered: 0, rating: 'Not Started' };
+
+    const currentTaxYear = getCurrentTaxYear();
+
+    // Get contributions for current tax year only
+    const yearContributions = contributions.filter(c =>
+      !c.deleted && isDateInTaxYear(new Date(c.date), currentTaxYear)
+    );
+
+    if (yearContributions.length === 0) return { score: 0, monthsCovered: 0, rating: 'Not Started' };
+
+    // 1. MONTHLY COVERAGE SCORE (60% weight)
+    // Count unique months with contributions
+    const monthsWithContributions = new Set(
+      yearContributions.map(c => {
+        const date = new Date(c.date);
+        return `${date.getFullYear()}-${date.getMonth()}`;
+      })
+    );
+    const monthsCovered = monthsWithContributions.size;
+    const monthlyCoverageScore = (monthsCovered / 12) * 60;
+
+    // 2. DISTRIBUTION QUALITY SCORE (30% weight)
+    // Rewards spreading contributions throughout the year
+    // Uses coefficient of variation - lower is better (more consistent)
+    const monthlyTotals = new Map<string, number>();
+    yearContributions.forEach(c => {
+      const date = new Date(c.date);
+      const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+      monthlyTotals.set(monthKey, (monthlyTotals.get(monthKey) || 0) + c.amount);
+    });
+
+    const amounts = Array.from(monthlyTotals.values());
+    if (amounts.length < 2) {
+      // Single month contribution = lower distribution score
+      var distributionScore = 10; // Out of 30
+    } else {
+      const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+      const variance = amounts.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / amounts.length;
+      const stdDev = Math.sqrt(variance);
+      const coefficientOfVariation = stdDev / mean;
+
+      // Lower CV = more consistent = higher score
+      // CV of 0 (all equal) = 30 points, CV of 2+ = 0 points
+      const normalizedCV = Math.max(0, Math.min(2, coefficientOfVariation)) / 2;
+      var distributionScore = (1 - normalizedCV) * 30;
+    }
+
+    // 3. EARLY START BONUS (10% weight)
+    // Rewards starting contributions early in the tax year
+    const firstContribution = new Date(Math.min(...yearContributions.map(c => new Date(c.date).getTime())));
+    const taxYearStart = currentTaxYear.startDate;
+    const monthsSinceStart = Math.max(0,
+      (firstContribution.getFullYear() - taxYearStart.getFullYear()) * 12 +
+      (firstContribution.getMonth() - taxYearStart.getMonth())
+    );
+
+    // Started in first 3 months = full 10 points
+    // Started after month 9 = 0 points
+    const earlyStartScore = Math.max(0, Math.min(10, 10 - (monthsSinceStart / 9) * 10));
+
+    // TOTAL SCORE (out of 100)
+    const totalScore = Math.round(monthlyCoverageScore + distributionScore + earlyStartScore);
+
+    // RATING
+    let rating = 'Getting Started';
+    if (totalScore >= 90) rating = 'ISA Pro';
+    else if (totalScore >= 75) rating = 'Steady Investor';
+    else if (totalScore >= 60) rating = 'Building Habits';
+    else if (totalScore >= 40) rating = 'Making Progress';
+
+    return {
+      score: totalScore,
+      monthsCovered,
+      rating
+    };
+  };
+
+  const consistencyData = calculateConsistencyScore(currentYearContributions);
 
   // Calculate historical performance data
   const historicalPerformance = calculateHistoricalPerformance(contributions);
@@ -263,9 +342,17 @@ export default function AnalyticsScreen() {
 
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
-              <Ionicons name="shield-checkmark" size={24} color={Colors.gold} />
-              <Text style={styles.big}>{formatCurrency(taxSaved)}</Text>
-              <Text style={styles.sub}>Tax Saved</Text>
+              <Ionicons name="analytics" size={24} color={Colors.gold} />
+              <Text style={styles.big}>{consistencyData.score}%</Text>
+              <Text style={styles.sub}>Consistency Score</Text>
+              <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: 'rgba(255, 255, 255, 0.1)', width: '100%' }}>
+                <Text style={[styles.sub, { fontSize: 11, textAlign: 'center', color: Colors.gold }]}>
+                  {consistencyData.rating}
+                </Text>
+                <Text style={[styles.sub, { fontSize: 10, marginTop: 4, textAlign: 'center' }]}>
+                  {consistencyData.monthsCovered}/12 months
+                </Text>
+              </View>
             </GlassCard>
             <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
               <Ionicons name="flash" size={24} color={ISA_INFO.lifetime.color} />
