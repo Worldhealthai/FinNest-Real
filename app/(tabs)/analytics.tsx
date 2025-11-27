@@ -766,16 +766,6 @@ export default function AnalyticsScreen() {
             )}
           </GlassCard>
 
-          <GlassCard style={styles.card} intensity="dark">
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Ionicons name="trophy" size={24} color={Colors.gold} />
-              <Text style={[styles.name, { marginLeft: 12 }]}>On Track!</Text>
-            </View>
-            <Text style={[styles.sub, { marginTop: 8, lineHeight: 20 }]}>
-              You're using your ISA allowance more efficiently than 78% of UK savers. Keep it up!
-            </Text>
-          </GlassCard>
-
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
