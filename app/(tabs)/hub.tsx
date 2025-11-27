@@ -144,6 +144,240 @@ export default function HubScreen() {
             </View>
           </View>
 
+          {/* ISA Master Level Section */}
+          <Text style={styles.section}>ISA Master Level</Text>
+
+          <View style={styles.card}>
+            {/* Current Level Display */}
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <Text style={{ fontSize: 64, marginBottom: 8 }}>🌱</Text>
+              <Text style={{ fontSize: Typography.sizes.xxl, color: '#90EE90', fontWeight: Typography.weights.extrabold }}>
+                Level 1: Seedling
+              </Text>
+              <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, marginTop: 4 }}>
+                Your ISA journey begins
+              </Text>
+            </View>
+
+            {/* Progress to Next Level */}
+            <View style={{ marginBottom: 20 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray }}>
+                  Progress to Sprout 🌿
+                </Text>
+                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.gold, fontWeight: Typography.weights.bold }}>
+                  0%
+                </Text>
+              </View>
+              <View style={{ height: 12, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
+                <LinearGradient
+                  colors={['#7FD87F', '#7FD87FAA']}
+                  style={{ width: '0%', height: '100%' }}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                />
+              </View>
+              <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 6 }}>
+                Start contributing to level up
+              </Text>
+            </View>
+
+            {/* All Levels Display */}
+            <View style={{ marginTop: 12 }}>
+              <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, marginBottom: 12, fontWeight: Typography.weights.semibold }}>
+                All Levels
+              </Text>
+
+              {/* Seedling - Level 1 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: '#90EE9020',
+                borderRadius: 12,
+                borderWidth: 2,
+                borderColor: '#90EE90'
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🌱</Text>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                      Seedling
+                    </Text>
+                    <View style={{ marginLeft: 8, backgroundColor: '#90EE90', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
+                      <Text style={{ fontSize: Typography.sizes.xs, color: Colors.deepNavy, fontWeight: Typography.weights.bold }}>
+                        CURRENT
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Your ISA journey begins • 0-15% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  1
+                </Text>
+              </View>
+
+              {/* Sprout - Level 2 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🌿</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    Sprout
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Growing your savings habit • 15-30% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  2
+                </Text>
+              </View>
+
+              {/* Sapling - Level 3 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🌳</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    Sapling
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Building consistent momentum • 30-50% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  3
+                </Text>
+              </View>
+
+              {/* Bronze Investor - Level 4 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🥉</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    Bronze Investor
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Halfway to ISA mastery • 50-65% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  4
+                </Text>
+              </View>
+
+              {/* Silver Champion - Level 5 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🥈</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    Silver Champion
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Excellence in saving • 65-80% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  5
+                </Text>
+              </View>
+
+              {/* Gold Pro - Level 6 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>🥇</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    Gold Pro
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Elite investor status • 80-90% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  6
+                </Text>
+              </View>
+
+              {/* ISA Master - Level 7 */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                opacity: 0.5
+              }}>
+                <Text style={{ fontSize: 32, marginRight: 12 }}>👑</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                    ISA Master
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                    Legendary dedication • 90-100% score
+                  </Text>
+                </View>
+                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                  7
+                </Text>
+              </View>
+            </View>
+          </View>
+
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
