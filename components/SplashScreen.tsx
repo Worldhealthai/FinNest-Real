@@ -243,7 +243,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: height * 0.2,
   },
   gradient: {
     ...StyleSheet.absoluteFillObject,
