@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
     marginBottom: Spacing.md,
-    marginTop: -Spacing.xl,
+    marginTop: -60,
   },
   title: {
     fontSize: Typography.sizes.xxxl + 4,
