@@ -385,7 +385,10 @@ export default function AnalyticsScreen() {
             <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
               <Ionicons name="analytics" size={24} color={Colors.gold} />
               <Text style={styles.big}>{consistencyData.score}%</Text>
-              <Text style={styles.sub}>{consistencyData.rating}</Text>
+              <Text style={styles.sub}>Consistency Score</Text>
+              <View style={[styles.badge, { marginTop: 6 }]}>
+                <Text style={styles.badgeText}>{consistencyData.rating}</Text>
+              </View>
             </GlassCard>
           </View>
 
