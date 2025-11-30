@@ -37,107 +37,6 @@ const LEVELS = [
   { number: 7, name: 'ISA Master', emoji: '👑', color: '#FFD700', minScore: 90, maxScore: 100, description: 'Legendary dedication', reward: 'Master Crown', rewardIcon: 'diamond' },
 ];
 
-// Achievement configuration
-interface Achievement {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  color: string;
-  requirement: (contributions: ISAContribution[], score: number) => boolean;
-}
-
-const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 'first_contribution',
-    name: 'First Step',
-    description: 'Made your first ISA contribution',
-    icon: 'footsteps',
-    color: '#90EE90',
-    requirement: (contributions) => contributions.length > 0,
-  },
-  {
-    id: 'three_month_streak',
-    name: 'Streak Starter',
-    description: 'Contributed for 3 consecutive months',
-    icon: 'flame',
-    color: '#FF6B35',
-    requirement: (contributions) => {
-      const { score } = calculateConsistencyScore(contributions);
-      const monthlyHeatmap = getMonthlyHeatmap(contributions);
-      let maxStreak = 0;
-      let currentStreak = 0;
-      for (let i = 0; i < 12; i++) {
-        if (monthlyHeatmap[i]) {
-          currentStreak++;
-          maxStreak = Math.max(maxStreak, currentStreak);
-        } else {
-          currentStreak = 0;
-        }
-      }
-      return maxStreak >= 3;
-    },
-  },
-  {
-    id: 'six_months',
-    name: 'Half Year Hero',
-    description: 'Contributed in 6 different months',
-    icon: 'calendar',
-    color: '#4ECDC4',
-    requirement: (contributions) => {
-      const monthlyHeatmap = getMonthlyHeatmap(contributions);
-      return monthlyHeatmap.filter(Boolean).length >= 6;
-    },
-  },
-  {
-    id: 'perfect_year',
-    name: 'Perfect Attendance',
-    description: 'Contributed every month of the tax year',
-    icon: 'trophy',
-    color: Colors.gold,
-    requirement: (contributions) => {
-      const monthlyHeatmap = getMonthlyHeatmap(contributions);
-      return monthlyHeatmap.filter(Boolean).length === 12;
-    },
-  },
-  {
-    id: 'early_bird',
-    name: 'Early Bird',
-    description: 'Started contributing in first 3 months',
-    icon: 'sunrise',
-    color: '#FFA500',
-    requirement: (contributions) => {
-      const currentTaxYear = getCurrentTaxYear();
-      const yearContributions = contributions.filter(c =>
-        !c.deleted && isDateInTaxYear(new Date(c.date), currentTaxYear)
-      );
-      if (yearContributions.length === 0) return false;
-      const firstContribution = new Date(Math.min(...yearContributions.map(c => new Date(c.date).getTime())));
-      const monthsSinceStart = Math.max(0,
-        (firstContribution.getFullYear() - currentTaxYear.startDate.getFullYear()) * 12 +
-        (firstContribution.getMonth() - currentTaxYear.startDate.getMonth())
-      );
-      return monthsSinceStart <= 2;
-    },
-  },
-  {
-    id: 'reach_level_5',
-    name: 'Silver Status',
-    description: 'Reached Level 5 or higher',
-    icon: 'medal',
-    color: '#C0C0C0',
-    requirement: (contributions, score) => score >= 65,
-  },
-  {
-    id: 'isa_master',
-    name: 'Ultimate Master',
-    description: 'Reached the legendary ISA Master level',
-    icon: 'diamond',
-    color: '#FFD700',
-    requirement: (contributions, score) => score >= 90,
-  },
-];
-
 // Helper function to get monthly heatmap
 const getMonthlyHeatmap = (contributions: ISAContribution[]) => {
   const currentTaxYear = getCurrentTaxYear();
@@ -345,11 +244,6 @@ export default function HubScreen() {
       setPreviousLevel(currentLevel.number);
     }
   }, [currentLevel.number]);
-
-  // Calculate unlocked achievements
-  const unlockedAchievements = ACHIEVEMENTS.filter(achievement =>
-    achievement.requirement(currentYearContributions, score)
-  );
 
   return (
     <View style={styles.container}>
@@ -561,59 +455,6 @@ export default function HubScreen() {
                 </Text>
               </View>
             )}
-
-            {/* Achievements Section */}
-            <View style={{ marginTop: 12, marginBottom: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, fontWeight: Typography.weights.semibold }}>
-                  Achievements
-                </Text>
-                <Text style={{ fontSize: Typography.sizes.xs, color: Colors.gold, fontWeight: Typography.weights.bold }}>
-                  {unlockedAchievements.length}/{ACHIEVEMENTS.length}
-                </Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {ACHIEVEMENTS.map((achievement) => {
-                  const isUnlocked = unlockedAchievements.some(a => a.id === achievement.id);
-                  return (
-                    <View
-                      key={achievement.id}
-                      style={{
-                        width: '31%',
-                        aspectRatio: 1,
-                        backgroundColor: isUnlocked ? achievement.color + '20' : 'rgba(255, 255, 255, 0.05)',
-                        borderRadius: 12,
-                        padding: 8,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        borderWidth: 1,
-                        borderColor: isUnlocked ? achievement.color : 'rgba(255, 255, 255, 0.1)',
-                        opacity: isUnlocked ? 1 : 0.4,
-                      }}
-                    >
-                      <Ionicons
-                        name={achievement.icon as any}
-                        size={28}
-                        color={isUnlocked ? achievement.color : Colors.lightGray}
-                      />
-                      <Text
-                        style={{
-                          fontSize: Typography.sizes.xs,
-                          color: isUnlocked ? achievement.color : Colors.lightGray,
-                          fontWeight: Typography.weights.bold,
-                          marginTop: 4,
-                          textAlign: 'center',
-                        }}
-                        numberOfLines={2}
-                      >
-                        {achievement.name}
-                      </Text>
-                    </View>
-                  );
-                })}
-              </View>
-            </View>
 
             {/* All Levels Display */}
             <View style={{ marginTop: 12 }}>
