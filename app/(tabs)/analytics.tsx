@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -157,6 +157,7 @@ const calculateContributionTrend = (contributions: ISAContribution[]) => {
 
 export default function AnalyticsScreen() {
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Load saved ISA data on mount
   useEffect(() => {
@@ -328,15 +329,7 @@ export default function AnalyticsScreen() {
   };
 
   const showConsistencyInfo = () => {
-    Alert.alert(
-      'Consistency Score',
-      'Your score is based on how many different months you contribute in during the tax year.\n\n' +
-      '• Each unique month with a contribution counts\n' +
-      '• Multiple contributions in the same month = still counts as 1 month\n' +
-      '• To increase your score, contribute in different months\n\n' +
-      'Example: Contributing in 6 different months = 50% score',
-      [{ text: 'Got it', style: 'default' }]
-    );
+    setShowInfoModal(true);
   };
 
   return (
@@ -532,6 +525,67 @@ export default function AnalyticsScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Info Modal */}
+      <Modal
+        visible={showInfoModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowInfoModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowInfoModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <GlassCard style={styles.modalContent} intensity="dark">
+              <View style={styles.modalHeader}>
+                <Ionicons name="analytics" size={24} color={Colors.gold} />
+                <Text style={styles.modalTitle}>Consistency Score</Text>
+              </View>
+
+              <Text style={styles.modalText}>
+                Your score is based on how many different months you contribute in during the tax year.
+              </Text>
+
+              <View style={styles.modalBullets}>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>Each unique month with a contribution counts</Text>
+                </View>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>Multiple contributions in the same month = still counts as 1 month</Text>
+                </View>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>To increase your score, contribute in different months</Text>
+                </View>
+              </View>
+
+              <View style={styles.exampleBox}>
+                <Text style={styles.exampleText}>
+                  Example: Contributing in 6 different months = 50% score
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setShowInfoModal(false)}
+              >
+                <LinearGradient
+                  colors={Colors.goldGradient}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Text style={styles.buttonText}>Got it</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </GlassCard>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -560,4 +614,81 @@ const styles = StyleSheet.create({
   histval: { fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold, marginRight: 12 },
   badge: { backgroundColor: Colors.gold + '30', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
   badgeText: { fontSize: Typography.sizes.xs, color: Colors.gold, fontWeight: Typography.weights.bold },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    padding: Spacing.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  modalTitle: {
+    fontSize: Typography.sizes.xl,
+    color: Colors.white,
+    fontWeight: Typography.weights.bold,
+  },
+  modalText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.lightGray,
+    lineHeight: 22,
+    marginBottom: Spacing.md,
+  },
+  modalBullets: {
+    marginBottom: Spacing.md,
+  },
+  bulletRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.sm,
+  },
+  bullet: {
+    color: Colors.gold,
+    fontSize: Typography.sizes.md,
+    marginRight: Spacing.sm,
+    fontWeight: Typography.weights.bold,
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    lineHeight: 20,
+  },
+  exampleBox: {
+    backgroundColor: Colors.gold + '20',
+    padding: Spacing.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.gold + '40',
+    marginBottom: Spacing.md,
+  },
+  exampleText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.gold,
+    fontWeight: Typography.weights.semibold,
+    textAlign: 'center',
+  },
+  modalButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  buttonGradient: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.deepNavy,
+    fontWeight: Typography.weights.bold,
+  },
 });
