@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -327,6 +327,18 @@ export default function AnalyticsScreen() {
     }],
   };
 
+  const showConsistencyInfo = () => {
+    Alert.alert(
+      'Consistency Score',
+      'Your score is based on how many different months you contribute in during the tax year.\n\n' +
+      '• Each unique month with a contribution counts\n' +
+      '• Multiple contributions in the same month = still counts as 1 month\n' +
+      '• To increase your score, contribute in different months\n\n' +
+      'Example: Contributing in 6 different months = 50% score',
+      [{ text: 'Got it', style: 'default' }]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <AnimatedBackground />
@@ -383,7 +395,12 @@ export default function AnalyticsScreen() {
               <Text style={styles.sub}>Govt Bonus (LISA)</Text>
             </GlassCard>
             <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
-              <Ionicons name="analytics" size={24} color={Colors.gold} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Ionicons name="analytics" size={24} color={Colors.gold} />
+                <TouchableOpacity onPress={showConsistencyInfo} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                  <Ionicons name="information-circle-outline" size={20} color={Colors.lightGray} />
+                </TouchableOpacity>
+              </View>
               <Text style={styles.big}>{consistencyData.score}%</Text>
               <Text style={styles.sub}>
                 Consistency Score
