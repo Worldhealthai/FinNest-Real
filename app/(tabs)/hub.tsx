@@ -1,18 +1,254 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, Image, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Haptics from 'expo-haptics';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import ConfettiCelebration from '@/components/ConfettiCelebration';
+import GlassCard from '@/components/GlassCard';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { ISA_INFO, ISA_ANNUAL_ALLOWANCE, LIFETIME_ISA_MAX, EDUCATIONAL_CONTENT, formatCurrency } from '@/constants/isaData';
+import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
+
+const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
+const LEVEL_STORAGE_KEY = '@finnest_user_level';
+
+interface ISAContribution {
+  id: string;
+  isaType: string;
+  provider: string;
+  amount: number;
+  date: string;
+  deleted?: boolean;
+  deletedDate?: string;
+}
+
+// Level configuration with unlockable rewards
+const LEVELS = [
+  { number: 1, name: 'Seedling', emoji: '🌱', color: '#90EE90', minScore: 0, maxScore: 15, description: 'Your ISA journey begins', reward: 'Welcome Badge', rewardIcon: 'ribbon' },
+  { number: 2, name: 'Sprout', emoji: '🌿', color: '#7FD87F', minScore: 15, maxScore: 30, description: 'Growing your savings habit', reward: 'Consistent Saver Badge', rewardIcon: 'leaf' },
+  { number: 3, name: 'Sapling', emoji: '🌳', color: '#6BC76B', minScore: 30, maxScore: 50, description: 'Building consistent momentum', reward: 'Momentum Builder Badge', rewardIcon: 'trending-up' },
+  { number: 4, name: 'Bronze Investor', emoji: '🥉', color: '#CD7F32', minScore: 50, maxScore: 65, description: 'Halfway to ISA mastery', reward: 'Bronze Achievement', rewardIcon: 'medal' },
+  { number: 5, name: 'Silver Champion', emoji: '🥈', color: '#C0C0C0', minScore: 65, maxScore: 80, description: 'Excellence in saving', reward: 'Silver Achievement', rewardIcon: 'trophy' },
+  { number: 6, name: 'Gold Pro', emoji: '🥇', color: Colors.gold, minScore: 80, maxScore: 90, description: 'Elite investor status', reward: 'Gold Achievement', rewardIcon: 'star' },
+  { number: 7, name: 'ISA Master', emoji: '👑', color: '#FFD700', minScore: 90, maxScore: 100, description: 'Legendary dedication', reward: 'Master Crown', rewardIcon: 'diamond' },
+];
+
+// Helper function to get monthly heatmap
+const getMonthlyHeatmap = (contributions: ISAContribution[]) => {
+  const currentTaxYear = getCurrentTaxYear();
+  const yearContributions = contributions.filter(c =>
+    !c.deleted && isDateInTaxYear(new Date(c.date), currentTaxYear)
+  );
+
+  if (yearContributions.length === 0) {
+    return Array(12).fill(false);
+  }
+
+  const monthsWithContributions = new Set(
+    yearContributions.map(c => new Date(c.date).getMonth())
+  );
+
+  const taxYearStart = currentTaxYear.startDate.getMonth();
+  const monthlyHeatmap = Array(12).fill(false);
+  monthsWithContributions.forEach(month => {
+    const taxYearMonth = (month - taxYearStart + 12) % 12;
+    monthlyHeatmap[taxYearMonth] = true;
+  });
+
+  return monthlyHeatmap;
+};
+
+// Calculate Consistency Score - Simple & Transparent
+const calculateConsistencyScore = (contributions: ISAContribution[]) => {
+  if (contributions.length === 0) {
+    return { score: 0 };
+  }
+
+  const currentTaxYear = getCurrentTaxYear();
+
+  // Get contributions for current tax year only
+  const yearContributions = contributions.filter(c =>
+    !c.deleted && isDateInTaxYear(new Date(c.date), currentTaxYear)
+  );
+
+  if (yearContributions.length === 0) {
+    return { score: 0 };
+  }
+
+  // BASE SCORE: Simple monthly coverage (0-100%)
+  const monthsWithContributions = new Set(
+    yearContributions.map(c => {
+      const date = new Date(c.date);
+      return date.getMonth(); // 0-11 for Jan-Dec
+    })
+  );
+  const monthsCovered = monthsWithContributions.size;
+  const baseScore = Math.round((monthsCovered / 12) * 100);
+
+  // Create monthly heatmap (April = index 0, March = index 11)
+  const taxYearStart = currentTaxYear.startDate.getMonth(); // April = 3
+  const monthlyHeatmap = Array(12).fill(false);
+  monthsWithContributions.forEach(month => {
+    // Convert calendar month to tax year month (April = 0, May = 1, etc.)
+    const taxYearMonth = (month - taxYearStart + 12) % 12;
+    monthlyHeatmap[taxYearMonth] = true;
+  });
+
+  // BONUSES (transparent and visible)
+  const bonuses: Array<{ name: string; value: number; earned: boolean }> = [];
+
+  // 1. EARLY BIRD BONUS (+10%)
+  const firstContribution = new Date(Math.min(...yearContributions.map(c => new Date(c.date).getTime())));
+  const monthsSinceStart = Math.max(0,
+    (firstContribution.getFullYear() - currentTaxYear.startDate.getFullYear()) * 12 +
+    (firstContribution.getMonth() - currentTaxYear.startDate.getMonth())
+  );
+  const earnedEarlyBird = monthsSinceStart <= 2; // First 3 months (Apr, May, Jun)
+  bonuses.push({
+    name: 'Early Bird',
+    value: 10,
+    earned: earnedEarlyBird
+  });
+
+  // 2. ACTIVE STREAK BONUS (+10%)
+  // Check for 3+ consecutive months
+  let maxStreak = 0;
+  let currentStreak = 0;
+  for (let i = 0; i < 12; i++) {
+    if (monthlyHeatmap[i]) {
+      currentStreak++;
+      maxStreak = Math.max(maxStreak, currentStreak);
+    } else {
+      currentStreak = 0;
+    }
+  }
+  const earnedStreak = maxStreak >= 3;
+  bonuses.push({
+    name: 'Active Streak',
+    value: 10,
+    earned: earnedStreak
+  });
+
+  // 3. FREQUENT SAVER BONUS (+5%)
+  const earnedFrequent = monthsCovered >= 6;
+  bonuses.push({
+    name: 'Frequent Saver',
+    value: 5,
+    earned: earnedFrequent
+  });
+
+  // TOTAL SCORE (base + earned bonuses, capped at 100%)
+  const bonusPoints = bonuses.filter(b => b.earned).reduce((sum, b) => sum + b.value, 0);
+  const totalScore = Math.min(100, baseScore + bonusPoints);
+
+  return { score: totalScore };
+};
+
+// Get current level based on score
+const getCurrentLevel = (score: number) => {
+  return LEVELS.find(level => score >= level.minScore && score < level.maxScore) || LEVELS[0];
+};
+
+// Get next level
+const getNextLevel = (currentLevelNumber: number) => {
+  return LEVELS.find(level => level.number === currentLevelNumber + 1) || null;
+};
 
 export default function HubScreen() {
   const [expandedISA, setExpandedISA] = useState<string | null>(null);
+  const [contributions, setContributions] = useState<ISAContribution[]>([]);
+  const [previousLevel, setPreviousLevel] = useState<number | null>(null);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [newlyUnlockedLevel, setNewlyUnlockedLevel] = useState<typeof LEVELS[0] | null>(null);
+
+  // Load saved ISA data and previous level
+  const loadISAData = async () => {
+    try {
+      const savedData = await AsyncStorage.getItem(CONTRIBUTIONS_STORAGE_KEY);
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        setContributions(parsed);
+      }
+
+      const savedLevel = await AsyncStorage.getItem(LEVEL_STORAGE_KEY);
+      if (savedLevel) {
+        setPreviousLevel(parseInt(savedLevel, 10));
+      }
+    } catch (error) {
+      console.error('Error loading contributions:', error);
+    }
+  };
+
+  // Save current level
+  const saveCurrentLevel = async (level: number) => {
+    try {
+      await AsyncStorage.setItem(LEVEL_STORAGE_KEY, level.toString());
+    } catch (error) {
+      console.error('Error saving level:', error);
+    }
+  };
+
+  // Load on mount
+  useEffect(() => {
+    loadISAData();
+  }, []);
+
+  // Reload whenever the hub tab is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadISAData();
+    }, [])
+  );
+
+  // Filter contributions by current tax year
+  const currentTaxYear = getCurrentTaxYear();
+  const currentYearContributions = contributions.filter(contribution =>
+    isDateInTaxYear(new Date(contribution.date), currentTaxYear)
+  );
+
+  // Calculate consistency score and level
+  const { score } = calculateConsistencyScore(currentYearContributions);
+  const currentLevel = getCurrentLevel(score);
+  const nextLevel = getNextLevel(currentLevel.number);
+
+  // Calculate progress to next level
+  const progressToNext = nextLevel
+    ? ((score - currentLevel.minScore) / (nextLevel.minScore - currentLevel.minScore)) * 100
+    : 100;
+
+  // Calculate months needed for next level
+  const monthsNeeded = nextLevel
+    ? Math.ceil((nextLevel.minScore - score) / (100 / 12))
+    : 0;
+
+  // Check for level up
+  useEffect(() => {
+    if (previousLevel !== null && currentLevel.number > previousLevel) {
+      // Level up detected!
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setNewlyUnlockedLevel(currentLevel);
+      setShowConfetti(true);
+      setShowLevelUpModal(true);
+
+      // Hide confetti after 3.5 seconds
+      setTimeout(() => setShowConfetti(false), 3500);
+    }
+
+    if (currentLevel.number !== previousLevel) {
+      saveCurrentLevel(currentLevel.number);
+      setPreviousLevel(currentLevel.number);
+    }
+  }, [currentLevel.number]);
 
   return (
     <View style={styles.container}>
       <AnimatedBackground />
+      <ConfettiCelebration show={showConfetti} />
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
@@ -150,37 +386,75 @@ export default function HubScreen() {
           <View style={styles.card}>
             {/* Current Level Display */}
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ fontSize: 64, marginBottom: 8 }}>🌱</Text>
-              <Text style={{ fontSize: Typography.sizes.xxl, color: '#90EE90', fontWeight: Typography.weights.extrabold }}>
-                Level 1: Seedling
+              <Text style={{ fontSize: 64, marginBottom: 8 }}>{currentLevel.emoji}</Text>
+              <Text style={{ fontSize: Typography.sizes.xxl, color: currentLevel.color, fontWeight: Typography.weights.extrabold }}>
+                Level {currentLevel.number}: {currentLevel.name}
               </Text>
               <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, marginTop: 4 }}>
-                Your ISA journey begins
+                {currentLevel.description}
               </Text>
+
+              {/* Unlocked Reward */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12, backgroundColor: currentLevel.color + '20', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 }}>
+                <Ionicons name={currentLevel.rewardIcon as any} size={16} color={currentLevel.color} />
+                <Text style={{ fontSize: Typography.sizes.xs, color: currentLevel.color, marginLeft: 6, fontWeight: Typography.weights.bold }}>
+                  {currentLevel.reward} Unlocked
+                </Text>
+              </View>
             </View>
 
+            {/* Motivational Progress Nudge */}
+            {nextLevel && monthsNeeded > 0 && (
+              <View style={{ backgroundColor: 'rgba(255, 215, 0, 0.1)', padding: 12, borderRadius: 12, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255, 215, 0, 0.3)' }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="sparkles" size={20} color={Colors.gold} />
+                  <Text style={{ fontSize: Typography.sizes.sm, color: Colors.gold, marginLeft: 8, fontWeight: Typography.weights.bold, flex: 1 }}>
+                    {monthsNeeded === 1
+                      ? "🎯 Just 1 more month to level up!"
+                      : `🚀 Contribute in ${monthsNeeded} more months to reach ${nextLevel.name}!`}
+                  </Text>
+                </View>
+              </View>
+            )}
+
             {/* Progress to Next Level */}
-            <View style={{ marginBottom: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray }}>
-                  Progress to Sprout 🌿
+            {nextLevel ? (
+              <View style={{ marginBottom: 20 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray }}>
+                    Progress to {nextLevel.name} {nextLevel.emoji}
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.sm, color: Colors.gold, fontWeight: Typography.weights.bold }}>
+                    {Math.round(progressToNext)}%
+                  </Text>
+                </View>
+                <View style={{ height: 12, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
+                  <LinearGradient
+                    colors={[currentLevel.color, nextLevel.color]}
+                    style={{ width: `${Math.min(100, progressToNext)}%`, height: '100%' }}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                  />
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 }}>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray }}>
+                    {score}% Consistency Score
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray }}>
+                    {nextLevel.minScore}% needed
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View style={{ marginBottom: 20, alignItems: 'center' }}>
+                <Text style={{ fontSize: Typography.sizes.md, color: Colors.gold, fontWeight: Typography.weights.bold }}>
+                  🎉 Maximum Level Achieved! 🎉
                 </Text>
-                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.gold, fontWeight: Typography.weights.bold }}>
-                  0%
+                <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, marginTop: 4 }}>
+                  You've reached ISA Master status!
                 </Text>
               </View>
-              <View style={{ height: 12, backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: 6, overflow: 'hidden' }}>
-                <LinearGradient
-                  colors={['#7FD87F', '#7FD87FAA']}
-                  style={{ width: '0%', height: '100%' }}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                />
-              </View>
-              <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 6 }}>
-                Start contributing to level up
-              </Text>
-            </View>
+            )}
 
             {/* All Levels Display */}
             <View style={{ marginTop: 12 }}>
@@ -188,199 +462,134 @@ export default function HubScreen() {
                 All Levels
               </Text>
 
-              {/* Seedling - Level 1 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: '#90EE9020',
-                borderRadius: 12,
-                borderWidth: 2,
-                borderColor: '#90EE90'
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🌱</Text>
-                <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                      Seedling
-                    </Text>
-                    <View style={{ marginLeft: 8, backgroundColor: '#90EE90', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
-                      <Text style={{ fontSize: Typography.sizes.xs, color: Colors.deepNavy, fontWeight: Typography.weights.bold }}>
-                        CURRENT
+              {LEVELS.map((level) => {
+                const isCurrent = level.number === currentLevel.number;
+                const isUnlocked = score >= level.minScore;
+
+                return (
+                  <View
+                    key={level.number}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: 12,
+                      marginBottom: 8,
+                      backgroundColor: isCurrent ? level.color + '20' : 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: 12,
+                      borderWidth: isCurrent ? 2 : 1,
+                      borderColor: isCurrent ? level.color : 'rgba(255, 255, 255, 0.1)',
+                      opacity: isUnlocked ? 1 : 0.5,
+                    }}
+                  >
+                    <Text style={{ fontSize: 32, marginRight: 12 }}>{level.emoji}</Text>
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
+                          {level.name}
+                        </Text>
+                        {isCurrent && (
+                          <View style={{ marginLeft: 8, backgroundColor: level.color, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
+                            <Text style={{ fontSize: Typography.sizes.xs, color: Colors.deepNavy, fontWeight: Typography.weights.bold }}>
+                              CURRENT
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
+                        {level.description} • {level.minScore}-{level.maxScore}% score
                       </Text>
                     </View>
+                    <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
+                      {level.number}
+                    </Text>
                   </View>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Your ISA journey begins • 0-15% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  1
-                </Text>
-              </View>
-
-              {/* Sprout - Level 2 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🌿</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    Sprout
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Growing your savings habit • 15-30% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  2
-                </Text>
-              </View>
-
-              {/* Sapling - Level 3 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🌳</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    Sapling
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Building consistent momentum • 30-50% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  3
-                </Text>
-              </View>
-
-              {/* Bronze Investor - Level 4 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🥉</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    Bronze Investor
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Halfway to ISA mastery • 50-65% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  4
-                </Text>
-              </View>
-
-              {/* Silver Champion - Level 5 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🥈</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    Silver Champion
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Excellence in saving • 65-80% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  5
-                </Text>
-              </View>
-
-              {/* Gold Pro - Level 6 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>🥇</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    Gold Pro
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Elite investor status • 80-90% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  6
-                </Text>
-              </View>
-
-              {/* ISA Master - Level 7 */}
-              <View style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: 12,
-                marginBottom: 8,
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                opacity: 0.5
-              }}>
-                <Text style={{ fontSize: 32, marginRight: 12 }}>👑</Text>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold }}>
-                    ISA Master
-                  </Text>
-                  <Text style={{ fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 }}>
-                    Legendary dedication • 90-100% score
-                  </Text>
-                </View>
-                <Text style={{ fontSize: Typography.sizes.lg, color: Colors.lightGray, fontWeight: Typography.weights.bold }}>
-                  7
-                </Text>
-              </View>
+                );
+              })}
             </View>
           </View>
 
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Level Up Celebration Modal */}
+      <Modal
+        visible={showLevelUpModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLevelUpModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowLevelUpModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <GlassCard style={styles.levelUpModal} intensity="dark">
+              {newlyUnlockedLevel && (
+                <>
+                  <Text style={{ fontSize: 72, textAlign: 'center', marginBottom: 16 }}>
+                    {newlyUnlockedLevel.emoji}
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xxxl, color: newlyUnlockedLevel.color, fontWeight: Typography.weights.extrabold, textAlign: 'center' }}>
+                    LEVEL UP!
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.xl, color: Colors.white, fontWeight: Typography.weights.bold, textAlign: 'center', marginTop: 12 }}>
+                    Level {newlyUnlockedLevel.number}: {newlyUnlockedLevel.name}
+                  </Text>
+                  <Text style={{ fontSize: Typography.sizes.md, color: Colors.lightGray, textAlign: 'center', marginTop: 8 }}>
+                    {newlyUnlockedLevel.description}
+                  </Text>
+
+                  {/* Reward Unlocked */}
+                  <View style={{ marginTop: 24, backgroundColor: newlyUnlockedLevel.color + '20', padding: 16, borderRadius: 16, borderWidth: 2, borderColor: newlyUnlockedLevel.color }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
+                      <Ionicons name="gift" size={24} color={newlyUnlockedLevel.color} />
+                      <Text style={{ fontSize: Typography.sizes.lg, color: newlyUnlockedLevel.color, fontWeight: Typography.weights.bold, marginLeft: 8 }}>
+                        Reward Unlocked!
+                      </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                      <Ionicons name={newlyUnlockedLevel.rewardIcon as any} size={20} color={newlyUnlockedLevel.color} />
+                      <Text style={{ fontSize: Typography.sizes.md, color: Colors.white, marginLeft: 8, fontWeight: Typography.weights.semibold }}>
+                        {newlyUnlockedLevel.reward}
+                      </Text>
+                    </View>
+                  </View>
+
+                  {/* Next Goal */}
+                  {getNextLevel(newlyUnlockedLevel.number) && (
+                    <View style={{ marginTop: 20, padding: 12, backgroundColor: 'rgba(255, 255, 255, 0.05)', borderRadius: 12 }}>
+                      <Text style={{ fontSize: Typography.sizes.sm, color: Colors.lightGray, textAlign: 'center' }}>
+                        Next: {getNextLevel(newlyUnlockedLevel.number)?.name} {getNextLevel(newlyUnlockedLevel.number)?.emoji}
+                      </Text>
+                    </View>
+                  )}
+
+                  <Pressable
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setShowLevelUpModal(false);
+                    }}
+                    style={({ pressed }) => [
+                      {
+                        marginTop: 24,
+                        backgroundColor: newlyUnlockedLevel.color,
+                        paddingVertical: 14,
+                        borderRadius: 12,
+                        opacity: pressed ? 0.8 : 1,
+                      },
+                    ]}
+                  >
+                    <Text style={{ fontSize: Typography.sizes.md, color: Colors.deepNavy, fontWeight: Typography.weights.bold, textAlign: 'center' }}>
+                      Awesome!
+                    </Text>
+                  </Pressable>
+                </>
+              )}
+            </GlassCard>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -415,86 +624,16 @@ const styles = StyleSheet.create({
   eduTitle: { fontSize: Typography.sizes.md, color: Colors.gold, fontWeight: Typography.weights.bold },
   badge: { alignSelf: 'flex-start', backgroundColor: Colors.gold + '30', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, marginTop: 8 },
   badgeText: { fontSize: Typography.sizes.xs, color: Colors.gold, fontWeight: Typography.weights.bold },
-
-  // Gamification styles
-  levelCard: {
-    marginBottom: Spacing.md,
-    padding: 0,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  levelGradient: { padding: Spacing.lg },
-  levelHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.md },
-  levelBadge: { width: 70, height: 70, borderRadius: 35, backgroundColor: Colors.white, alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md, position: 'relative' },
-  levelNumber: { position: 'absolute', fontSize: Typography.sizes.xl, color: Colors.deepNavy, fontWeight: Typography.weights.extrabold, bottom: 4 },
-  levelInfo: { flex: 1 },
-  levelTitle: { fontSize: Typography.sizes.lg, color: Colors.white, fontWeight: Typography.weights.extrabold },
-  levelSubtitle: { fontSize: Typography.sizes.sm, color: Colors.white, opacity: 0.9, marginTop: 2 },
-  xpBar: { marginBottom: Spacing.sm },
-  xpBarBg: { height: 12, backgroundColor: 'rgba(255, 255, 255, 0.3)', borderRadius: 6, overflow: 'hidden', marginBottom: Spacing.xs },
-  xpBarFill: { height: '100%', borderRadius: 6 },
-  xpText: { fontSize: Typography.sizes.sm, color: Colors.white, fontWeight: Typography.weights.bold, textAlign: 'center' },
-  xpInfo: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
-  xpInfoText: { fontSize: Typography.sizes.xs, color: Colors.deepNavy, fontWeight: Typography.weights.semibold },
-
-  streakCard: {
-    marginBottom: Spacing.md,
-    padding: Spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  streakHeader: { flexDirection: 'row', alignItems: 'center' },
-  streakIconWrapper: { marginRight: Spacing.md },
-  streakIconGradient: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  streakTitle: { fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.bold },
-  streakSubtitle: { fontSize: Typography.sizes.xs, color: Colors.lightGray, marginTop: 2 },
-  streakStats: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: Colors.glassLight },
-  streakStat: { alignItems: 'center', gap: 4 },
-  streakNumber: { fontSize: Typography.sizes.xl, color: Colors.gold, fontWeight: Typography.weights.extrabold },
-  streakLabel: { fontSize: Typography.sizes.xs, color: Colors.lightGray },
-  streakDivider: { width: 1, backgroundColor: Colors.glassLight },
-
-  taskCard: {
-    marginBottom: Spacing.sm,
-    padding: Spacing.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  taskRow: { flexDirection: 'row', alignItems: 'center' },
-  taskIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginRight: Spacing.md },
-  taskTitle: { fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold },
-  taskXP: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  taskXPText: { fontSize: Typography.sizes.xs, color: Colors.gold, fontWeight: Typography.weights.bold },
-  completedBadge: { backgroundColor: Colors.success + '30', paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: 12 },
-  completedText: { fontSize: Typography.sizes.xs, color: Colors.success, fontWeight: Typography.weights.bold },
-
-  achievementGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginBottom: Spacing.md },
-  achievementWrapper: { width: '48%' },
-  achievementCard: {
-    padding: Spacing.md,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: BorderRadius.xl,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    padding: Spacing.lg,
   },
-  achievementCardLocked: {
-    opacity: 0.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+  levelUpModal: {
+    width: '100%',
+    maxWidth: 400,
+    padding: Spacing.xl,
   },
-  achievementIcon: { width: 60, height: 60, borderRadius: 30, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
-  achievementTitle: { fontSize: Typography.sizes.sm, color: Colors.white, fontWeight: Typography.weights.bold, textAlign: 'center', marginBottom: 4 },
-  achievementTitleLocked: { color: Colors.mediumGray },
-  achievementDesc: { fontSize: Typography.sizes.xs, color: Colors.lightGray, textAlign: 'center', lineHeight: 16 },
-  achievementDescLocked: { color: Colors.mediumGray },
-  unlockedBadge: { position: 'absolute', top: Spacing.xs, right: Spacing.xs, width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.success, alignItems: 'center', justifyContent: 'center' },
 });

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -157,6 +157,7 @@ const calculateContributionTrend = (contributions: ISAContribution[]) => {
 
 export default function AnalyticsScreen() {
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Load saved ISA data on mount
   useEffect(() => {
@@ -205,7 +206,7 @@ export default function AnalyticsScreen() {
         baseScore: 0,
         monthsCovered: 0,
         bonuses: [],
-        rating: 'Not Started',
+        rating: '',
         monthlyHeatmap: Array(12).fill(false)
       };
     }
@@ -223,7 +224,7 @@ export default function AnalyticsScreen() {
         baseScore: 0,
         monthsCovered: 0,
         bonuses: [],
-        rating: 'Not Started',
+        rating: '',
         monthlyHeatmap: Array(12).fill(false)
       };
     }
@@ -327,6 +328,10 @@ export default function AnalyticsScreen() {
     }],
   };
 
+  const showConsistencyInfo = () => {
+    setShowInfoModal(true);
+  };
+
   return (
     <View style={styles.container}>
       <AnimatedBackground />
@@ -361,6 +366,7 @@ export default function AnalyticsScreen() {
 
           <Text style={styles.section}>Year Overview</Text>
 
+          {/* Row 1: Total Saved and Remaining */}
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
               <Ionicons name="trending-up" size={24} color={Colors.success} />
@@ -374,75 +380,29 @@ export default function AnalyticsScreen() {
             </GlassCard>
           </View>
 
-          {/* Consistency Score Card - Full Width */}
-          <GlassCard style={styles.card} intensity="medium">
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="analytics" size={24} color={Colors.gold} style={{ marginRight: 8 }} />
-                <Text style={styles.name}>Consistency Score</Text>
+          {/* Row 2: Government Bonus and Consistency Score */}
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
+              <Ionicons name="flash" size={24} color={ISA_INFO.lifetime.color} />
+              <Text style={styles.big}>{formatCurrency(lifetimeBonus)}</Text>
+              <Text style={styles.sub}>Govt Bonus (LISA)</Text>
+            </GlassCard>
+            <GlassCard style={[styles.card, { flex: 1 }]} intensity="medium">
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <Ionicons name="analytics" size={24} color={Colors.gold} />
+                <TouchableOpacity onPress={showConsistencyInfo} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                  <Ionicons name="information-circle-outline" size={20} color={Colors.lightGray} />
+                </TouchableOpacity>
               </View>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={[styles.big, { fontSize: Typography.sizes.xxxl, marginBottom: 0 }]}>{consistencyData.score}%</Text>
-                <Text style={[styles.sub, { fontSize: 11, color: Colors.gold, marginTop: 2 }]}>
-                  {consistencyData.rating}
-                </Text>
-              </View>
-            </View>
-
-            {/* Base Score + Bonuses */}
-            <View style={{ marginBottom: 12 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <Text style={[styles.sub, { fontSize: 12 }]}>Base: {consistencyData.monthsCovered}/12 months</Text>
-                <Text style={[styles.val, { fontSize: 14, color: Colors.gold }]}>{consistencyData.baseScore}%</Text>
-              </View>
-
-              {/* Bonuses */}
-              {consistencyData.bonuses.map((bonus: any, index: number) => (
-                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4, opacity: bonus.earned ? 1 : 0.4 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name={bonus.earned ? "checkmark-circle" : "close-circle"}
-                      size={16}
-                      color={bonus.earned ? Colors.success : Colors.mediumGray}
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text style={[styles.sub, { fontSize: 11 }]}>
-                      {bonus.name} {!bonus.earned && '(locked)'}
-                    </Text>
-                  </View>
-                  <Text style={[styles.sub, { fontSize: 11, color: bonus.earned ? Colors.success : Colors.mediumGray }]}>
-                    +{bonus.value}%
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Monthly Heatmap */}
-            <View>
-              <Text style={[styles.sub, { fontSize: 10, marginBottom: 6, opacity: 0.7 }]}>Monthly Activity</Text>
-              <View style={{ flexDirection: 'row', gap: 4 }}>
-                {['A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D', 'J', 'F', 'M'].map((month, index) => (
-                  <View key={index} style={{ flex: 1, alignItems: 'center' }}>
-                    <View style={{
-                      width: '100%',
-                      aspectRatio: 1,
-                      backgroundColor: consistencyData.monthlyHeatmap[index] ? Colors.gold : 'rgba(255, 255, 255, 0.1)',
-                      borderRadius: 4,
-                      marginBottom: 2
-                    }} />
-                    <Text style={{ fontSize: 8, color: Colors.lightGray }}>{month}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </GlassCard>
-
-          {/* Gov Bonus Card */}
-          <GlassCard style={styles.card} intensity="medium">
-            <Ionicons name="flash" size={24} color={ISA_INFO.lifetime.color} />
-            <Text style={styles.big}>{formatCurrency(lifetimeBonus)}</Text>
-            <Text style={styles.sub}>Government Bonus (LISA)</Text>
-          </GlassCard>
+              <Text style={styles.big}>{consistencyData.score}%</Text>
+              <Text style={styles.sub}>
+                Consistency Score
+                {consistencyData.score > 0 && (
+                  <Text style={{ color: Colors.gold, fontWeight: Typography.weights.semibold }}> • {consistencyData.rating}</Text>
+                )}
+              </Text>
+            </GlassCard>
+          </View>
 
           <Text style={styles.section}>ISA Breakdown</Text>
 
@@ -565,6 +525,67 @@ export default function AnalyticsScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Info Modal */}
+      <Modal
+        visible={showInfoModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowInfoModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowInfoModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <GlassCard style={styles.modalContent} intensity="dark">
+              <View style={styles.modalHeader}>
+                <Ionicons name="analytics" size={24} color={Colors.gold} />
+                <Text style={styles.modalTitle}>Consistency Score</Text>
+              </View>
+
+              <Text style={styles.modalText}>
+                Your score is based on how many different months you contribute in during the tax year.
+              </Text>
+
+              <View style={styles.modalBullets}>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>Each unique month with a contribution counts</Text>
+                </View>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>Multiple contributions in the same month = still counts as 1 month</Text>
+                </View>
+                <View style={styles.bulletRow}>
+                  <Text style={styles.bullet}>•</Text>
+                  <Text style={styles.bulletText}>To increase your score, contribute in different months</Text>
+                </View>
+              </View>
+
+              <View style={styles.exampleBox}>
+                <Text style={styles.exampleText}>
+                  Example: Contributing in 6 different months = 50% score
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setShowInfoModal(false)}
+              >
+                <LinearGradient
+                  colors={Colors.goldGradient}
+                  style={styles.buttonGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Text style={styles.buttonText}>Got it</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </GlassCard>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -593,4 +614,81 @@ const styles = StyleSheet.create({
   histval: { fontSize: Typography.sizes.md, color: Colors.white, fontWeight: Typography.weights.semibold, marginRight: 12 },
   badge: { backgroundColor: Colors.gold + '30', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
   badgeText: { fontSize: Typography.sizes.xs, color: Colors.gold, fontWeight: Typography.weights.bold },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    padding: Spacing.lg,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  modalTitle: {
+    fontSize: Typography.sizes.xl,
+    color: Colors.white,
+    fontWeight: Typography.weights.bold,
+  },
+  modalText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.lightGray,
+    lineHeight: 22,
+    marginBottom: Spacing.md,
+  },
+  modalBullets: {
+    marginBottom: Spacing.md,
+  },
+  bulletRow: {
+    flexDirection: 'row',
+    marginBottom: Spacing.sm,
+  },
+  bullet: {
+    color: Colors.gold,
+    fontSize: Typography.sizes.md,
+    marginRight: Spacing.sm,
+    fontWeight: Typography.weights.bold,
+  },
+  bulletText: {
+    flex: 1,
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    lineHeight: 20,
+  },
+  exampleBox: {
+    backgroundColor: Colors.gold + '20',
+    padding: Spacing.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.gold + '40',
+    marginBottom: Spacing.md,
+  },
+  exampleText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.gold,
+    fontWeight: Typography.weights.semibold,
+    textAlign: 'center',
+  },
+  modalButton: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  buttonGradient: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.deepNavy,
+    fontWeight: Typography.weights.bold,
+  },
 });
