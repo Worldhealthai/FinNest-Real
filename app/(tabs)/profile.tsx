@@ -460,7 +460,6 @@ const styles = StyleSheet.create({
   profileCard: {
     padding: Spacing.xl,
     marginBottom: Spacing.xl,
-    transform: [{ rotate: '-1deg' }],
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -598,7 +597,6 @@ const styles = StyleSheet.create({
   logoutCard: {
     marginBottom: Spacing.lg,
     padding: Spacing.lg,
-    transform: [{ rotate: '1deg' }],
     shadowColor: Colors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
