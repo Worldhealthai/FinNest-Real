@@ -79,6 +79,7 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.overlay}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
         <View style={styles.container}>
           <GlassCard style={styles.card} intensity="dark">
@@ -93,7 +94,11 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
               </TouchableOpacity>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollContent}
+            >
               <Text style={styles.subtitle}>
                 Have a question or need help? Send us a message and we'll get back to you within 24 hours.
               </Text>
@@ -206,6 +211,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     padding: Spacing.xl,
   },
+  scrollContent: {
+    paddingBottom: Spacing.xxl,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -250,8 +258,10 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   messageInput: {
-    height: 120,
+    minHeight: 120,
+    maxHeight: 180,
     paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
   },
   submitButton: {
     backgroundColor: Colors.success,
