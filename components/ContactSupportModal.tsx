@@ -210,9 +210,11 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     padding: Spacing.xl,
+    overflow: 'visible',
   },
   scrollContent: {
     paddingBottom: Spacing.xxl,
+    paddingHorizontal: 2,
   },
   header: {
     flexDirection: 'row',
@@ -241,6 +243,7 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: Spacing.lg,
+    paddingHorizontal: 2,
   },
   label: {
     fontSize: Typography.sizes.sm,
@@ -250,12 +253,13 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.15)',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     fontSize: Typography.sizes.md,
     color: Colors.white,
+    outlineStyle: 'none',
   },
   messageInput: {
     minHeight: 120,
