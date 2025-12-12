@@ -38,7 +38,7 @@ const EXPERIENCE_OPTIONS = [
     value: 'experienced' as ISAExperience,
     icon: 'school',
     title: 'Experienced',
-    description: 'I'm familiar with ISAs and their benefits',
+    description: "I'm familiar with ISAs and their benefits",
   },
 ];
 
