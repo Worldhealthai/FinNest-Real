@@ -106,7 +106,7 @@ const getProgressMessage = (percentage: number) => {
 };
 
 export default function ProfileScreen() {
-  const { userProfile } = useOnboarding();
+  const { userProfile, updateProfile } = useOnboarding();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [biometricsEnabled, setBiometricsEnabled] = React.useState(true);
 
@@ -170,8 +170,11 @@ export default function ProfileScreen() {
   // Handle profile photo selection
   const handlePickImage = async () => {
     try {
+      console.log('Starting image picker...');
+
       // Request permission
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log('Permission result:', permissionResult);
 
       if (permissionResult.granted === false) {
         Alert.alert('Permission Required', 'Please allow access to your photo library to change your profile picture.');
@@ -186,10 +189,18 @@ export default function ProfileScreen() {
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      console.log('Image picker result:', result);
+
+      if (!result.canceled && result.assets && result.assets[0]) {
         const photoUri = result.assets[0].uri;
+        console.log('Selected photo URI:', photoUri);
+
         await updateProfile({ profilePhoto: photoUri });
+        console.log('Profile updated successfully');
+
         Alert.alert('Success', 'Profile photo updated!');
+      } else {
+        console.log('Image selection was cancelled or no image selected');
       }
     } catch (error) {
       console.error('Error picking image:', error);
