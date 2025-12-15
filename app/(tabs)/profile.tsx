@@ -22,6 +22,7 @@ import SecurityModal from '@/components/SecurityModal';
 import TermsModal from '@/components/TermsModal';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import ContactSupportModal from '@/components/ContactSupportModal';
+import TargetGoalModal from '@/components/TargetGoalModal';
 import { ISAContribution } from '@/components/AddISAContributionModal';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { ISA_ANNUAL_ALLOWANCE, formatCurrency } from '@/constants/isaData';
@@ -134,6 +135,7 @@ export default function ProfileScreen() {
   const [termsVisible, setTermsVisible] = React.useState(false);
   const [privacyVisible, setPrivacyVisible] = React.useState(false);
   const [contactSupportVisible, setContactSupportVisible] = React.useState(false);
+  const [targetGoalVisible, setTargetGoalVisible] = React.useState(false);
 
   // Contributions state
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
@@ -225,20 +227,34 @@ export default function ProfileScreen() {
 
                   {/* Target Goal Display - Only if set */}
                   {userProfile.targetAmount && userProfile.targetAmount > 0 && (
-                    <View style={styles.targetGoalBadge}>
-                      <Ionicons name="flag" size={14} color={Colors.gold} />
-                      <View style={styles.targetGoalContent}>
-                        <Text style={styles.targetGoalLabel}>Target</Text>
-                        <Text style={styles.targetGoalAmount}>
-                          {formatCurrency(userProfile.targetAmount)}
-                        </Text>
-                        {userProfile.targetDate && (
-                          <Text style={styles.targetGoalDate}>
-                            by {new Date(userProfile.targetDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                    <TouchableOpacity
+                      style={styles.targetGoalBadge}
+                      onPress={() => setTargetGoalVisible(true)}
+                      activeOpacity={0.7}
+                    >
+                      <LinearGradient
+                        colors={['rgba(255, 215, 0, 0.25)', 'rgba(255, 215, 0, 0.1)']}
+                        style={styles.targetGoalGradient}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                      >
+                        <View style={styles.targetGoalIconWrapper}>
+                          <Ionicons name="flag" size={16} color={Colors.gold} />
+                        </View>
+                        <View style={styles.targetGoalContent}>
+                          <Text style={styles.targetGoalLabel}>SAVINGS GOAL</Text>
+                          <Text style={styles.targetGoalAmount}>
+                            {formatCurrency(userProfile.targetAmount)}
                           </Text>
-                        )}
-                      </View>
-                    </View>
+                          {userProfile.targetDate && (
+                            <Text style={styles.targetGoalDate}>
+                              by {new Date(userProfile.targetDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                            </Text>
+                          )}
+                        </View>
+                        <Ionicons name="pencil" size={14} color={Colors.gold} style={styles.editIcon} />
+                      </LinearGradient>
+                    </TouchableOpacity>
                   )}
                 </View>
                 <View style={styles.memberSince}>
@@ -446,6 +462,10 @@ export default function ProfileScreen() {
         visible={contactSupportVisible}
         onClose={() => setContactSupportVisible(false)}
       />
+      <TargetGoalModal
+        visible={targetGoalVisible}
+        onClose={() => setTargetGoalVisible(false)}
+      />
     </View>
   );
 }
@@ -549,34 +569,58 @@ const styles = StyleSheet.create({
     color: Colors.lightGray,
   },
   targetGoalBadge: {
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 215, 0, 0.4)',
+    shadowColor: Colors.gold,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  targetGoalGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 215, 0, 0.15)',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.3)',
+    paddingVertical: Spacing.md,
     gap: Spacing.sm,
   },
+  targetGoalIconWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 215, 0, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.5)',
+  },
   targetGoalContent: {
+    flex: 1,
     alignItems: 'flex-end',
   },
   targetGoalLabel: {
-    fontSize: Typography.sizes.xs,
+    fontSize: Typography.sizes.xxs,
     color: Colors.gold,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: Typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+    marginBottom: 2,
   },
   targetGoalAmount: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.xl,
     color: Colors.white,
     fontWeight: Typography.weights.extrabold,
+    marginBottom: 2,
   },
   targetGoalDate: {
     fontSize: Typography.sizes.xs,
     color: Colors.lightGray,
+    fontWeight: Typography.weights.medium,
+  },
+  editIcon: {
+    opacity: 0.7,
   },
   memberSince: {
     flexDirection: 'row',
