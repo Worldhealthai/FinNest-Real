@@ -137,7 +137,7 @@ export default function AccountScreen() {
               <View style={styles.form}>
                 {/* Full Name */}
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Full Name</Text>
+                  <Text style={styles.label}>Full Name *</Text>
                   <View style={[styles.inputWrapper, errors.fullName && styles.inputError]}>
                     <Ionicons name="person-outline" size={20} color={Colors.gold} />
                     <TextInput
@@ -156,7 +156,7 @@ export default function AccountScreen() {
 
                 {/* Email */}
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Email Address</Text>
+                  <Text style={styles.label}>Email Address *</Text>
                   <View style={[styles.inputWrapper, errors.email && styles.inputError]}>
                     <Ionicons name="mail-outline" size={20} color={Colors.gold} />
                     <TextInput
@@ -174,7 +174,7 @@ export default function AccountScreen() {
 
                 {/* Password */}
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Password</Text>
+                  <Text style={styles.label}>Password *</Text>
                   <View style={[styles.inputWrapper, errors.password && styles.inputError]}>
                     <Ionicons name="lock-closed-outline" size={20} color={Colors.gold} />
                     <TextInput
@@ -201,7 +201,7 @@ export default function AccountScreen() {
 
                 {/* Confirm Password */}
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Confirm Password</Text>
+                  <Text style={styles.label}>Confirm Password *</Text>
                   <View
                     style={[styles.inputWrapper, errors.confirmPassword && styles.inputError]}
                   >
