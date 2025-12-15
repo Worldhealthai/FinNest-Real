@@ -19,7 +19,7 @@ export interface UserProfile {
   hasExistingISAs: boolean;
 
   // Goals
-  savingsGoal: 'first_home' | 'retirement' | 'emergency' | 'education' | 'general' | 'other';
+  savingsGoals: ('first_home' | 'retirement' | 'emergency' | 'education' | 'general' | 'other')[];
   targetAmount: number;
   targetDate: string;
 
