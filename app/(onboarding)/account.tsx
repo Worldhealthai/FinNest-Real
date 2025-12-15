@@ -225,7 +225,7 @@ export default function AccountScreen() {
                 <View style={styles.notice}>
                   <Ionicons name="shield-checkmark" size={20} color={Colors.success} />
                   <Text style={styles.noticeText}>
-                    Your data is encrypted and secured with bank-level security
+                    We follow recognized security best practices and use encryption designed to help protect sensitive data.
                   </Text>
                 </View>
               </View>
