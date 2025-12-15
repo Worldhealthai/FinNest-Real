@@ -14,10 +14,6 @@ export interface UserProfile {
   nationalInsuranceNumber: string;
   phoneNumber: string;
 
-  // ISA Knowledge
-  isaExperience: 'new' | 'some' | 'experienced';
-  hasExistingISAs: boolean;
-
   // Goals
   savingsGoals: ('first_home' | 'retirement' | 'emergency' | 'education' | 'general' | 'other')[];
   targetAmount: number;

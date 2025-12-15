@@ -27,7 +27,7 @@ const NOTIFICATION_OPTIONS = [
     key: 'taxYearReminders' as const,
     icon: 'calendar',
     title: 'Tax Year Reminders',
-    description: 'Get notified before the tax year ends to maximize your ISA allowance',
+    description: 'Get notified before the tax year ends to maximise your ISA allowance',
     color: Colors.gold,
   },
   {
@@ -145,12 +145,12 @@ export default function NotificationsScreen() {
                 <View style={styles.progressBar}>
                   <LinearGradient
                     colors={Colors.goldGradient}
-                    style={[styles.progress, { width: '83%' }]}
+                    style={[styles.progress, { width: '80%' }]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                   />
                 </View>
-                <Text style={styles.progressText}>Step 5 of 6</Text>
+                <Text style={styles.progressText}>Step 4 of 5</Text>
               </View>
             </View>
 
