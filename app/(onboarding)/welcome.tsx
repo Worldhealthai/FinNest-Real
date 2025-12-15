@@ -25,12 +25,12 @@ const FEATURES = [
   {
     icon: 'shield-checkmark',
     title: 'Secure & Tax-Free',
-    description: 'Maximize your ISA allowance safely',
+    description: 'Maximise your ISA allowance safely',
   },
   {
     icon: 'trending-up',
-    title: 'Maximize Returns',
-    description: 'Optimize your financial future',
+    title: 'Maximise Returns',
+    description: 'Optimise your financial future',
   },
 ];
 

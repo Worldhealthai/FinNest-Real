@@ -27,7 +27,7 @@ const NOTIFICATION_OPTIONS = [
     key: 'taxYearReminders' as const,
     icon: 'calendar',
     title: 'Tax Year Reminders',
-    description: 'Get notified before the tax year ends to maximize your ISA allowance',
+    description: 'Get notified before the tax year ends to maximise your ISA allowance',
     color: Colors.gold,
   },
   {
