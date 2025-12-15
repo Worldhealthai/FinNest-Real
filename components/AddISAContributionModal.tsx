@@ -177,6 +177,28 @@ export default function AddISAContributionModal({
       console.log('Lifetime ISA detected - automatically setting as non-flexible');
       await setISASetting(provider.trim(), selectedType, false);
       console.log(`✅ Saved flexibility setting for Lifetime ISA: false`);
+
+      // Close modal directly for Lifetime ISA
+      const contributionAmount = parseFloat(amount);
+      const contribution: ISAContribution = {
+        id: Date.now().toString(),
+        provider: provider.trim(),
+        isaType: selectedType,
+        amount: contributionAmount,
+        date: contributionDate.toISOString(),
+        notes: notes.trim() || undefined,
+      };
+
+      console.log('Created contribution:', contribution);
+
+      if (onAdd) {
+        console.log('Calling parent onAdd');
+        onAdd(contribution);
+      }
+
+      // Close modal directly
+      handleDone();
+      return;
     } else if (!setting && !needsFlexibilityAnswer) {
       // First time adding to this provider+type combo (non-Lifetime ISA)
       // Show flexibility question
@@ -211,22 +233,14 @@ export default function AddISAContributionModal({
 
     console.log('Created contribution:', contribution);
 
-    // Store contribution first
-    setSubmittedContribution(contribution);
-    console.log('Set submittedContribution');
-
-    // Then call parent's onAdd
+    // Call parent's onAdd
     if (onAdd) {
       console.log('Calling parent onAdd');
       onAdd(contribution);
     }
 
-    // Move to confirmation screen after a short delay to ensure state is set
-    console.log('Setting timeout to move to step 4');
-    setTimeout(() => {
-      console.log('Moving to step 4');
-      setStep(4);
-    }, 100);
+    // Close modal directly instead of going to confirmation screen
+    handleDone();
   };
 
   const handleDone = () => {
