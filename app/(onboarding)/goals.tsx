@@ -156,12 +156,12 @@ export default function GoalsScreen() {
                 <View style={styles.progressBar}>
                   <LinearGradient
                     colors={Colors.goldGradient}
-                    style={[styles.progress, { width: '66%' }]}
+                    style={[styles.progress, { width: '60%' }]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                   />
                 </View>
-                <Text style={styles.progressText}>Step 4 of 6</Text>
+                <Text style={styles.progressText}>Step 3 of 5</Text>
               </View>
             </View>
 

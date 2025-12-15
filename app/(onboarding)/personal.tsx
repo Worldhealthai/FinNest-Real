@@ -136,13 +136,13 @@ export default function PersonalScreen() {
   const handleContinue = () => {
     if (validateForm()) {
       updateProfile({ dateOfBirth, nationalInsuranceNumber, phoneNumber });
-      router.push('/(onboarding)/knowledge');
+      router.push('/(onboarding)/goals');
     }
   };
 
   const handleSkip = () => {
     updateProfile({ phoneNumber: '' });
-    router.push('/(onboarding)/knowledge');
+    router.push('/(onboarding)/goals');
   };
 
   return (
@@ -172,12 +172,12 @@ export default function PersonalScreen() {
                   <View style={styles.progressBar}>
                     <LinearGradient
                       colors={Colors.goldGradient}
-                      style={[styles.progress, { width: '33%' }]}
+                      style={[styles.progress, { width: '40%' }]}
                       start={{ x: 0, y: 0 }}
                       end={{ x: 1, y: 0 }}
                     />
                   </View>
-                  <Text style={styles.progressText}>Step 2 of 6</Text>
+                  <Text style={styles.progressText}>Step 2 of 5</Text>
                 </View>
               </View>
 

@@ -145,12 +145,12 @@ export default function NotificationsScreen() {
                 <View style={styles.progressBar}>
                   <LinearGradient
                     colors={Colors.goldGradient}
-                    style={[styles.progress, { width: '83%' }]}
+                    style={[styles.progress, { width: '80%' }]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                   />
                 </View>
-                <Text style={styles.progressText}>Step 5 of 6</Text>
+                <Text style={styles.progressText}>Step 4 of 5</Text>
               </View>
             </View>
 
