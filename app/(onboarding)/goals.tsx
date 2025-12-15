@@ -177,7 +177,7 @@ export default function GoalsScreen() {
               </View>
               <Text style={styles.title}>Set Your Goals</Text>
               <Text style={styles.subtitle}>
-                Select one or more savings goals to personalize your experience
+                Select one or more savings goals to personalise your experience
               </Text>
             </View>
 

@@ -286,8 +286,7 @@ export default function PersonalScreen() {
                 <View style={styles.notice}>
                   <Ionicons name="lock-closed" size={20} color={Colors.info} />
                   <Text style={styles.noticeText}>
-                    Your personal information is encrypted and never shared with third
-                    parties. We comply with GDPR and UK data protection laws.
+                    Your data is securely encrypted and protected under UK data protection laws. We only share information with trusted partners when you choose to connect services.
                   </Text>
                 </View>
               </View>

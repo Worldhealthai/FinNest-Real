@@ -18,14 +18,14 @@ const { width, height } = Dimensions.get('window');
 
 const FEATURES = [
   {
-    icon: 'shield-checkmark',
-    title: 'Secure & Tax-Free',
-    description: 'Maximize your ISA allowance safely',
-  },
-  {
     icon: 'analytics',
     title: 'Smart Tracking',
     description: 'Monitor all your ISAs in one place',
+  },
+  {
+    icon: 'shield-checkmark',
+    title: 'Secure & Tax-Free',
+    description: 'Maximize your ISA allowance safely',
   },
   {
     icon: 'trending-up',
@@ -303,7 +303,8 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.medium,
   },
   featuresContainer: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
+    marginVertical: Spacing.xl,
   },
   featureCard: {
     borderRadius: BorderRadius.md,
