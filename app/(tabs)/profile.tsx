@@ -217,8 +217,30 @@ export default function ProfileScreen() {
               </Animated.View>
 
               <View style={styles.userInfo}>
-                <Text style={styles.userName}>{userProfile.fullName || 'Welcome'}</Text>
-                <Text style={styles.userEmail}>{userProfile.email || 'user@finnest.com'}</Text>
+                <View style={styles.userInfoHeader}>
+                  <View style={styles.userNameSection}>
+                    <Text style={styles.userName}>{userProfile.fullName || 'Welcome'}</Text>
+                    <Text style={styles.userEmail}>{userProfile.email || 'user@finnest.com'}</Text>
+                  </View>
+
+                  {/* Target Goal Display - Only if set */}
+                  {userProfile.targetAmount && userProfile.targetAmount > 0 && (
+                    <View style={styles.targetGoalBadge}>
+                      <Ionicons name="flag" size={14} color={Colors.gold} />
+                      <View style={styles.targetGoalContent}>
+                        <Text style={styles.targetGoalLabel}>Target</Text>
+                        <Text style={styles.targetGoalAmount}>
+                          {formatCurrency(userProfile.targetAmount)}
+                        </Text>
+                        {userProfile.targetDate && (
+                          <Text style={styles.targetGoalDate}>
+                            by {new Date(userProfile.targetDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                  )}
+                </View>
                 <View style={styles.memberSince}>
                   <Ionicons name="calendar-outline" size={14} color={Colors.lightGray} />
                   <Text style={styles.memberText}>
@@ -507,6 +529,15 @@ const styles = StyleSheet.create({
   userInfo: {
     flex: 1,
   },
+  userInfoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  userNameSection: {
+    flex: 1,
+  },
   userName: {
     fontSize: Typography.sizes.xxl,
     color: Colors.white,
@@ -516,7 +547,36 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: Typography.sizes.md,
     color: Colors.lightGray,
-    marginBottom: 8,
+  },
+  targetGoalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 215, 0, 0.15)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.3)',
+    gap: Spacing.sm,
+  },
+  targetGoalContent: {
+    alignItems: 'flex-end',
+  },
+  targetGoalLabel: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.gold,
+    fontWeight: Typography.weights.semibold,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  targetGoalAmount: {
+    fontSize: Typography.sizes.lg,
+    color: Colors.white,
+    fontWeight: Typography.weights.extrabold,
+  },
+  targetGoalDate: {
+    fontSize: Typography.sizes.xs,
+    color: Colors.lightGray,
   },
   memberSince: {
     flexDirection: 'row',
