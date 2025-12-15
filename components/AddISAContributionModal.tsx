@@ -666,11 +666,7 @@ export default function AddISAContributionModal({
 
           <View style={styles.flexibilityOptions}>
             <Pressable
-              onPress={() => {
-                setIsFlexible(true);
-                // Automatically submit after a short delay to show selection
-                setTimeout(() => handleSubmit(), 300);
-              }}
+              onPress={() => setIsFlexible(true)}
               style={({ pressed }) => [
                 styles.flexibilityOption,
                 isFlexible === true && styles.flexibilityOptionSelected,
@@ -697,11 +693,7 @@ export default function AddISAContributionModal({
             </Pressable>
 
             <Pressable
-              onPress={() => {
-                setIsFlexible(false);
-                // Automatically submit after a short delay to show selection
-                setTimeout(() => handleSubmit(), 300);
-              }}
+              onPress={() => setIsFlexible(false)}
               style={({ pressed }) => [
                 styles.flexibilityOption,
                 isFlexible === false && styles.flexibilityOptionSelected,
@@ -742,6 +734,26 @@ export default function AddISAContributionModal({
             >
               <Text style={styles.flexibilityCancelText}>Cancel</Text>
             </Pressable>
+
+            {isFlexible !== null && (
+              <Pressable
+                onPress={handleSubmit}
+                style={({ pressed }) => [
+                  styles.flexibilityConfirmButton,
+                  { opacity: pressed ? 0.9 : 1 }
+                ]}
+              >
+                <LinearGradient
+                  colors={Colors.goldGradient}
+                  style={styles.flexibilityConfirmGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Ionicons name="checkmark-circle" size={24} color={Colors.deepNavy} />
+                  <Text style={styles.flexibilityConfirmText}>Done</Text>
+                </LinearGradient>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>
