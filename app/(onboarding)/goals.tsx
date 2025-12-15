@@ -69,13 +69,21 @@ const GOAL_OPTIONS = [
 
 export default function GoalsScreen() {
   const { userProfile, updateProfile } = useOnboarding();
-  const [savingsGoal, setSavingsGoal] = useState<GoalType | null>(
-    userProfile.savingsGoal || null
+  const [savingsGoals, setSavingsGoals] = useState<GoalType[]>(
+    userProfile.savingsGoals || []
   );
   const [targetAmount, setTargetAmount] = useState(
     userProfile.targetAmount?.toString() || ''
   );
   const [targetDate, setTargetDate] = useState(userProfile.targetDate || '');
+
+  const toggleGoal = (goal: GoalType) => {
+    setSavingsGoals(prev =>
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
+    );
+  };
 
   const contentOpacity = useSharedValue(0);
   const contentY = useSharedValue(20);
@@ -111,9 +119,9 @@ export default function GoalsScreen() {
   };
 
   const handleContinue = () => {
-    if (savingsGoal) {
+    if (savingsGoals.length > 0) {
       updateProfile({
-        savingsGoal,
+        savingsGoals,
         targetAmount: parseInt(targetAmount.replace(/,/g, '')) || 0,
         targetDate: targetDate || '',
       });
@@ -167,9 +175,9 @@ export default function GoalsScreen() {
                   <Ionicons name="flag" size={32} color={Colors.gold} />
                 </LinearGradient>
               </View>
-              <Text style={styles.title}>Set Your Goal</Text>
+              <Text style={styles.title}>Set Your Goals</Text>
               <Text style={styles.subtitle}>
-                Define your savings objectives to personalize your experience
+                Select one or more savings goals to personalize your experience
               </Text>
             </View>
 
@@ -178,62 +186,65 @@ export default function GoalsScreen() {
               <Text style={styles.sectionTitle}>What are you saving for?</Text>
 
               <View style={styles.goalsGrid}>
-                {GOAL_OPTIONS.map((option) => (
-                  <TouchableOpacity
-                    key={option.value}
-                    style={[
-                      styles.goalCard,
-                      savingsGoal === option.value && styles.goalCardSelected,
-                    ]}
-                    onPress={() => setSavingsGoal(option.value)}
-                    activeOpacity={0.8}
-                  >
-                    <LinearGradient
-                      colors={
-                        savingsGoal === option.value
-                          ? ['rgba(255, 215, 0, 0.2)', 'rgba(255, 215, 0, 0.1)']
-                          : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
-                      }
-                      style={styles.goalGradient}
+                {GOAL_OPTIONS.map((option) => {
+                  const isSelected = savingsGoals.includes(option.value);
+                  return (
+                    <TouchableOpacity
+                      key={option.value}
+                      style={[
+                        styles.goalCard,
+                        isSelected && styles.goalCardSelected,
+                      ]}
+                      onPress={() => toggleGoal(option.value)}
+                      activeOpacity={0.8}
                     >
-                      <View
-                        style={[
-                          styles.goalIcon,
-                          {
-                            backgroundColor:
-                              savingsGoal === option.value
-                                ? option.color + '30'
-                                : 'rgba(255, 255, 255, 0.1)',
-                          },
-                        ]}
+                      <LinearGradient
+                        colors={
+                          isSelected
+                            ? ['rgba(255, 215, 0, 0.2)', 'rgba(255, 215, 0, 0.1)']
+                            : ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.05)']
+                        }
+                        style={styles.goalGradient}
                       >
-                        <Ionicons
-                          name={option.icon as any}
-                          size={24}
-                          color={savingsGoal === option.value ? option.color : Colors.lightGray}
-                        />
-                      </View>
-                      <Text
-                        style={[
-                          styles.goalTitle,
-                          savingsGoal === option.value && { color: Colors.gold },
-                        ]}
-                      >
-                        {option.title}
-                      </Text>
-                      {savingsGoal === option.value && (
-                        <View style={styles.selectedBadge}>
-                          <Ionicons name="checkmark" size={16} color={Colors.deepNavy} />
+                        <View
+                          style={[
+                            styles.goalIcon,
+                            {
+                              backgroundColor:
+                                isSelected
+                                  ? option.color + '30'
+                                  : 'rgba(255, 255, 255, 0.1)',
+                            },
+                          ]}
+                        >
+                          <Ionicons
+                            name={option.icon as any}
+                            size={24}
+                            color={isSelected ? option.color : Colors.lightGray}
+                          />
                         </View>
-                      )}
-                    </LinearGradient>
-                  </TouchableOpacity>
-                ))}
+                        <Text
+                          style={[
+                            styles.goalTitle,
+                            isSelected && { color: Colors.gold },
+                          ]}
+                        >
+                          {option.title}
+                        </Text>
+                        {isSelected && (
+                          <View style={styles.selectedBadge}>
+                            <Ionicons name="checkmark" size={16} color={Colors.deepNavy} />
+                          </View>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </View>
 
             {/* Optional Details */}
-            {savingsGoal && (
+            {savingsGoals.length > 0 && (
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>
                   Target Details <Text style={styles.optional}>(Optional)</Text>
@@ -286,13 +297,13 @@ export default function GoalsScreen() {
             {/* Buttons */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
-                style={[styles.button, !savingsGoal && styles.buttonDisabled]}
+                style={[styles.button, savingsGoals.length === 0 && styles.buttonDisabled]}
                 onPress={handleContinue}
                 activeOpacity={0.8}
-                disabled={!savingsGoal}
+                disabled={savingsGoals.length === 0}
               >
                 <LinearGradient
-                  colors={savingsGoal ? Colors.goldGradient : ['#666', '#555']}
+                  colors={savingsGoals.length > 0 ? Colors.goldGradient : ['#666', '#555']}
                   style={styles.buttonGradient}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
