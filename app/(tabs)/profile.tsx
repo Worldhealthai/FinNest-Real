@@ -316,7 +316,7 @@ export default function ProfileScreen() {
             </View>
 
             {/* Circular Stats with Progress Rings - Only show if user has contributions */}
-            {contributions.length > 0 ? (
+            {contributions.length > 0 && (
               <View style={styles.statsContainer}>
                 <View style={styles.statBox}>
                   <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
@@ -343,14 +343,6 @@ export default function ProfileScreen() {
                   </View>
                   <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
                 </View>
-              </View>
-            ) : (
-              <View style={styles.emptyStateContainer}>
-                <Ionicons name="wallet-outline" size={48} color={Colors.gold} style={{ opacity: 0.5 }} />
-                <Text style={styles.emptyStateTitle}>Start Your ISA Journey</Text>
-                <Text style={styles.emptyStateText}>
-                  Add your first ISA contribution to start tracking your tax-free savings
-                </Text>
               </View>
             )}
           </GlassCard>
@@ -691,25 +683,6 @@ const styles = StyleSheet.create({
     color: Colors.lightGray,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
-  },
-  emptyStateContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xxl,
-    gap: Spacing.md,
-  },
-  emptyStateTitle: {
-    fontSize: Typography.sizes.xl,
-    color: Colors.white,
-    fontWeight: Typography.weights.bold,
-    textAlign: 'center',
-  },
-  emptyStateText: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.lightGray,
-    textAlign: 'center',
-    lineHeight: 20,
-    paddingHorizontal: Spacing.lg,
   },
   section: {
     marginBottom: Spacing.xl,
