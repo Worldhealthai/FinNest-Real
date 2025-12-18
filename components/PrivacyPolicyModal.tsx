@@ -50,7 +50,7 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
               </Text>
 
               <Text style={styles.subsectionTitle}>What We Do NOT Collect</Text>
-              <Text style={styles.bulletPoint}>• Access to your actual ISA provider accounts</Text>
+              <Text style={styles.bulletPoint}>• Access to your ISA provider accounts without your explicit consent</Text>
               <Text style={styles.bulletPoint}>• Your ISA account numbers or login credentials</Text>
               <Text style={styles.bulletPoint}>• Your precise geolocation</Text>
               <Text style={styles.bulletPoint}>• Your contacts, photos, or other device data</Text>
