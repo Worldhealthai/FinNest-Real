@@ -40,20 +40,14 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
               <Text style={styles.bulletPoint}>• ISA provider names</Text>
               <Text style={styles.bulletPoint}>• ISA account types</Text>
 
-              <Text style={styles.highlight}>
-                IMPORTANT: This data is stored locally on your device only. We do NOT store this financial data on our servers.
+              <Text style={styles.paragraph}>
+                This data is stored locally on your device. Because it is stored only on your device, FinNest cannot access, retrieve, or delete this information on your behalf. You control this data directly within the app.
               </Text>
 
               <Text style={styles.subsectionTitle}>Device Information</Text>
               <Text style={styles.paragraph}>
                 We may collect device type, operating system version, and app version for analytics purposes only.
               </Text>
-
-              <Text style={styles.subsectionTitle}>What We Do NOT Collect</Text>
-              <Text style={styles.bulletPoint}>• Access to your ISA provider accounts without your explicit consent</Text>
-              <Text style={styles.bulletPoint}>• Your ISA account numbers or login credentials</Text>
-              <Text style={styles.bulletPoint}>• Your precise geolocation</Text>
-              <Text style={styles.bulletPoint}>• Your contacts, photos, or other device data</Text>
             </View>
           </View>
 
@@ -62,13 +56,22 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
             <View style={styles.sectionBox}>
               <Text style={styles.sectionTitle}>2. How We Use Your Information</Text>
               <Text style={styles.paragraph}>
-                We use information to:
+                We use the information we collect to:
               </Text>
-              <Text style={styles.bulletPoint}>• Provide the FinNest service</Text>
+              <Text style={styles.bulletPoint}>• Provide and operate the FinNest service</Text>
               <Text style={styles.bulletPoint}>• Calculate ISA allowances and contributions</Text>
               <Text style={styles.bulletPoint}>• Display your contribution history</Text>
               <Text style={styles.bulletPoint}>• Improve our app and fix bugs</Text>
               <Text style={styles.bulletPoint}>• Provide customer support</Text>
+
+              <Text style={styles.paragraph}>
+                We process personal data based on your consent, our legitimate interest in operating and improving the app, and to comply with legal obligations where applicable.
+              </Text>
+
+              <Text style={styles.subsectionTitle}>Future Optional Integrations</Text>
+              <Text style={styles.paragraph}>
+                If you choose to connect external services (such as ISA providers) in the future, we will only access and use that information with your explicit consent and solely to provide features you request.
+              </Text>
             </View>
           </View>
 
@@ -79,15 +82,15 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
 
               <Text style={styles.subsectionTitle}>Local Storage</Text>
               <Text style={styles.paragraph}>
-                Financial tracking data (ISA contributions, amounts, dates) is stored locally on your device using AsyncStorage. This data:
+                Financial tracking data (ISA contributions, amounts, dates) is stored locally on your device. This data:
               </Text>
               <Text style={styles.bulletPoint}>• Remains on your device unless you delete the app</Text>
-              <Text style={styles.bulletPoint}>• Is NOT transmitted to our servers</Text>
               <Text style={styles.bulletPoint}>• Will be lost if you delete the app or reset your device</Text>
+              <Text style={styles.bulletPoint}>• You control this data directly within the app</Text>
 
               <Text style={styles.subsectionTitle}>Security Measures</Text>
               <Text style={styles.paragraph}>
-                We implement appropriate technical and organizational measures to protect your data, including encryption of data in transit (HTTPS) and secure coding practices.
+                We implement appropriate technical and organizational measures to protect your data, including secure coding standards and secure local storage practices. Where data is transmitted (such as analytics or future optional integrations), it is encrypted in transit.
               </Text>
             </View>
           </View>
@@ -95,16 +98,20 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
           {/* Section 4 */}
           <View style={styles.sectionContainer}>
             <View style={styles.sectionBox}>
-              <Text style={styles.sectionTitle}>4. Your Rights Under UK GDPR</Text>
+              <Text style={styles.sectionTitle}>4. Your Rights</Text>
               <Text style={styles.paragraph}>
                 You have the following rights regarding your personal information:
               </Text>
-              <Text style={styles.bulletPoint}>• Right of Access - Request a copy of your data</Text>
-              <Text style={styles.bulletPoint}>• Right to Rectification - Correct inaccurate information</Text>
-              <Text style={styles.bulletPoint}>• Right to Erasure - Request deletion of your data</Text>
-              <Text style={styles.bulletPoint}>• Right to Data Portability - Receive your data in a portable format</Text>
-              <Text style={styles.bulletPoint}>• Right to Object - Object to certain processing activities</Text>
-              <Text style={styles.bulletPoint}>• Right to Lodge a Complaint - Contact the ICO</Text>
+              <Text style={styles.bulletPoint}>• Right of Access – Request a copy of your data</Text>
+              <Text style={styles.bulletPoint}>• Right to Rectification – Correct inaccurate information</Text>
+              <Text style={styles.bulletPoint}>• Right to Erasure – Request deletion of your data</Text>
+              <Text style={styles.bulletPoint}>• Right to Data Portability – Receive your data in a portable format</Text>
+              <Text style={styles.bulletPoint}>• Right to Object – Object to certain processing activities</Text>
+              <Text style={styles.bulletPoint}>• Right to Lodge a Complaint – Contact the ICO</Text>
+
+              <Text style={styles.paragraph}>
+                Note: Where personal data is stored only on your device, FinNest may not be able to directly fulfil certain rights (such as access, portability, or erasure). In these cases, you can exercise your rights by managing or deleting the data within the app or by uninstalling the app.
+              </Text>
             </View>
           </View>
 
@@ -115,8 +122,13 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
               <Text style={styles.paragraph}>
                 We may share limited data with trusted third-party service providers who assist us with analytics and app performance monitoring.
               </Text>
-              <Text style={styles.highlight}>
+              <Text style={styles.paragraph}>
                 We will NEVER sell, rent, or trade your personal information to third parties for marketing purposes.
+              </Text>
+
+              <Text style={styles.subsectionTitle}>Future Optional Integrations</Text>
+              <Text style={styles.paragraph}>
+                In the future, FinNest may offer optional integrations with regulated financial service providers (such as ISA platforms). Any such connection will only occur with your explicit consent, and we will clearly explain what data is accessed, how it is used, and how you can revoke access at any time.
               </Text>
             </View>
           </View>
@@ -136,7 +148,7 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
             <View style={styles.sectionBox}>
               <Text style={styles.sectionTitle}>7. Changes to This Policy</Text>
               <Text style={styles.paragraph}>
-                We may update this Privacy Policy from time to time. We will notify you of material changes by updating the "Last Updated" date and posting a notice in the app.
+                We may update this Privacy Policy from time to time. The "Last Updated" date will reflect the most recent version, and for material changes we will post a clear notice in the app. Continued use of FinNest after an update indicates your acceptance of the revised Privacy Policy.
               </Text>
             </View>
           </View>
@@ -161,17 +173,6 @@ export default function PrivacyPolicyModal({ visible, onClose }: PrivacyPolicyMo
               </Text>
               <Text style={styles.bulletPoint}>• Website: https://ico.org.uk</Text>
               <Text style={styles.bulletPoint}>• Helpline: 0303 123 1113</Text>
-            </View>
-          </View>
-
-          {/* Summary Box */}
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionBox}>
-              <Text style={styles.highlight}>Data Protection Summary</Text>
-              <Text style={styles.bulletPoint}>• Your ISA data stays on your device</Text>
-              <Text style={styles.bulletPoint}>• We don't access your bank accounts</Text>
-              <Text style={styles.bulletPoint}>• We comply with UK GDPR</Text>
-              <Text style={styles.bulletPoint}>• We never sell your data</Text>
             </View>
           </View>
         </View>
