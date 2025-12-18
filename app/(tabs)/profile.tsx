@@ -24,6 +24,7 @@ import TermsModal from '@/components/TermsModal';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import ContactSupportModal from '@/components/ContactSupportModal';
 import TargetGoalModal from '@/components/TargetGoalModal';
+import NotificationsModal from '@/components/NotificationsModal';
 import { ISAContribution } from '@/components/AddISAContributionModal';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { ISA_ANNUAL_ALLOWANCE, formatCurrency } from '@/constants/isaData';
@@ -131,6 +132,7 @@ export default function ProfileScreen() {
   const [personalInfoVisible, setPersonalInfoVisible] = React.useState(false);
   const [isaAccountsVisible, setIsaAccountsVisible] = React.useState(false);
   const [securityVisible, setSecurityVisible] = React.useState(false);
+  const [notificationsVisible, setNotificationsVisible] = React.useState(false);
   const [termsVisible, setTermsVisible] = React.useState(false);
   const [privacyVisible, setPrivacyVisible] = React.useState(false);
   const [contactSupportVisible, setContactSupportVisible] = React.useState(false);
@@ -382,7 +384,7 @@ export default function ProfileScreen() {
               </GlassCard>
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setNotificationsVisible(true)}>
               <GlassCard style={styles.menuCard} intensity="medium">
                 <View style={styles.menuItem}>
                   <Ionicons name="notifications-outline" size={24} color={Colors.info} />
@@ -460,6 +462,10 @@ export default function ProfileScreen() {
       <SecurityModal
         visible={securityVisible}
         onClose={() => setSecurityVisible(false)}
+      />
+      <NotificationsModal
+        visible={notificationsVisible}
+        onClose={() => setNotificationsVisible(false)}
       />
       <TermsModal
         visible={termsVisible}
