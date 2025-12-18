@@ -315,36 +315,34 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-            {/* Circular Stats with Progress Rings - Only show if user has contributions */}
-            {contributions.length > 0 && (
-              <View style={styles.statsContainer}>
-                <View style={styles.statBox}>
-                  <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-                    <CircularProgress value={uniqueAccounts} max={10} size={120} strokeWidth={10} color={Colors.gold} />
-                    <View style={{ position: 'absolute', alignItems: 'center' }}>
-                      <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl }]}>{uniqueAccounts}</Text>
-                    </View>
+            {/* Circular Stats with Progress Rings */}
+            <View style={styles.statsContainer}>
+              <View style={styles.statBox}>
+                <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                  <CircularProgress value={uniqueAccounts} max={10} size={120} strokeWidth={10} color={Colors.gold} />
+                  <View style={{ position: 'absolute', alignItems: 'center' }}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl }]}>{uniqueAccounts}</Text>
                   </View>
-                  <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
                 </View>
-
-                <View style={styles.statBox}>
-                  <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-                    <CircularProgress
-                      value={totalAllTime}
-                      max={ISA_ANNUAL_ALLOWANCE}
-                      size={120}
-                      strokeWidth={10}
-                      color={Colors.success}
-                    />
-                    <View style={{ position: 'absolute', alignItems: 'center' }}>
-                      <Text style={[styles.statValue, { fontSize: Typography.sizes.lg }]}>{formatCurrency(totalAllTime)}</Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
-                </View>
+                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
               </View>
-            )}
+
+              <View style={styles.statBox}>
+                <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                  <CircularProgress
+                    value={totalAllTime}
+                    max={ISA_ANNUAL_ALLOWANCE}
+                    size={120}
+                    strokeWidth={10}
+                    color={Colors.success}
+                  />
+                  <View style={{ position: 'absolute', alignItems: 'center' }}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.lg }]}>{formatCurrency(totalAllTime)}</Text>
+                  </View>
+                </View>
+                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
+              </View>
+            </View>
           </GlassCard>
 
           <WavyDivider />
