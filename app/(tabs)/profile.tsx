@@ -313,34 +313,44 @@ export default function ProfileScreen() {
               </View>
             </View>
 
-            {/* Circular Stats with Progress Rings */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statBox}>
-                <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-                  <CircularProgress value={uniqueAccounts} max={10} size={120} strokeWidth={10} color={Colors.gold} />
-                  <View style={{ position: 'absolute', alignItems: 'center' }}>
-                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl }]}>{uniqueAccounts}</Text>
+            {/* Circular Stats with Progress Rings - Only show if user has contributions */}
+            {contributions.length > 0 ? (
+              <View style={styles.statsContainer}>
+                <View style={styles.statBox}>
+                  <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress value={uniqueAccounts} max={10} size={120} strokeWidth={10} color={Colors.gold} />
+                    <View style={{ position: 'absolute', alignItems: 'center' }}>
+                      <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl }]}>{uniqueAccounts}</Text>
+                    </View>
                   </View>
+                  <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
                 </View>
-                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
-              </View>
 
-              <View style={styles.statBox}>
-                <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-                  <CircularProgress
-                    value={totalAllTime}
-                    max={ISA_ANNUAL_ALLOWANCE}
-                    size={120}
-                    strokeWidth={10}
-                    color={Colors.success}
-                  />
-                  <View style={{ position: 'absolute', alignItems: 'center' }}>
-                    <Text style={[styles.statValue, { fontSize: Typography.sizes.lg }]}>{formatCurrency(totalAllTime)}</Text>
+                <View style={styles.statBox}>
+                  <View style={{ position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress
+                      value={totalAllTime}
+                      max={ISA_ANNUAL_ALLOWANCE}
+                      size={120}
+                      strokeWidth={10}
+                      color={Colors.success}
+                    />
+                    <View style={{ position: 'absolute', alignItems: 'center' }}>
+                      <Text style={[styles.statValue, { fontSize: Typography.sizes.lg }]}>{formatCurrency(totalAllTime)}</Text>
+                    </View>
                   </View>
+                  <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
                 </View>
-                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
               </View>
-            </View>
+            ) : (
+              <View style={styles.emptyStateContainer}>
+                <Ionicons name="wallet-outline" size={48} color={Colors.gold} style={{ opacity: 0.5 }} />
+                <Text style={styles.emptyStateTitle}>Start Your ISA Journey</Text>
+                <Text style={styles.emptyStateText}>
+                  Add your first ISA contribution to start tracking your tax-free savings
+                </Text>
+              </View>
+            )}
           </GlassCard>
 
           <WavyDivider />
@@ -675,6 +685,25 @@ const styles = StyleSheet.create({
     color: Colors.lightGray,
     fontWeight: Typography.weights.bold,
     textAlign: 'center',
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xxl,
+    gap: Spacing.md,
+  },
+  emptyStateTitle: {
+    fontSize: Typography.sizes.xl,
+    color: Colors.white,
+    fontWeight: Typography.weights.bold,
+    textAlign: 'center',
+  },
+  emptyStateText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: Spacing.lg,
   },
   section: {
     marginBottom: Spacing.xl,
