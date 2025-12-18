@@ -155,7 +155,7 @@ export default function WelcomeScreen() {
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
             />
-            <Text style={styles.subtitle}>Smart ISA Tracker</Text>
+            <Text style={styles.subtitle}>Your Smart ISA Tracker Platform</Text>
           </Animated.View>
         </View>
 
