@@ -419,17 +419,6 @@ export default function ProfileScreen() {
                 />
               </View>
             </GlassCard>
-
-            <TouchableOpacity>
-              <GlassCard style={styles.menuCard} intensity="medium">
-                <View style={styles.menuItem}>
-                  <Ionicons name="language-outline" size={24} color={Colors.warning} />
-                  <Text style={styles.menuText}>Language</Text>
-                  <Text style={styles.menuSubtext}>English</Text>
-                  <Ionicons name="chevron-forward" size={22} color={Colors.lightGray} />
-                </View>
-              </GlassCard>
-            </TouchableOpacity>
           </View>
 
           <WavyDivider />
