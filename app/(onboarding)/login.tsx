@@ -38,7 +38,7 @@ export default function LoginScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login, signup } = useOnboarding();
+  const { login, signup, continueAsGuest } = useOnboarding();
 
   // Animations
   const logoScale = useSharedValue(0);
@@ -363,6 +363,30 @@ export default function LoginScreen() {
               </Text>
             </Text>
           </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Guest Mode Button */}
+          <TouchableOpacity
+            style={styles.guestButton}
+            onPress={async () => {
+              await continueAsGuest();
+              router.replace('/(tabs)');
+            }}
+            activeOpacity={0.7}
+            disabled={isLoading}
+          >
+            <View style={styles.guestButtonContent}>
+              <Ionicons name="eye-outline" size={20} color={Colors.info} />
+              <Text style={styles.guestButtonText}>Continue as Guest</Text>
+            </View>
+            <Text style={styles.guestButtonSubtext}>Try the app without signing up</Text>
+          </TouchableOpacity>
         </Animated.View>
 
         <View style={{ height: 60 }} />
@@ -550,5 +574,44 @@ const styles = StyleSheet.create({
   toggleLinkBold: {
     fontWeight: Typography.weights.bold,
     color: Colors.gold,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: Spacing.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  dividerText: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    marginHorizontal: Spacing.md,
+    fontWeight: Typography.weights.medium,
+  },
+  guestButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    alignItems: 'center',
+  },
+  guestButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: 4,
+  },
+  guestButtonText: {
+    fontSize: Typography.sizes.md,
+    fontWeight: Typography.weights.bold,
+    color: Colors.white,
+  },
+  guestButtonSubtext: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
   },
 });

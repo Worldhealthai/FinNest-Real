@@ -5,6 +5,7 @@ const ONBOARDING_KEY = '@finnest_onboarding_completed';
 const USER_PROFILE_KEY = '@finnest_user_profile';
 const AUTH_KEY = '@finnest_auth';
 const USERS_KEY = '@finnest_users';
+const GUEST_MODE_KEY = '@finnest_guest_mode';
 
 export interface UserProfile {
   // Account Info
@@ -33,6 +34,7 @@ export interface UserProfile {
 interface OnboardingContextType {
   isOnboardingCompleted: boolean;
   isAuthenticated: boolean;
+  isGuest: boolean;
   userProfile: Partial<UserProfile>;
   updateProfile: (updates: Partial<UserProfile>) => void;
   completeOnboarding: () => Promise<void>;
@@ -40,6 +42,7 @@ interface OnboardingContextType {
   login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, fullName: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  continueAsGuest: () => Promise<void>;
 }
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
@@ -47,6 +50,7 @@ const OnboardingContext = createContext<OnboardingContextType | undefined>(undef
 export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isGuest, setIsGuest] = useState(false);
   const [userProfile, setUserProfile] = useState<Partial<UserProfile>>({});
   const [loading, setLoading] = useState(true);
 
@@ -57,10 +61,14 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const loadOnboardingStatus = async () => {
     try {
       const authData = await AsyncStorage.getItem(AUTH_KEY);
+      const guestMode = await AsyncStorage.getItem(GUEST_MODE_KEY);
       const completed = await AsyncStorage.getItem(ONBOARDING_KEY);
       const profileData = await AsyncStorage.getItem(USER_PROFILE_KEY);
 
-      if (authData) {
+      if (guestMode === 'true') {
+        setIsGuest(true);
+        setIsAuthenticated(true); // Guests are treated as authenticated for navigation
+      } else if (authData) {
         setIsAuthenticated(true);
       }
 
@@ -190,9 +198,9 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const logout = async () => {
     try {
-      // Save current user's data before logging out
+      // Save current user's data before logging out (if not guest)
       const currentEmail = await AsyncStorage.getItem(AUTH_KEY);
-      if (currentEmail) {
+      if (currentEmail && !isGuest) {
         const userProfileKey = `${USER_PROFILE_KEY}_${currentEmail}`;
         const userOnboardingKey = `${ONBOARDING_KEY}_${currentEmail}`;
 
@@ -204,12 +212,25 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       await AsyncStorage.removeItem(AUTH_KEY);
       await AsyncStorage.removeItem(ONBOARDING_KEY);
       await AsyncStorage.removeItem(USER_PROFILE_KEY);
+      await AsyncStorage.removeItem(GUEST_MODE_KEY);
 
       setIsAuthenticated(false);
       setIsOnboardingCompleted(false);
+      setIsGuest(false);
       setUserProfile({});
     } catch (error) {
       console.error('Error logging out:', error);
+    }
+  };
+
+  const continueAsGuest = async () => {
+    try {
+      await AsyncStorage.setItem(GUEST_MODE_KEY, 'true');
+      setIsGuest(true);
+      setIsAuthenticated(true);
+      setUserProfile({ fullName: 'Guest User' });
+    } catch (error) {
+      console.error('Error continuing as guest:', error);
     }
   };
 
@@ -222,6 +243,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       value={{
         isOnboardingCompleted,
         isAuthenticated,
+        isGuest,
         userProfile,
         updateProfile,
         completeOnboarding,
@@ -229,6 +251,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         login,
         signup,
         logout,
+        continueAsGuest,
       }}
     >
       {children}
