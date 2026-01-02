@@ -187,6 +187,8 @@ export default function LoginScreen() {
         {/* Logo Section */}
         <Animated.View style={[styles.logoSection, logoAnimatedStyle]}>
           <View style={styles.logoContainer}>
+            <View style={styles.hexagon1} />
+            <View style={styles.hexagon2} />
             <Image
               source={require('@/assets/logo.png')}
               style={styles.logoImage}
@@ -454,15 +456,27 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255, 215, 0, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.lg,
+  },
+  hexagon1: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
     borderWidth: 2,
-    borderColor: Colors.gold + '40',
+    borderColor: Colors.gold + '60',
+    borderRadius: 20,
+    transform: [{ rotate: '45deg' }],
+  },
+  hexagon2: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderWidth: 1.5,
+    borderColor: Colors.info + '40',
+    borderRadius: 18,
+    transform: [{ rotate: '45deg' }],
   },
   logoImage: {
     width: 100,
