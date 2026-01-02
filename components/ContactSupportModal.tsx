@@ -40,9 +40,9 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          service_id: 'service_finnest', // You'll need to create this in EmailJS
-          template_id: 'template_finnest', // You'll need to create this in EmailJS
-          user_id: 'YOUR_EMAILJS_PUBLIC_KEY', // Replace with your EmailJS public key
+          service_id: 'service_r611b4a',
+          template_id: 'template_nbp84em',
+          user_id: '9HKfvJSzUreMPTYZf',
           template_params: {
             to_email: 'kndevapp@gmail.com',
             from_name: name,
