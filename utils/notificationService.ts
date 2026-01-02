@@ -32,20 +32,35 @@ export const defaultSettings: NotificationSettings = {
   educationalTips: true,
 };
 
-// Configure how notifications are handled when app is in foreground
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
+// Initialize notification handler safely
+let handlerInitialized = false;
+
+function initializeNotificationHandler() {
+  if (handlerInitialized) return;
+
+  try {
+    // Configure how notifications are handled when app is in foreground
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+    handlerInitialized = true;
+  } catch (error) {
+    console.error('Error initializing notification handler:', error);
+  }
+}
 
 /**
  * Request notification permissions from the user
  */
 export async function requestNotificationPermissions(): Promise<boolean> {
   try {
+    // Initialize handler first
+    initializeNotificationHandler();
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
