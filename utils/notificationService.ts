@@ -1,4 +1,3 @@
-import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
@@ -35,10 +34,11 @@ export const defaultSettings: NotificationSettings = {
 // Initialize notification handler safely
 let handlerInitialized = false;
 
-function initializeNotificationHandler() {
-  if (handlerInitialized) return;
+async function initializeNotificationHandler() {
+  if (handlerInitialized || Platform.OS === 'web') return;
 
   try {
+    const Notifications = await import('expo-notifications');
     // Configure how notifications are handled when app is in foreground
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -57,9 +57,13 @@ function initializeNotificationHandler() {
  * Request notification permissions from the user
  */
 export async function requestNotificationPermissions(): Promise<boolean> {
+  if (Platform.OS === 'web') return false;
+
   try {
+    const Notifications = await import('expo-notifications');
+
     // Initialize handler first
-    initializeNotificationHandler();
+    await initializeNotificationHandler();
 
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -129,7 +133,10 @@ export async function saveNotificationSettings(settings: Partial<NotificationSet
  * Cancel all scheduled notifications
  */
 export async function cancelAllNotifications(): Promise<void> {
+  if (Platform.OS === 'web') return;
+
   try {
+    const Notifications = await import('expo-notifications');
     await Notifications.cancelAllScheduledNotificationsAsync();
   } catch (error) {
     console.error('Error canceling notifications:', error);
@@ -140,7 +147,11 @@ export async function cancelAllNotifications(): Promise<void> {
  * Schedule all notifications based on settings
  */
 export async function scheduleNotifications(settings: NotificationSettings): Promise<void> {
+  if (Platform.OS === 'web') return;
+
   try {
+    const Notifications = await import('expo-notifications');
+
     // Cancel all existing notifications first
     await cancelAllNotifications();
 
@@ -151,27 +162,27 @@ export async function scheduleNotifications(settings: NotificationSettings): Pro
 
     // Schedule ISA Tax Year Reminder (April 5th)
     if (settings.isaReminders && settings.taxYearReminders) {
-      await scheduleISATaxYearReminder();
+      await scheduleISATaxYearReminder(Notifications);
     }
 
     // Schedule monthly summaries
     if (settings.monthlySummaries) {
-      await scheduleMonthlySummary();
+      await scheduleMonthlySummary(Notifications);
     }
 
     // Schedule contribution alerts (check weekly)
     if (settings.contributionAlerts) {
-      await scheduleContributionAlerts();
+      await scheduleContributionAlerts(Notifications);
     }
 
     // Schedule educational tips (bi-weekly)
     if (settings.educationalTips) {
-      await scheduleEducationalTips();
+      await scheduleEducationalTips(Notifications);
     }
 
     // Schedule contribution streak reminders (weekly)
     if (settings.contributionStreaks) {
-      await scheduleContributionStreakReminder();
+      await scheduleContributionStreakReminder(Notifications);
     }
   } catch (error) {
     console.error('Error scheduling notifications:', error);
@@ -181,7 +192,7 @@ export async function scheduleNotifications(settings: NotificationSettings): Pro
 /**
  * Schedule ISA Tax Year Reminder for April 5th
  */
-async function scheduleISATaxYearReminder(): Promise<void> {
+async function scheduleISATaxYearReminder(Notifications: any): Promise<void> {
   const now = new Date();
   const currentYear = now.getFullYear();
 
@@ -248,7 +259,7 @@ async function scheduleISATaxYearReminder(): Promise<void> {
 /**
  * Schedule monthly summary notification
  */
-async function scheduleMonthlySummary(): Promise<void> {
+async function scheduleMonthlySummary(Notifications: any): Promise<void> {
   // Schedule for the 1st of next month at 10am
   const now = new Date();
   const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1, 10, 0, 0);
@@ -269,7 +280,7 @@ async function scheduleMonthlySummary(): Promise<void> {
 /**
  * Schedule contribution alerts
  */
-async function scheduleContributionAlerts(): Promise<void> {
+async function scheduleContributionAlerts(Notifications: any): Promise<void> {
   // Schedule a weekly check-in every Monday at 9am
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -289,7 +300,7 @@ async function scheduleContributionAlerts(): Promise<void> {
 /**
  * Schedule educational tips
  */
-async function scheduleEducationalTips(): Promise<void> {
+async function scheduleEducationalTips(Notifications: any): Promise<void> {
   const tips = [
     'Did you know? You can hold multiple ISAs, but can only pay into one of each type per tax year.',
     'Pro tip: Stocks & Shares ISAs can offer higher returns than Cash ISAs, but come with more risk.',
@@ -322,7 +333,7 @@ async function scheduleEducationalTips(): Promise<void> {
 /**
  * Schedule contribution streak reminder
  */
-async function scheduleContributionStreakReminder(): Promise<void> {
+async function scheduleContributionStreakReminder(Notifications: any): Promise<void> {
   // Remind users about their streak every Saturday at 11am
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -343,7 +354,10 @@ async function scheduleContributionStreakReminder(): Promise<void> {
  * Send a test notification immediately
  */
 export async function sendTestNotification(): Promise<void> {
+  if (Platform.OS === 'web') return;
+
   try {
+    const Notifications = await import('expo-notifications');
     await Notifications.scheduleNotificationAsync({
       content: {
         title: '✅ Notifications Enabled!',
@@ -362,8 +376,11 @@ export async function sendTestNotification(): Promise<void> {
 /**
  * Get all scheduled notifications (for debugging)
  */
-export async function getAllScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
+export async function getAllScheduledNotifications(): Promise<any[]> {
+  if (Platform.OS === 'web') return [];
+
   try {
+    const Notifications = await import('expo-notifications');
     return await Notifications.getAllScheduledNotificationsAsync();
   } catch (error) {
     console.error('Error getting scheduled notifications:', error);
