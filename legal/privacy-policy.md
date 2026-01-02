@@ -12,17 +12,12 @@ When you use FinNest in Guest Mode, financial tracking data you enter (such as I
 
 ### B. Registered User Accounts
 
-If you choose to create a FinNest account, we may collect and process:
+If you choose to create a FinNest account to save your data or access it across devices, we may collect:
 
-- Email address
-- Authentication credentials (stored securely)
+- Email address and login credentials
 - Financial tracking data associated with your account
 
-This information is used to:
-
-- Save and restore your data
-- Enable access across devices
-- Provide account-related features you request
+This data is stored securely on our servers and is used only to provide the features you request, such as saving your data and syncing across devices.
 
 ### C. App & Device Information (Analytics)
 
@@ -68,7 +63,7 @@ For Guest Mode users, financial tracking data:
 
 ### Server Storage (Registered Users)
 
-For registered users, account and financial tracking data is stored on secure servers using appropriate technical and organisational security measures.
+For registered users, account and financial tracking data is stored on secure servers. We implement appropriate technical and organizational measures to protect this data, including encryption and access controls.
 
 ### Security Measures
 
@@ -116,7 +111,7 @@ Under UK GDPR and the Data Protection Act 2018, you have the right to:
 Where data is stored solely on your device, FinNest cannot directly access or export it. You can exercise your rights by managing the data within the app or uninstalling the app.
 
 **For Registered Users:**
-Registered users may request account and data deletion through the app or by contacting us, subject to legal and regulatory obligations.
+Registered users may request account and data deletion through the app or by contacting us.
 
 ## 6. Children's Privacy
 
