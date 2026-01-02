@@ -182,7 +182,7 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
                 <Text style={styles.altContactTitle}>Other Ways to Reach Us:</Text>
                 <View style={styles.altContactItem}>
                   <Ionicons name="mail" size={16} color={Colors.gold} />
-                  <Text style={styles.altContactText}>support@finnest.com</Text>
+                  <Text style={styles.altContactText}>kndevapp@gmail.com</Text>
                 </View>
                 <View style={styles.altContactItem}>
                   <Ionicons name="time" size={16} color={Colors.gold} />
