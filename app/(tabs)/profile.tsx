@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -322,8 +322,8 @@ export default function ProfileScreen() {
                     { text: 'Not Now', style: 'cancel' },
                     {
                       text: 'Sign Up',
-                      onPress: async () => {
-                        await logout();
+                      onPress: () => {
+                        router.push('/(onboarding)/login');
                       },
                     },
                   ]
