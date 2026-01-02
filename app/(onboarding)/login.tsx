@@ -26,6 +26,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Colors, Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useOnboarding } from '@/contexts/OnboardingContext';
+import TermsModal from '@/components/TermsModal';
+import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,6 +40,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const { login, signup, continueAsGuest } = useOnboarding();
 
@@ -125,6 +130,11 @@ export default function LoginScreen() {
         return;
       }
 
+      if (!agreedToTerms) {
+        Alert.alert('Terms Required', 'Please agree to the Terms & Conditions and Privacy Policy to continue.');
+        return;
+      }
+
       if (password.length < 6) {
         Alert.alert('Weak Password', 'Password must be at least 6 characters long.');
         return;
@@ -140,8 +150,9 @@ export default function LoginScreen() {
       setIsLoading(false);
 
       if (success) {
-        // Navigate to onboarding flow
-        router.replace('/(onboarding)/account');
+        // Skip account screen since we already collected this info
+        // Navigate directly to personal information screen
+        router.replace('/(onboarding)/personal');
       } else {
         Alert.alert('Signup Failed', 'An account with this email already exists.');
       }
@@ -156,6 +167,7 @@ export default function LoginScreen() {
     setFullName('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAgreedToTerms(false);
   };
 
   return (
@@ -331,6 +343,44 @@ export default function LoginScreen() {
             </View>
           )}
 
+          {/* Terms & Conditions Checkbox (Signup only) */}
+          {!isLogin && (
+            <TouchableOpacity
+              style={styles.checkboxContainer}
+              onPress={() => setAgreedToTerms(!agreedToTerms)}
+              activeOpacity={0.7}
+              disabled={isLoading}
+            >
+              <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+                {agreedToTerms && (
+                  <Ionicons name="checkmark" size={18} color={Colors.deepNavy} />
+                )}
+              </View>
+              <Text style={styles.checkboxText}>
+                I agree to the{' '}
+                <Text
+                  style={styles.checkboxLink}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setShowTermsModal(true);
+                  }}
+                >
+                  Terms & Conditions
+                </Text>
+                {' '}and{' '}
+                <Text
+                  style={styles.checkboxLink}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setShowPrivacyModal(true);
+                  }}
+                >
+                  Privacy Policy
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* Submit Button */}
           <TouchableOpacity
             style={[styles.button, isLoading && styles.buttonDisabled]}
@@ -398,6 +448,18 @@ export default function LoginScreen() {
 
         <View style={{ height: 60 }} />
       </ScrollView>
+
+      {/* Terms & Conditions Modal */}
+      <TermsModal
+        visible={showTermsModal}
+        onClose={() => setShowTermsModal(false)}
+      />
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicyModal
+        visible={showPrivacyModal}
+        onClose={() => setShowPrivacyModal(false)}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -637,5 +699,37 @@ const styles = StyleSheet.create({
   guestButtonSubtext: {
     fontSize: Typography.sizes.sm,
     color: Colors.lightGray,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: Colors.lightGray,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: Colors.gold,
+    borderColor: Colors.gold,
+  },
+  checkboxText: {
+    flex: 1,
+    fontSize: Typography.sizes.sm,
+    color: Colors.lightGray,
+    lineHeight: 20,
+  },
+  checkboxLink: {
+    color: Colors.gold,
+    fontWeight: Typography.weights.bold,
+    textDecorationLine: 'underline',
   },
 });

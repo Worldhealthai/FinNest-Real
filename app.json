@@ -28,7 +28,9 @@
       },
       "package": "com.finnest.app",
       "permissions": [
-        "INTERNET"
+        "INTERNET",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
       ],
       "intentFilters": [
         {
@@ -54,6 +56,14 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#FFD700",
+          "sounds": []
+        }
+      ],
       [
         "expo-build-properties",
         {
