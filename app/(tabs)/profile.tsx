@@ -10,13 +10,13 @@ import {
   Alert,
   Modal,
   TextInput,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as ImagePicker from 'expo-image-picker';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
 import PersonalInfoModal from '@/components/PersonalInfoModal';
@@ -126,9 +126,17 @@ export default function ProfileScreen() {
     }, [])
   );
 
-  // Handle profile photo selection
+  // Handle profile photo selection - only works on native platforms
   const handlePickImage = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert('Not Available on Web', 'Profile photo upload is only available on mobile devices.');
+      return;
+    }
+
     try {
+      // Dynamically import expo-image-picker only on native platforms
+      const ImagePicker = await import('expo-image-picker');
+
       console.log('Starting image picker...');
 
       // Request permission
