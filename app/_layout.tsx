@@ -24,8 +24,8 @@ function RootLayoutNav() {
         // User not authenticated, redirect to login
         router.replace('/(onboarding)/login');
       } else if (isAuthenticated && !isOnboardingCompleted && !inOnboarding) {
-        // User authenticated but hasn't completed onboarding, redirect to onboarding
-        router.replace('/(onboarding)/account');
+        // User authenticated but hasn't completed onboarding, redirect to personal screen (we skip account screen now)
+        router.replace('/(onboarding)/personal');
       } else if (isAuthenticated && isOnboardingCompleted && inOnboarding) {
         // User authenticated and completed onboarding but is in onboarding flow, redirect to tabs
         router.replace('/(tabs)');

@@ -369,7 +369,12 @@ export default function ProfileScreen() {
                 <View style={styles.userInfoHeader}>
                   <View style={styles.userNameSection}>
                     <Text style={styles.userName}>{userProfile.fullName || 'Welcome'}</Text>
-                    <Text style={styles.userEmail}>{userProfile.email || 'user@finnest.com'}</Text>
+                    {!isGuest && (
+                      <Text style={styles.userEmail}>{userProfile.email || 'user@finnest.com'}</Text>
+                    )}
+                    {isGuest && (
+                      <Text style={styles.userEmail}>Guest Mode - Data stored locally</Text>
+                    )}
                   </View>
 
                   {/* Target Goal Display - Only if set */}
