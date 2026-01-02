@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import AnimatedBackground from '@/components/AnimatedBackground';
@@ -314,21 +314,10 @@ export default function ProfileScreen() {
           {/* Guest Mode Banner */}
           {isGuest && (
             <TouchableOpacity
-              onPress={() => {
-                Alert.alert(
-                  'Create an Account',
-                  'Sign up to save your data permanently and access your account from any device.',
-                  [
-                    { text: 'Not Now', style: 'cancel' },
-                    {
-                      text: 'Sign Up',
-                      onPress: async () => {
-                        await logout();
-                      },
-                    },
-                  ]
-                );
+              onPress={async () => {
+                await logout();
               }}
+              activeOpacity={0.7}
             >
               <GlassCard style={styles.guestBanner} intensity="medium">
                 <LinearGradient
@@ -341,7 +330,7 @@ export default function ProfileScreen() {
                   <View style={styles.guestBannerContent}>
                     <Text style={styles.guestBannerTitle}>You're in Guest Mode</Text>
                     <Text style={styles.guestBannerText}>
-                      Sign up to save your data permanently
+                      Tap here to sign up and save your data permanently
                     </Text>
                   </View>
                   <Ionicons name="arrow-forward" size={20} color={Colors.info} />

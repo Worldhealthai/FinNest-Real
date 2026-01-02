@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -186,7 +187,13 @@ export default function LoginScreen() {
         {/* Logo Section */}
         <Animated.View style={[styles.logoSection, logoAnimatedStyle]}>
           <View style={styles.logoContainer}>
-            <Ionicons name="shield-checkmark" size={60} color={Colors.gold} />
+            <View style={styles.hexagon1} />
+            <View style={styles.hexagon2} />
+            <Image
+              source={require('@/assets/logo.png')}
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
           <Text style={styles.title}>FinNest</Text>
           <LinearGradient
@@ -449,15 +456,32 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255, 215, 0, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.xxl,
+  },
+  hexagon1: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
     borderWidth: 2,
-    borderColor: Colors.gold + '40',
+    borderColor: Colors.gold + '60',
+    borderRadius: 20,
+    transform: [{ rotate: '45deg' }],
+  },
+  hexagon2: {
+    position: 'absolute',
+    width: 120,
+    height: 120,
+    borderWidth: 1.5,
+    borderColor: Colors.info + '40',
+    borderRadius: 18,
+    transform: [{ rotate: '45deg' }],
+  },
+  logoImage: {
+    width: 100,
+    height: 100,
+    tintColor: Colors.gold,
   },
   title: {
     fontSize: Typography.sizes.xxxl,
