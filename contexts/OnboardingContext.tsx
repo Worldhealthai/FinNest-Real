@@ -175,6 +175,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         return false;
       }
 
+      // Clear any existing contributions data from previous sessions/users
+      await AsyncStorage.removeItem('@finnest_contributions');
+      await AsyncStorage.removeItem('@finnest_isa_accounts');
+
       // Store new user
       users[emailLower] = {
         email: emailLower,

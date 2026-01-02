@@ -43,6 +43,7 @@ export default function LoginScreen() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [termsError, setTermsError] = useState(false);
 
   const { login, signup, continueAsGuest } = useOnboarding();
 
@@ -131,7 +132,7 @@ export default function LoginScreen() {
       }
 
       if (!agreedToTerms) {
-        Alert.alert('Terms Required', 'Please agree to the Terms & Conditions and Privacy Policy to continue.');
+        setTermsError(true);
         return;
       }
 
@@ -345,40 +346,57 @@ export default function LoginScreen() {
 
           {/* Terms & Conditions Checkbox (Signup only) */}
           {!isLogin && (
-            <TouchableOpacity
-              style={styles.checkboxContainer}
-              onPress={() => setAgreedToTerms(!agreedToTerms)}
-              activeOpacity={0.7}
-              disabled={isLoading}
-            >
-              <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
-                {agreedToTerms && (
-                  <Ionicons name="checkmark" size={18} color={Colors.deepNavy} />
-                )}
-              </View>
-              <Text style={styles.checkboxText}>
-                I agree to the{' '}
-                <Text
-                  style={styles.checkboxLink}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setShowTermsModal(true);
-                  }}
-                >
-                  Terms & Conditions
+            <View>
+              <TouchableOpacity
+                style={styles.checkboxContainer}
+                onPress={() => {
+                  setAgreedToTerms(!agreedToTerms);
+                  setTermsError(false);
+                }}
+                activeOpacity={0.7}
+                disabled={isLoading}
+              >
+                <View style={[
+                  styles.checkbox,
+                  agreedToTerms && styles.checkboxChecked,
+                  termsError && styles.checkboxError
+                ]}>
+                  {agreedToTerms && (
+                    <Ionicons name="checkmark" size={18} color={Colors.deepNavy} />
+                  )}
+                </View>
+                <Text style={styles.checkboxText}>
+                  I agree to the{' '}
+                  <Text
+                    style={styles.checkboxLink}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setShowTermsModal(true);
+                    }}
+                  >
+                    Terms & Conditions
+                  </Text>
+                  {' '}and{' '}
+                  <Text
+                    style={styles.checkboxLink}
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      setShowPrivacyModal(true);
+                    }}
+                  >
+                    Privacy Policy
+                  </Text>
                 </Text>
-                {' '}and{' '}
-                <Text
-                  style={styles.checkboxLink}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    setShowPrivacyModal(true);
-                  }}
-                >
-                  Privacy Policy
-                </Text>
-              </Text>
-            </TouchableOpacity>
+              </TouchableOpacity>
+              {termsError && (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={16} color={Colors.error} />
+                  <Text style={styles.errorText}>
+                    Please agree to the Terms & Conditions and Privacy Policy to continue
+                  </Text>
+                </View>
+              )}
+            </View>
           )}
 
           {/* Submit Button */}
@@ -731,5 +749,22 @@ const styles = StyleSheet.create({
     color: Colors.gold,
     fontWeight: Typography.weights.bold,
     textDecorationLine: 'underline',
+  },
+  checkboxError: {
+    borderColor: Colors.error,
+    borderWidth: 2,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 8,
+    marginLeft: 4,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: Typography.sizes.xs,
+    color: Colors.error,
+    lineHeight: 16,
   },
 });
