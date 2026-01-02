@@ -21,7 +21,6 @@ import AnimatedBackground from '@/components/AnimatedBackground';
 import GlassCard from '@/components/GlassCard';
 import PersonalInfoModal from '@/components/PersonalInfoModal';
 import ISAAccountsModal from '@/components/ISAAccountsModal';
-import SecurityModal from '@/components/SecurityModal';
 import TermsModal from '@/components/TermsModal';
 import PrivacyPolicyModal from '@/components/PrivacyPolicyModal';
 import ContactSupportModal from '@/components/ContactSupportModal';
@@ -88,7 +87,6 @@ export default function ProfileScreen() {
   // Modal states
   const [personalInfoVisible, setPersonalInfoVisible] = React.useState(false);
   const [isaAccountsVisible, setIsaAccountsVisible] = React.useState(false);
-  const [securityVisible, setSecurityVisible] = React.useState(false);
   const [notificationsVisible, setNotificationsVisible] = React.useState(false);
   const [termsVisible, setTermsVisible] = React.useState(false);
   const [privacyVisible, setPrivacyVisible] = React.useState(false);
@@ -428,16 +426,6 @@ export default function ProfileScreen() {
               </GlassCard>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setSecurityVisible(true)}>
-              <GlassCard style={styles.menuCard} intensity="medium">
-                <View style={styles.menuItem}>
-                  <Ionicons name="shield-checkmark-outline" size={24} color={Colors.warning} />
-                  <Text style={styles.menuText}>Security</Text>
-                  <Ionicons name="chevron-forward" size={22} color={Colors.lightGray} />
-                </View>
-              </GlassCard>
-            </TouchableOpacity>
-
             <TouchableOpacity onPress={() => setNotificationsVisible(true)}>
               <GlassCard style={styles.menuCard} intensity="medium">
                 <View style={styles.menuItem}>
@@ -534,10 +522,6 @@ export default function ProfileScreen() {
         visible={isaAccountsVisible}
         onClose={() => setIsaAccountsVisible(false)}
         contributions={contributions}
-      />
-      <SecurityModal
-        visible={securityVisible}
-        onClose={() => setSecurityVisible(false)}
       />
       <NotificationsModal
         visible={notificationsVisible}

@@ -25,9 +25,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function PersonalScreen() {
   const { userProfile, updateProfile } = useOnboarding();
   const [dateOfBirth, setDateOfBirth] = useState(userProfile.dateOfBirth || '');
-  const [nationalInsuranceNumber, setNationalInsuranceNumber] = useState(
-    userProfile.nationalInsuranceNumber || ''
-  );
   const [phoneNumber, setPhoneNumber] = useState(userProfile.phoneNumber || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -43,20 +40,6 @@ export default function PersonalScreen() {
     opacity: contentOpacity.value,
     transform: [{ translateY: contentY.value }],
   }));
-
-  const formatNINO = (text: string) => {
-    // Remove any non-alphanumeric characters
-    const cleaned = text.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    // Format as XX 12 34 56 X
-    let formatted = '';
-    for (let i = 0; i < cleaned.length && i < 9; i++) {
-      if (i === 2 || i === 4 || i === 6 || i === 8) {
-        formatted += ' ';
-      }
-      formatted += cleaned[i];
-    }
-    return formatted;
-  };
 
   const formatDate = (text: string) => {
     // Remove any non-numeric characters
@@ -102,12 +85,6 @@ export default function PersonalScreen() {
     return age >= 18;
   };
 
-  const validateNINO = (nino: string) => {
-    const cleaned = nino.replace(/\s/g, '');
-    // Basic UK NINO format: 2 letters, 6 digits, 1 letter
-    return /^[A-Z]{2}\d{6}[A-Z]$/.test(cleaned);
-  };
-
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
@@ -117,12 +94,6 @@ export default function PersonalScreen() {
       newErrors.dateOfBirth = 'Please enter a valid date (DD/MM/YYYY)';
     } else if (!validateAge(dateOfBirth)) {
       newErrors.dateOfBirth = 'You must be 18 or older to open an ISA';
-    }
-
-    if (!nationalInsuranceNumber.trim()) {
-      newErrors.nationalInsuranceNumber = 'National Insurance Number is required';
-    } else if (!validateNINO(nationalInsuranceNumber)) {
-      newErrors.nationalInsuranceNumber = 'Please enter a valid UK NINO';
     }
 
     if (phoneNumber && phoneNumber.replace(/\s/g, '').length !== 11) {
@@ -135,13 +106,13 @@ export default function PersonalScreen() {
 
   const handleContinue = () => {
     if (validateForm()) {
-      updateProfile({ dateOfBirth, nationalInsuranceNumber, phoneNumber });
+      updateProfile({ dateOfBirth, phoneNumber });
       router.push('/(onboarding)/goals');
     }
   };
 
   const handleSkip = () => {
-    // Validate only required fields (DOB and NI Number), skip phone validation
+    // Validate only required field (DOB), skip phone validation
     const newErrors: Record<string, string> = {};
 
     if (!dateOfBirth.trim()) {
@@ -152,16 +123,10 @@ export default function PersonalScreen() {
       newErrors.dateOfBirth = 'You must be 18 or older to open an ISA';
     }
 
-    if (!nationalInsuranceNumber.trim()) {
-      newErrors.nationalInsuranceNumber = 'National Insurance Number is required';
-    } else if (!validateNINO(nationalInsuranceNumber)) {
-      newErrors.nationalInsuranceNumber = 'Please enter a valid UK NINO';
-    }
-
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      updateProfile({ dateOfBirth, nationalInsuranceNumber, phoneNumber: '' });
+      updateProfile({ dateOfBirth, phoneNumber: '' });
       router.push('/(onboarding)/goals');
     }
   };
@@ -243,40 +208,6 @@ export default function PersonalScreen() {
                     <Text style={styles.errorText}>{errors.dateOfBirth}</Text>
                   )}
                   <Text style={styles.hint}>You must be 18+ to open an ISA account</Text>
-                </View>
-
-                {/* National Insurance Number */}
-                <View style={styles.inputGroup}>
-                  <Text style={styles.label}>
-                    National Insurance Number <Text style={styles.required}>*</Text>
-                  </Text>
-                  <View
-                    style={[
-                      styles.inputWrapper,
-                      errors.nationalInsuranceNumber && styles.inputError,
-                    ]}
-                  >
-                    <Ionicons name="shield-checkmark-outline" size={20} color={Colors.gold} />
-                    <TextInput
-                      style={styles.input}
-                      value={nationalInsuranceNumber}
-                      onChangeText={(text) =>
-                        setNationalInsuranceNumber(formatNINO(text))
-                      }
-                      placeholder="XX 12 34 56 X"
-                      placeholderTextColor={Colors.mediumGray}
-                      autoCapitalize="characters"
-                      maxLength={13}
-                    />
-                  </View>
-                  {errors.nationalInsuranceNumber && (
-                    <Text style={styles.errorText}>
-                      {errors.nationalInsuranceNumber}
-                    </Text>
-                  )}
-                  <Text style={styles.hint}>
-                    Required to open an ISA account in the UK
-                  </Text>
                 </View>
 
                 {/* Phone Number (Optional) */}
