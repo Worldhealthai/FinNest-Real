@@ -6,133 +6,102 @@
 
 ## 1. Information We Collect
 
-### A. Guest Mode (Local-Only Data)
+### Financial Tracking Data (Stored Locally)
 
-When you use FinNest in Guest Mode, financial tracking data you enter (such as ISA contributions, amounts, and dates) is stored locally on your device only. FinNest does not collect, access, or store this data.
+When you use FinNest to track your ISA contributions, you may enter:
 
-### B. Registered User Accounts
+- ISA contribution amounts
+- Contribution dates
+- ISA provider names
+- ISA account types
 
-If you choose to create a FinNest account to save your data or access it across devices, we may collect:
+This data is stored locally on your device. FinNest cannot access, retrieve, or delete this information on your behalf. You control this data directly within the app.
+
+### Device Information
+
+We may collect device type, operating system version, and app version for analytics purposes only.
+
+### Registered User Accounts
+
+If you create a FinNest account, we may collect:
 
 - Email address and login credentials
 - Financial tracking data associated with your account
 
-This data is stored securely on our servers and is used only to provide the features you request, such as saving your data and syncing across devices.
-
-### C. App & Device Information (Analytics)
-
-We may collect limited technical information such as:
-
-- Device type
-- Operating system version
-- App version
-- Anonymous usage events (e.g. app launches)
-
-This data:
-
-- Does not include financial data
-- Does not directly identify you
-- Is used solely for analytics, performance monitoring, and bug fixing
-
-## 2. How We Use Your Information
-
-We use information to:
-
-- Operate and maintain the FinNest app
-- Display ISA allowance usage and contribution history (locally on your device)
-- Improve app performance and reliability
-- Provide customer support
-
-### Lawful Bases for Processing
-
-Where applicable, we process personal data under:
-
-- Your consent
-- Our legitimate interests in operating and improving the app
-- Legal obligations, where required
-
-## 3. Data Storage & Security
-
-### Local Storage (Guest Mode)
-
-For Guest Mode users, financial tracking data:
-
-- Remains on your device unless you delete it
-- May be lost if you uninstall the app or reset your device
-- Is not accessible to FinNest
-
-### Server Storage (Registered Users)
-
-For registered users, account and financial tracking data is stored on secure servers. We implement appropriate technical and organizational measures to protect this data, including encryption and access controls.
-
-### Security Measures
-
-We apply appropriate safeguards including:
-
-- Secure local storage practices
-- Secure development standards
-- Encryption for any data transmitted (e.g. analytics or future integrations)
-- Industry-standard server security for registered user data
-
-## 4. Third-Party Services
-
-We may use trusted third-party providers for:
-
-- Analytics
-- Crash reporting
-- Performance monitoring
-
-These providers process only the minimum data necessary and are contractually required to protect your information.
-
-### Data Sharing for Registered Users
-
-Account data may be processed by trusted service providers strictly for hosting, authentication, and data security purposes.
+This data is stored securely on our servers and used only to provide features such as saving and syncing data across devices.
 
 ### Future Optional Integrations
 
-If we introduce optional integrations with financial institutions:
+If you choose to connect external services (such as ISA providers), we will only access and use that information with your explicit consent and solely to provide features you request.
 
-- You must explicitly opt in
-- We will clearly explain what data is accessed and why
-- You may revoke access at any time
+## 2. How We Use Your Information
 
-## 5. Your Data Protection Rights
+We use the information we collect to:
 
-Under UK GDPR and the Data Protection Act 2018, you have the right to:
+- Provide and operate the FinNest service
+- Calculate ISA allowances and contributions
+- Display your contribution history
+- Improve our app and fix bugs
+- Provide customer support
 
-- Access your personal data
-- Correct inaccurate data
-- Request erasure
-- Object to certain processing
-- Request data portability
-- Lodge a complaint with the ICO
+We process personal data based on your consent, our legitimate interest in operating and improving the app, and to comply with legal obligations where applicable.
 
-**For Guest Mode Users:**
-Where data is stored solely on your device, FinNest cannot directly access or export it. You can exercise your rights by managing the data within the app or uninstalling the app.
+## 3. Data Storage and Security
 
-**For Registered Users:**
-Registered users may request account and data deletion through the app or by contacting us.
+### Local Storage
+
+Financial tracking data (ISA contributions, amounts, dates) for guest users is stored locally on your device. It will be lost if you delete the app or reset your device.
+
+### Server Storage
+
+For registered users, account and financial tracking data is stored securely on our servers with encryption and access controls.
+
+### Security Measures
+
+We implement appropriate technical and organizational measures to protect your data. Where data is transmitted (such as analytics or optional integrations), it is encrypted in transit.
+
+## 4. Your Rights
+
+You have the following rights regarding your personal information:
+
+- **Right of Access** – Request a copy of your data
+- **Right to Rectification** – Correct inaccurate information
+- **Right to Erasure** – Request deletion of your data
+- **Right to Data Portability** – Receive your data in a portable format
+- **Right to Object** – Object to certain processing activities
+- **Right to Lodge a Complaint** – Contact the ICO
+
+**Note:** For data stored only on your device, you may need to manage or delete it directly in the app. Registered users may request deletion of account data through the app or by contacting us.
+
+## 5. Data Sharing
+
+We may share limited data with trusted third-party service providers who assist us with analytics, hosting, authentication, or app performance monitoring.
+
+We will never sell, rent, or trade your personal information for marketing purposes.
+
+### Future Optional Integrations
+
+Any connection to external financial services will only occur with your explicit consent, and you may revoke access at any time.
 
 ## 6. Children's Privacy
 
-FinNest is not intended for users under the age of 18. We do not knowingly collect personal data from children.
+FinNest is not intended for use by anyone under the age of 18. We do not knowingly collect personal information from children.
 
 ## 7. Changes to This Policy
 
-We may update this Privacy Policy from time to time. Material changes will be clearly communicated within the app. Continued use of FinNest constitutes acceptance of the updated policy.
+We may update this Privacy Policy from time to time. The "Last Updated" date will reflect the most recent version, and material changes will be posted in the app. Continued use of FinNest after updates indicates your acceptance of the revised Privacy Policy.
 
 ## 8. Contact Us
 
-If you have questions about this Privacy Policy, please contact:
-
 **Email:** privacy@finnest.app
 
-## 9. Information Commissioner's Office (ICO)
+## 9. Information Commissioner's Office
 
-You have the right to lodge a complaint with the UK supervisory authority:
+You have the right to lodge a complaint with the UK's data protection authority:
 
-**Website:** https://ico.org.uk
-**Helpline:** 0303 123 1113
+Website: https://ico.org.uk
+
+Helpline: 0303 123 1113
 
 ---
 
