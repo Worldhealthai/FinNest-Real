@@ -18,17 +18,23 @@ The Service is provided on an "as is" and "as available" basis. FinNest reserves
 
 You must be at least 18 years old and legally capable of entering into a binding contract to use FinNest.
 
-## 4. User Accounts & Data Storage
+## 4. User Accounts, Guest Mode & Data Storage
 
-FinNest may operate without creating a server-side user account. Financial tracking data entered into the app (such as ISA contributions) may be stored locally on your device only.
+FinNest offers both Guest Mode and Registered User Accounts.
 
-Where data is stored locally:
+### Guest Mode
 
-- FinNest does not have access to this data
-- FinNest cannot retrieve, modify, or delete this data on your behalf
-- You are responsible for managing and safeguarding this data on your device
+When using FinNest in Guest Mode, financial tracking data entered into the app (such as ISA contributions) is stored locally on your device only. FinNest does not have access to this data and cannot retrieve or delete it on your behalf.
 
-You are responsible for maintaining the security of your device and any credentials used to access the Service.
+### Registered User Accounts
+
+To save data, enable backups, or access features across devices, you may be required to create a registered user account. When you create an account:
+
+- We process certain personal information, such as your email address and authentication credentials
+- Financial tracking data associated with your account may be stored securely on FinNest servers
+- This data is used solely to provide the requested account functionality
+
+You are responsible for maintaining the confidentiality of your login credentials and for all activities that occur under your account.
 
 ## 5. Financial Information & No Advice
 
