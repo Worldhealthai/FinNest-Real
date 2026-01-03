@@ -32,6 +32,7 @@ import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { ISA_ANNUAL_ALLOWANCE, formatCurrency } from '@/constants/isaData';
 import { getCurrentTaxYear, isDateInTaxYear } from '@/utils/taxYear';
 import { useOnboarding } from '@/contexts/OnboardingContext';
+import { loadContributions as loadContributionsDB } from '@/lib/contributions';
 
 const CONTRIBUTIONS_STORAGE_KEY = '@finnest_contributions';
 
@@ -99,13 +100,20 @@ export default function ProfileScreen() {
   // Contributions state
   const [contributions, setContributions] = useState<ISAContribution[]>([]);
 
-  // Load contributions from AsyncStorage
+  // Load contributions from Supabase (authenticated) or AsyncStorage (guest)
   const loadContributions = async () => {
     try {
-      const savedData = await AsyncStorage.getItem(CONTRIBUTIONS_STORAGE_KEY);
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        setContributions(parsed);
+      if (isGuest) {
+        // Guest mode: load from AsyncStorage
+        const savedData = await AsyncStorage.getItem(CONTRIBUTIONS_STORAGE_KEY);
+        if (savedData) {
+          const parsed = JSON.parse(savedData);
+          setContributions(parsed);
+        }
+      } else {
+        // Authenticated: load from Supabase
+        const data = await loadContributionsDB();
+        setContributions(data);
       }
     } catch (error) {
       console.error('Error loading contributions:', error);
@@ -115,7 +123,7 @@ export default function ProfileScreen() {
   // Load contributions on mount and when screen comes into focus
   useEffect(() => {
     loadContributions();
-  }, []);
+  }, [isGuest]);
 
   // Reload contributions whenever the profile tab is focused
   useFocusEffect(
@@ -361,14 +369,18 @@ export default function ProfileScreen() {
             <View style={styles.statsContainer}>
               <View style={styles.statBox}>
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: 120 }}>
-                  <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
+                  <View style={[styles.statCircle, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
+                  </View>
                 </View>
                 <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
               </View>
 
               <View style={styles.statBox}>
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: 120 }}>
-                  <Text style={[styles.statValue, { fontSize: Typography.sizes.lg, color: Colors.success }]}>{formatCurrency(totalAllTime)}</Text>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: 140 }}>
+                  <View style={[styles.statCircleLarge, { backgroundColor: 'rgba(33, 150, 243, 0.15)', borderColor: '#2196F3' }]}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xl, color: '#2196F3' }]} numberOfLines={1} adjustsFontSizeToFit>{formatCurrency(totalAllTime)}</Text>
+                  </View>
                 </View>
                 <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
               </View>
@@ -387,19 +399,6 @@ export default function ProfileScreen() {
                 <View style={styles.menuItem}>
                   <Ionicons name="person-outline" size={24} color={Colors.gold} />
                   <Text style={styles.menuText}>Personal Information</Text>
-                  <Ionicons name="chevron-forward" size={22} color={Colors.lightGray} />
-                </View>
-              </GlassCard>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setIsaAccountsVisible(true)}>
-              <GlassCard style={styles.menuCard} intensity="medium">
-                <View style={styles.menuItem}>
-                  <Ionicons name="wallet-outline" size={24} color={Colors.success} />
-                  <Text style={styles.menuText}>Connected Accounts</Text>
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{uniqueAccounts}</Text>
-                  </View>
                   <Ionicons name="chevron-forward" size={22} color={Colors.lightGray} />
                 </View>
               </GlassCard>
@@ -781,6 +780,23 @@ const styles = StyleSheet.create({
   },
   statBox: {
     alignItems: 'center',
+  },
+  statCircle: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+  },
+  statCircleLarge: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    paddingHorizontal: 8,
   },
   statValue: {
     color: Colors.white,
