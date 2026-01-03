@@ -368,8 +368,8 @@ export default function ProfileScreen() {
             {/* Simple Stats without SVG */}
             <View style={styles.statsContainer}>
               <View style={styles.statBox}>
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: 120 }}>
-                  <View style={[styles.statCircle, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: 140 }}>
+                  <View style={[styles.statCircleLarge, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
                     <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
                   </View>
                 </View>

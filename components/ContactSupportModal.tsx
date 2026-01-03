@@ -14,6 +14,7 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleSubmit = async () => {
     // Validation
@@ -52,22 +53,19 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
       });
 
       if (response.ok) {
-        Alert.alert(
-          'Message Sent!',
-          'Thank you for contacting us. Our support team will get back to you within 24 hours.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Reset form
-                setName('');
-                setEmail('');
-                setMessage('');
-                onClose();
-              },
-            },
-          ]
-        );
+        // Show confirmation message
+        setShowConfirmation(true);
+
+        // Reset form
+        setName('');
+        setEmail('');
+        setMessage('');
+
+        // Hide confirmation and close modal after 3 seconds
+        setTimeout(() => {
+          setShowConfirmation(false);
+          onClose();
+        }, 3000);
       } else {
         throw new Error('Failed to send email');
       }
@@ -109,12 +107,25 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.scrollContent}
             >
-              <Text style={styles.subtitle}>
-                Have a question or need help? Send us a message and we'll get back to you within 24 hours.
-              </Text>
+              {showConfirmation ? (
+                /* Confirmation Message */
+                <View style={styles.confirmationContainer}>
+                  <View style={styles.confirmationIconContainer}>
+                    <Ionicons name="checkmark-circle" size={64} color={Colors.success} />
+                  </View>
+                  <Text style={styles.confirmationTitle}>Message Sent!</Text>
+                  <Text style={styles.confirmationText}>
+                    Thank you for contacting us. Our support team will get back to you within 24 hours.
+                  </Text>
+                </View>
+              ) : (
+                <>
+                  <Text style={styles.subtitle}>
+                    Have a question or need help? Send us a message and we'll get back to you within 24 hours.
+                  </Text>
 
-              {/* Name Input */}
-              <View style={styles.inputGroup}>
+                  {/* Name Input */}
+                  <View style={styles.inputGroup}>
                 <Text style={styles.label}>Your Name</Text>
                 <TextInput
                   style={styles.input}
@@ -186,6 +197,8 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
                   <Text style={styles.altContactText}>Response time: Within 24 hours</Text>
                 </View>
               </View>
+                </>
+              )}
             </ScrollView>
           </GlassCard>
         </View>
@@ -304,5 +317,27 @@ const styles = StyleSheet.create({
   altContactText: {
     fontSize: Typography.sizes.xs,
     color: Colors.lightGray,
+  },
+  confirmationContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xxxl,
+    paddingHorizontal: Spacing.lg,
+  },
+  confirmationIconContainer: {
+    marginBottom: Spacing.lg,
+  },
+  confirmationTitle: {
+    fontSize: Typography.sizes.xxl,
+    color: Colors.white,
+    fontWeight: Typography.weights.bold,
+    marginBottom: Spacing.md,
+    textAlign: 'center',
+  },
+  confirmationText: {
+    fontSize: Typography.sizes.md,
+    color: Colors.lightGray,
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });
