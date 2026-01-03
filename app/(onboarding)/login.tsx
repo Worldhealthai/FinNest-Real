@@ -480,7 +480,7 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </Animated.View>
 
-        <View style={{ height: 60 }} />
+        <View style={{ height: 20 }} />
       </ScrollView>
 
       {/* Terms & Conditions Modal */}

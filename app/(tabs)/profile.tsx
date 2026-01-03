@@ -306,7 +306,7 @@ export default function ProfileScreen() {
                         style={styles.avatarImage}
                       />
                     ) : (
-                      <Ionicons name="person" size={50} color={Colors.white} />
+                      <Ionicons name="person" size={40} color={Colors.white} />
                     )}
                   </View>
                 </LinearGradient>
@@ -368,21 +368,21 @@ export default function ProfileScreen() {
             {/* Simple Stats without SVG */}
             <View style={styles.statsContainer}>
               <View style={styles.statBox}>
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: 140 }}>
-                  <View style={[styles.statCircleLarge, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
-                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: 110 }}>
+                  <View style={[styles.statCircleMedium, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
                   </View>
                 </View>
-                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>ISA Accounts</Text>
+                <Text style={[styles.statLabel, { marginTop: Spacing.sm }]}>ISA Accounts</Text>
               </View>
 
               <View style={styles.statBox}>
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: 140 }}>
-                  <View style={[styles.statCircleLarge, { backgroundColor: 'rgba(33, 150, 243, 0.15)', borderColor: '#2196F3' }]}>
-                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xl, color: '#2196F3' }]} numberOfLines={1} adjustsFontSizeToFit>{formatCurrency(totalAllTime)}</Text>
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: 110 }}>
+                  <View style={[styles.statCircleMedium, { backgroundColor: 'rgba(33, 150, 243, 0.15)', borderColor: '#2196F3' }]}>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.lg, color: '#2196F3' }]} numberOfLines={1} adjustsFontSizeToFit>{formatCurrency(totalAllTime)}</Text>
                   </View>
                 </View>
-                <Text style={[styles.statLabel, { marginTop: Spacing.md }]}>Total Saved</Text>
+                <Text style={[styles.statLabel, { marginTop: Spacing.sm }]}>Total Saved</Text>
               </View>
             </View>
           </GlassCard>
@@ -468,7 +468,7 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.actionButtonWrapper} onPress={handleLogout}>
               <GlassCard style={styles.logoutCard} intensity="medium">
                 <View style={styles.logoutButton}>
-                  <Ionicons name="log-out-outline" size={24} color={Colors.warning} />
+                  <Ionicons name="log-out-outline" size={20} color={Colors.warning} />
                   <Text style={styles.logoutText}>Log Out</Text>
                 </View>
               </GlassCard>
@@ -477,7 +477,7 @@ export default function ProfileScreen() {
             <TouchableOpacity style={styles.actionButtonWrapper} onPress={handleDeleteAccount}>
               <GlassCard style={styles.deleteCard} intensity="medium">
                 <View style={styles.deleteButton}>
-                  <Ionicons name="trash-outline" size={24} color={Colors.error} />
+                  <Ionicons name="trash-outline" size={20} color={Colors.error} />
                   <Text style={styles.deleteText}>Delete Account</Text>
                 </View>
               </GlassCard>
@@ -616,7 +616,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   greeting: {
-    fontSize: Typography.sizes.xxxl,
+    fontSize: Typography.sizes.xxl,
     color: Colors.white,
     fontWeight: Typography.weights.extrabold,
   },
@@ -625,8 +625,8 @@ const styles = StyleSheet.create({
     height: 60,
   },
   profileCard: {
-    padding: Spacing.xl,
-    marginBottom: Spacing.xl,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
     shadowColor: Colors.gold,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -636,25 +636,25 @@ const styles = StyleSheet.create({
   profileTop: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.xl,
-    paddingBottom: Spacing.xl,
+    marginBottom: Spacing.lg,
+    paddingBottom: Spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: Colors.glassLight,
   },
   avatarContainer: {
     position: 'relative',
-    marginRight: Spacing.lg,
+    marginRight: Spacing.md,
   },
   avatarGradient: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    padding: 4,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    padding: 3,
   },
   avatar: {
     width: '100%',
     height: '100%',
-    borderRadius: 56,
+    borderRadius: 42,
     backgroundColor: Colors.deepNavy,
     alignItems: 'center',
     justifyContent: 'center',
@@ -663,7 +663,7 @@ const styles = StyleSheet.create({
   avatarImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 56,
+    borderRadius: 42,
   },
   avatarBadge: {
     position: 'absolute',
@@ -691,7 +691,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    fontSize: Typography.sizes.xxl,
+    fontSize: Typography.sizes.xl,
     color: Colors.white,
     fontWeight: Typography.weights.extrabold,
     marginBottom: 4,
@@ -701,9 +701,9 @@ const styles = StyleSheet.create({
     color: Colors.lightGray,
   },
   targetGoalBadge: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
     overflow: 'hidden',
     borderWidth: 1.5,
     borderColor: 'rgba(255, 215, 0, 0.4)',
@@ -739,18 +739,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   targetGoalLabel: {
-    fontSize: Typography.sizes.xxs,
+    fontSize: 9,
     color: Colors.gold,
     fontWeight: Typography.weights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: 4,
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
   targetGoalAmount: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.md,
     color: Colors.white,
     fontWeight: Typography.weights.extrabold,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   targetGoalDate: {
     fontSize: Typography.sizes.xxs,
@@ -797,6 +797,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     paddingHorizontal: 8,
+  },
+  statCircleMedium: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    paddingHorizontal: 6,
   },
   statValue: {
     color: Colors.white,
@@ -857,7 +866,7 @@ const styles = StyleSheet.create({
   },
   logoutCard: {
     marginBottom: Spacing.lg,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     shadowColor: Colors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -868,10 +877,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   logoutText: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.md,
     color: Colors.error,
     fontWeight: Typography.weights.bold,
   },
@@ -890,7 +899,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deleteCard: {
-    padding: Spacing.lg,
+    padding: Spacing.md,
     shadowColor: Colors.error,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -901,10 +910,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
   },
   deleteText: {
-    fontSize: Typography.sizes.lg,
+    fontSize: Typography.sizes.md,
     color: Colors.error,
     fontWeight: Typography.weights.bold,
   },
