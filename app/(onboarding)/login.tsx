@@ -196,6 +196,7 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         bounces={false}
+        overScrollMode="never"
       >
         {/* Logo Section */}
         <Animated.View style={[styles.logoSection, logoAnimatedStyle]}>
