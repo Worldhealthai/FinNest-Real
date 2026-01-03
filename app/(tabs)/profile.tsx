@@ -370,7 +370,7 @@ export default function ProfileScreen() {
               <View style={styles.statBox}>
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: 110 }}>
                   <View style={[styles.statCircleMedium, { backgroundColor: 'rgba(255, 215, 0, 0.15)', borderColor: Colors.gold }]}>
-                    <Text style={[styles.statValue, { fontSize: Typography.sizes.xxl, color: Colors.gold }]}>{uniqueAccounts}</Text>
+                    <Text style={[styles.statValue, { fontSize: Typography.sizes.lg, color: Colors.gold }]}>{uniqueAccounts}</Text>
                   </View>
                 </View>
                 <Text style={[styles.statLabel, { marginTop: Spacing.sm }]}>ISA Accounts</Text>
