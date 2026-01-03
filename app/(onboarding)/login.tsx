@@ -451,7 +451,7 @@ export default function LoginScreen() {
             style={styles.guestButton}
             onPress={async () => {
               await continueAsGuest();
-              router.replace('/(tabs)');
+              // Navigation will happen automatically via _layout.tsx navigation guard
             }}
             activeOpacity={0.7}
             disabled={isLoading}

@@ -12,13 +12,12 @@ interface ContactSupportModalProps {
 export default function ContactSupportModal({ visible, onClose }: ContactSupportModalProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     // Validation
-    if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
+    if (!name.trim() || !email.trim() || !message.trim()) {
       Alert.alert('Required Fields', 'Please fill in all fields before submitting.');
       return;
     }
@@ -47,7 +46,6 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
             to_email: 'kndevapp@gmail.com',
             from_name: name,
             from_email: email,
-            subject: subject,
             message: message,
           },
         }),
@@ -64,7 +62,6 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
                 // Reset form
                 setName('');
                 setEmail('');
-                setSubject('');
                 setMessage('');
                 onClose();
               },
@@ -140,19 +137,6 @@ export default function ContactSupportModal({ visible, onClose }: ContactSupport
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  editable={!isSubmitting}
-                />
-              </View>
-
-              {/* Subject Input */}
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>Subject</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="What's this about?"
-                  placeholderTextColor={Colors.mediumGray}
-                  value={subject}
-                  onChangeText={setSubject}
                   editable={!isSubmitting}
                 />
               </View>

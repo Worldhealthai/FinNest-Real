@@ -188,6 +188,7 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             await logout();
+            router.replace('/(onboarding)/login');
           },
         },
       ]
@@ -228,6 +229,9 @@ export default function ProfileScreen() {
 
         setDeleteModalVisible(false);
         setDeleteText('');
+
+        // Navigate to login screen
+        router.replace('/(onboarding)/login');
       } catch (error) {
         console.error('Error deleting account:', error);
         Alert.alert('Error', 'Failed to delete account. Please try again.');
