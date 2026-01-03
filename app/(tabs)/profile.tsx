@@ -302,9 +302,6 @@ export default function ProfileScreen() {
                     )}
                   </View>
                 </LinearGradient>
-                <TouchableOpacity style={styles.avatarBadge} onPress={handlePickImage}>
-                  <Ionicons name="camera" size={18} color={Colors.deepNavy} />
-                </TouchableOpacity>
               </Animated.View>
 
               <View style={styles.userInfo}>
