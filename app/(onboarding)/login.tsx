@@ -450,8 +450,14 @@ export default function LoginScreen() {
           <TouchableOpacity
             style={styles.guestButton}
             onPress={async () => {
-              await continueAsGuest();
-              router.replace('/(tabs)');
+              try {
+                await continueAsGuest();
+                setTimeout(() => {
+                  router.replace('/(tabs)');
+                }, 150);
+              } catch (error) {
+                console.error('Guest mode error:', error);
+              }
             }}
             activeOpacity={0.7}
             disabled={isLoading}

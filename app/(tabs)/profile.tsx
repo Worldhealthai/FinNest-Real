@@ -187,7 +187,15 @@ export default function ProfileScreen() {
           text: 'Log Out',
           style: 'destructive',
           onPress: async () => {
-            await logout();
+            try {
+              await logout();
+              setTimeout(() => {
+                router.replace('/(onboarding)/login');
+              }, 150);
+            } catch (error) {
+              console.error('Logout error:', error);
+              Alert.alert('Error', 'Failed to log out. Please try again.');
+            }
           },
         },
       ]
@@ -228,6 +236,11 @@ export default function ProfileScreen() {
 
         setDeleteModalVisible(false);
         setDeleteText('');
+
+        // Navigate to login screen after state clears
+        setTimeout(() => {
+          router.replace('/(onboarding)/login');
+        }, 150);
       } catch (error) {
         console.error('Error deleting account:', error);
         Alert.alert('Error', 'Failed to delete account. Please try again.');
