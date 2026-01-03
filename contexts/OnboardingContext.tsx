@@ -203,6 +203,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
+      // Clear guest mode flag first
+      await AsyncStorage.removeItem(GUEST_MODE_KEY);
+      setIsGuest(false);
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.toLowerCase(),
         password,
@@ -230,6 +234,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const signup = async (email: string, password: string, fullName: string): Promise<boolean> => {
     try {
+      // Clear guest mode flag first
+      await AsyncStorage.removeItem(GUEST_MODE_KEY);
+      setIsGuest(false);
+
       const emailLower = email.toLowerCase();
 
       const { data, error } = await supabase.auth.signUp({
@@ -294,7 +302,6 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const continueAsGuest = async () => {
     try {
       await AsyncStorage.setItem(GUEST_MODE_KEY, 'true');
-      await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
       setIsGuest(true);
       setIsAuthenticated(true);
       setIsOnboardingCompleted(true);
