@@ -871,12 +871,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 6,
+    minHeight: 56,
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
+    minHeight: 40,
   },
   logoutText: {
     fontSize: Typography.sizes.md,
@@ -904,12 +906,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 6,
+    minHeight: 56,
   },
   deleteButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
+    minHeight: 40,
   },
   deleteText: {
     fontSize: Typography.sizes.md,
