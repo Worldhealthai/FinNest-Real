@@ -50,6 +50,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: Colors.gold,
         tabBarInactiveTintColor: Colors.mediumGray,
+        tabBarLabelPosition: 'below-icon',
         tabBarStyle: {
           position: 'absolute',
           bottom: 20,
@@ -76,15 +77,15 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: Typography.sizes.xs,
           fontWeight: Typography.weights.semibold,
+          marginTop: 8,
+          marginBottom: 8,
+        },
+        tabBarIconStyle: {
           marginTop: 4,
           marginBottom: 4,
         },
-        tabBarIconStyle: {
-          marginTop: 8,
-          marginBottom: 0,
-        },
         tabBarItemStyle: {
-          paddingVertical: 4,
+          paddingVertical: 8,
         },
       }}
     >
