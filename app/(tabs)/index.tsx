@@ -97,7 +97,6 @@ export default function DashboardScreen() {
   const [addContributionVisible, setAddContributionVisible] = useState(false);
   const [editContributionVisible, setEditContributionVisible] = useState(false);
   const [selectedContribution, setSelectedContribution] = useState<ISAContribution | null>(null);
-  const [preSelectedISAType, setPreSelectedISAType] = useState<string | undefined>(undefined);
 
   // Load saved ISA data on mount
   useEffect(() => {
@@ -305,19 +304,6 @@ export default function DashboardScreen() {
     }
   };
 
-  const handleISATypePress = (isaType: string) => {
-    const hasContributions = filteredContributions.filter(c => c.isaType === isaType).length > 0;
-
-    if (!hasContributions) {
-      // No contributions yet - open Add ISA modal with type pre-selected
-      setPreSelectedISAType(isaType);
-      setAddContributionVisible(true);
-    } else {
-      // Has contributions - toggle expanded view
-      setExpandedISA(expandedISA === isaType ? null : isaType);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <AnimatedBackground />
@@ -404,7 +390,7 @@ export default function DashboardScreen() {
           <Text style={styles.section}>My ISAs</Text>
 
           {/* Cash ISA */}
-          <Pressable onPress={() => handleISATypePress('cash')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+          <Pressable onPress={() => setExpandedISA(expandedISA === 'cash' ? null : 'cash')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
             <GlassCard style={styles.card} intensity="medium">
               <View style={styles.row}>
                 <View style={[styles.icon, { backgroundColor: ISA_INFO.cash.color + '30' }]}>
@@ -481,7 +467,7 @@ export default function DashboardScreen() {
           </Pressable>
 
           {/* Stocks & Shares ISA */}
-          <Pressable onPress={() => handleISATypePress('stocks_shares')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+          <Pressable onPress={() => setExpandedISA(expandedISA === 'stocks_shares' ? null : 'stocks_shares')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
             <GlassCard style={styles.card} intensity="medium">
               <View style={styles.row}>
                 <View style={[styles.icon, { backgroundColor: ISA_INFO.stocks_shares.color + '30' }]}>
@@ -558,7 +544,7 @@ export default function DashboardScreen() {
           </Pressable>
 
           {/* Lifetime ISA */}
-          <Pressable onPress={() => handleISATypePress('lifetime')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+          <Pressable onPress={() => setExpandedISA(expandedISA === 'lifetime' ? null : 'lifetime')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
             <GlassCard style={styles.card} intensity="medium">
               <View style={styles.row}>
                 <View style={[styles.icon, { backgroundColor: ISA_INFO.lifetime.color + '30' }]}>
@@ -639,7 +625,7 @@ export default function DashboardScreen() {
           </Pressable>
 
           {/* Innovative Finance ISA */}
-          <Pressable onPress={() => handleISATypePress('innovative_finance')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
+          <Pressable onPress={() => setExpandedISA(expandedISA === 'innovative_finance' ? null : 'innovative_finance')} style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}>
             <GlassCard style={styles.card} intensity="medium">
               <View style={styles.row}>
                 <View style={[styles.icon, { backgroundColor: ISA_INFO.innovative_finance.color + '30' }]}>
@@ -716,10 +702,7 @@ export default function DashboardScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => {
-              setPreSelectedISAType(undefined);
-              setAddContributionVisible(true);
-            }}
+            onPress={() => setAddContributionVisible(true)}
             style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
           >
             <GlassCard style={styles.card} intensity="light">
@@ -738,12 +721,8 @@ export default function DashboardScreen() {
       {/* Add ISA Contribution Modal */}
       <AddISAContributionModal
         visible={addContributionVisible}
-        onClose={() => {
-          setAddContributionVisible(false);
-          setPreSelectedISAType(undefined);
-        }}
+        onClose={() => setAddContributionVisible(false)}
         onAdd={handleAddContribution}
-        preSelectedType={preSelectedISAType}
         currentISAs={{
           cash: {
             contributed: groupedISAs.cash.total,

@@ -32,7 +32,6 @@ interface AddISAContributionModalProps {
   visible: boolean;
   onClose: () => void;
   onAdd?: (contribution: ISAContribution) => void;
-  preSelectedType?: string; // Optional: pre-select ISA type when modal opens
   currentISAs?: {
     [key: string]: {
       contributed: number;
@@ -57,7 +56,6 @@ export default function AddISAContributionModal({
   visible,
   onClose,
   onAdd,
-  preSelectedType,
   currentISAs,
 }: AddISAContributionModalProps) {
   const [step, setStep] = useState(1);
@@ -85,7 +83,7 @@ export default function AddISAContributionModal({
       setStep(1);
       setProvider('');
       setSelectedProviderData(null);
-      setSelectedType(preSelectedType || ISA_TYPES.CASH);
+      setSelectedType(ISA_TYPES.CASH);
       setAmount('');
       setNotes('');
       setContributionDate(new Date());
@@ -97,7 +95,7 @@ export default function AddISAContributionModal({
       setIsFlexible(null);
       setNeedsFlexibilityAnswer(false);
     }
-  }, [visible, preSelectedType]);
+  }, [visible]);
 
   const resetForm = () => {
     setStep(1);
