@@ -2,7 +2,7 @@
   "expo": {
     "name": "FinNest",
     "slug": "finnest",
-    "owner": "kndevapps-organization",
+    "owner": "kndevapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,6 +27,7 @@
         "backgroundColor": "#0A2540"
       },
       "package": "com.finnest.app",
+      "versionCode": 1,
       "permissions": [
         "INTERNET",
         "RECEIVE_BOOT_COMPLETED",
