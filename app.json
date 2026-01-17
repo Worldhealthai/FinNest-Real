@@ -74,7 +74,9 @@
             "kotlinVersion": "2.0.21"
           }
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-font"
     ],
     "scheme": "finnest",
     "experiments": {
